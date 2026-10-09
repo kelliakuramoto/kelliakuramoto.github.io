@@ -2,12 +2,12 @@
    script.js: Kelli Kuramoto portfolio
 
    1. CREATE: project grid + sidebar   (navigation, scroll animation, hover sync)
-   2. CREATE / CONSUME toggle          (switches between the two views)
-   3. CONSUME board                    (quotes, books, podcasts; edit COLLECTION)
-   4. PHOTOGRAPHY sections             (edit PHOTO_SECTIONS)
+   2. CREATE / Consume toggle          (switches between the two views)
+   3. Consume board                    (quotes, books, podcasts; edit COLLECTION)
+   4. Photography sections             (edit PHOTO_SECTIONS)
    5. PASSWORD GATE                    (Amazon Music case study)
    6. VIDEO: pause when off-screen
-   7. PHOTOBOOK                        (page-flip book)
+   7. Photobook                        (page-flip book)
    8. CAROUSEL                         (looping image slideshow)
    ===================================================== */
 
@@ -155,7 +155,7 @@ syncHover(gridItems, navLinks);
 
 
 // =====================================================
-// 2. CREATE / CONSUME toggle
+// 2. CREATE / Consume toggle
 // =====================================================
 const modeBtns = Array.from(document.querySelectorAll('.mode-btn'));
 
@@ -169,7 +169,7 @@ modeBtns.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode))
 
 
 // =====================================================
-// 3. CONSUME board
+// 3. Consume board
 // Add, remove or reorder items here. Layout and book cover colours are automatic.
 //   book:    { type, title, by, color? (cover colour), url? (external link) }
 //   podcast: { type, show, episode, minutes, progress? (0-100), image? (path), url? (external link) }
@@ -182,7 +182,7 @@ const COLLECTION = [
     episode: 'Lera Boroditsky: How Language Secretly Changes Your Personality',
     minutes: 111,
     progress: 21,
-    image: 'images/consume/what-now.png',
+    image: 'images/Consume/what-now.png',
     url: 'https://youtu.be/UVhAceBQmpY?si=Xk2LRWulUE9_W7gx'
   },
   {
@@ -196,7 +196,7 @@ const COLLECTION = [
     title: 'These Impossible Things',
     by: 'Salma El-Wardany',
     color: '#7a2a33',
-    image: 'images/consume/these-impossible-things.jpg',
+    image: 'images/Consume/these-impossible-things.jpg',
     url: 'https://www.goodreads.com/book/show/59228196-these-impossible-things'
   },
   {
@@ -204,7 +204,7 @@ const COLLECTION = [
     title: 'Everything is Tuberculosis',
     by: 'John Green',
     color: '#1d3a2b',
-    image: 'images/consume/everything-is-tuberculosis.jpg',
+    image: 'images/Consume/everything-is-tuberculosis.jpg',
     url: 'https://www.goodreads.com/book/show/220341389-everything-is-tuberculosis',
   },
   {
@@ -213,7 +213,7 @@ const COLLECTION = [
     episode: 'The Art of Learning & Living Life | Josh Waitzkin',
     minutes: 197,
     progress: 62,
-    image: 'images/consume/huberman-lab.png',
+    image: 'images/Consume/huberman-lab.png',
     url: 'https://www.youtube.com/watch?v=wAnDWfEIwoE'
   },
   {
@@ -228,7 +228,7 @@ const COLLECTION = [
     episode: 'The Score',
     minutes: 26,
     progress: 52,
-    image: 'images/consume/99-pi.png',
+    image: 'images/Consume/99-pi.png',
     url: 'https://youtu.be/QWG6u9yP7uQ?si=5euluw3dWN3DBamp'
   },
   {
@@ -236,7 +236,7 @@ const COLLECTION = [
     title: 'Beartown',
     by: 'Fredrick Backman',
     color: '#1d3a2b',
-    image: 'images/consume/beartown.jpg',
+    image: 'images/Consume/beartown.jpg',
     url: 'https://www.goodreads.com/book/show/33413128-beartown'
   },
   {
@@ -245,7 +245,7 @@ const COLLECTION = [
     episode: 'Arthur C Brooks: Are We Happy Yet?',
     minutes: 127,
     progress: 98,
-    image: 'images/consume/what-now.png',
+    image: 'images/Consume/what-now.png',
     url: 'https://youtu.be/xHZmw3JhT48?si=9_TKbWKsrs1-dklP'
   },
   {
@@ -259,7 +259,7 @@ const COLLECTION = [
     title: 'Think Again',
     by: 'Adam Grant',
     color: '#1d3a2b',
-    image: 'images/consume/think-again.jpeg',
+    image: 'images/Consume/think-again.jpeg',
     url: 'https://www.goodreads.com/book/show/55539565-think-again'
   },
   {
@@ -267,7 +267,7 @@ const COLLECTION = [
     title: 'The Anthropologists',
     by: 'Ayşegül Savaş',
     color: '#1d3a2b',
-    image: 'images/consume/the-anthropologists.jpg',
+    image: 'images/Consume/the-anthropologists.jpg',
     url: 'https://www.goodreads.com/book/show/195391751-the-anthropologists'
   },
 ];
@@ -327,7 +327,7 @@ document.getElementById('board').innerHTML = COLLECTION.map((it, i) => {
 
 
 // =====================================================
-// 4. PHOTOGRAPHY sections (inside section-4)
+// 4. Photography sections (inside section-4)
 //   section: { title, meta? (e.g. "Film, 2025"), photos: [...] }
 //   photo:   { src? (image path), alt?, ratio? ("4/5", "3/2", "1/1"), title?, sub? }
 //   No src = grey placeholder. No ratio = the photo keeps its own proportions.
@@ -340,47 +340,47 @@ const PHOTO_SECTIONS = [
     title: 'San Francisco',
     meta: '2024 - Present',
     photos: [
-      { src: 'images/photography/ca-1.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/ca-2.jpg', alt: 'Describe the photo', ratio: '5/4' },
-      { src: 'images/photography/ca-3.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/ca-4.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/ca-5.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/ca-6.jpg', alt: 'Describe the photo', ratio: '5/4' },
-      { src: 'images/photography/ca-7.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/ca-8.jpg', alt: 'Describe the photo', ratio: '5/4' },
-      { src: 'images/photography/ca-9.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/ca-1.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/ca-2.jpg', alt: 'Describe the photo', ratio: '5/4' },
+      { src: 'images/Photography/ca-3.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/ca-4.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/ca-5.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/ca-6.JPG', alt: 'Describe the photo', ratio: '5/4' },
+      { src: 'images/Photography/ca-7.JPG', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/ca-8.JPG', alt: 'Describe the photo', ratio: '5/4' },
+      { src: 'images/Photography/ca-9.jpg', alt: 'Describe the photo', ratio: '2/3' },
     ],
   },
   {
     title: 'Yosemite',
     meta: 'April 2026',
     photos: [
-      { src: 'images/photography/yosemite-1.jpg', alt: 'Describe the photo', ratio: '5/4' },
-      { src: 'images/photography/yosemite-2.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/yosemite-3.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/yosemite-4.jpg', alt: 'Describe the photo', ratio: '5/4' },
-      { src: 'images/photography/yosemite-5.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/yosemite-6.jpg', alt: 'Describe the photo', ratio: '5/4' },
-      { src: 'images/photography/yosemite-7.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/yosemite-8.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/yosemite-9.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/yosemite-1.JPG', alt: 'Describe the photo', ratio: '5/4' },
+      { src: 'images/Photography/yosemite-2.JPG', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/yosemite-3.JPG', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/yosemite-4.JPG', alt: 'Describe the photo', ratio: '5/4' },
+      { src: 'images/Photography/yosemite-5.JPG', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/yosemite-6.JPG', alt: 'Describe the photo', ratio: '5/4' },
+      { src: 'images/Photography/yosemite-7.JPG', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/yosemite-8.JPG', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/yosemite-9.JPG', alt: 'Describe the photo', ratio: '2/3' },
     ],
   },
   {
     title: 'Japan',
     meta: 'May 2025',
     photos: [
-      { src: 'images/photography/japan-1.jpg', alt: 'Describe the photo', ratio: '5/4' },
-      { src: 'images/photography/japan-2.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/japan-3.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/japan-4.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/japan-5.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/japan-6.jpg', alt: 'Describe the photo', ratio: '5/4' },
-      { src: 'images/photography/japan-7.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/japan-8.jpg', alt: 'Describe the photo', ratio: '5/4' },
-      { src: 'images/photography/japan-9.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/japan-10.jpg', alt: 'Describe the photo', ratio: '2/3' },
-      { src: 'images/photography/japan-11.jpg', alt: 'Describe the photo', ratio: '5/4' },
+      { src: 'images/Photography/japan-1.jpg', alt: 'Describe the photo', ratio: '5/4' },
+      { src: 'images/Photography/japan-2.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/japan-3.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/japan-4.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/japan-5.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/japan-6.jpg', alt: 'Describe the photo', ratio: '5/4' },
+      { src: 'images/Photography/japan-7.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/japan-8.jpg', alt: 'Describe the photo', ratio: '5/4' },
+      { src: 'images/Photography/japan-9.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/japan-10.jpg', alt: 'Describe the photo', ratio: '2/3' },
+      { src: 'images/Photography/japan-11.jpg', alt: 'Describe the photo', ratio: '5/4' },
     ],
   },
 ];
@@ -450,8 +450,8 @@ new IntersectionObserver(([e]) => e.isIntersecting ? v.play() : v.pause(), { thr
 
 
 // =====================================================
-// 7. PHOTOBOOK
-// A page-flip book built from 16 images (images/photobook/page-1.png ...).
+// 7. Photobook
+// A page-flip book built from 16 images (images/Photobook/page-1.png ...).
 // Each "leaf" is one sheet with a front and a back; flipping toggles the
 // `f` class and CSS rotates it. Click, arrow keys, buttons and swipe all
 // turn pages.
@@ -463,7 +463,7 @@ new IntersectionObserver(([e]) => e.isIntersecting ? v.play() : v.pause(), { thr
 
   // N = total pages, START = first image number, DUR = flip time in ms
   const N = 16, START = 1, DUR = 900;               // DUR must match --dur in the CSS
-  const url = i => `url(images/photobook/page-${i + START}.png)`;
+  const url = i => `url(images/Photobook/page-${i + START}.png)`;
   const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const mk = cls => Object.assign(document.createElement('div'), { className: cls });
   const leaves = [], loaded = new Set();
