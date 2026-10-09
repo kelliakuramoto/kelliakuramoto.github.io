@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kelli Kuramoto</title>
+  <link rel="icon" href="images/logo.png" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-mode="create">
+
+  <!-- ========== CREATE VIEW: sidebar + scrollable content. Toggled with CONSUME via body[data-mode]. ========== -->
+  <div class="layout">
+    <!-- LEFT: sidebar, stays fixed while the right side scrolls. Links open projects (script.js section 1). -->
+    <aside class="sidebar">
+      <div>
+        <!-- About: name, job and city each have their own accent style (see CSS section 3) -->
+        <div id="aboutSection">
+          <a id="aboutName">Hi, I’m Kelli with an i.</a>
+          <a id="aboutJob">Product designer</a> by trade, lover of questions at heart.
+          My body resides in <a id="aboutCity">San Francisco</a>, but my being is rooted in
+          curiosity, care, and conviction for all things that I create.
+        </div>
+        <div>
+          <strong>Questions that have been asked, <br>
+            Answers I have designed</strong>
+        </div>
+
+        <!-- Sidebar navigation: one question per project (href must match the project section ids below) -->
+        <nav id="sideNav">
+          <h3>at Work</h3>
+          <a href="#bizbuysell" class="nav-link">How might BizBuySell become more than a marketing platform?</a>
+          <a href="#amazon-music" class="nav-link">How might we use product bundles as a way to provide smaller artists with financial stability and a growing fan community?</a>
+          <br>
+          <h3>in Life</h3>
+          <a href="#photobook" class="nav-link">What if on my birthday, I gave gifts to my friends and family instead of receiving them?</a>
+          <a href="#photography" class="nav-link">How can you take the photos that your eyes make?</a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- RIGHT: scrollable content. Shows the overview grid, or one project at a time. -->
+    <main class="content" id="scrollArea">
+      <!-- Overview grid: 4 tiles, shown when nothing is selected. Hovering a tile shows its caption. -->
+      <div class="project-grid visible" id="projectGrid">
+        <a href="#bizbuysell" class="grid-item">
+          <div class="media">
+            <img src="images/bizbuysell_thumbnail.png" alt="Deal Accelerator project preview">
+            <div class="grid-caption">
+              <h3>Deal Accelerator, for BizBuySell</h3>
+              <p class="grid-desc">From lead generation to deal management platform.</p>
+            </div>
+          </div>
+        </a>
+        <a href="#amazon-music" class="grid-item">
+          <div class="media">
+            <img src="images/amazon_lg_thumbnail.png" alt="Amazon Music project preview">
+            <div class="grid-caption">
+              <h3>Fan Bundles, for Amazon Music</h3>
+              <p class="grid-desc">Defining and designing what a fan bundle could be</p>
+            </div>
+          </div>
+        </a>
+        <a href="#photobook" class="grid-item">
+          <div class="media">
+            <img src="images/photobook_thumbnail.png" alt="Photobook project preview">
+            <div class="grid-caption">
+              <h3>Happy 24th Birthday</h3>
+              <p class="grid-desc">Photobook of my favorite people and the effect they have had this past year.</p>
+            </div>
+          </div>
+        </a>
+        <a href="#photography" class="grid-item">
+          <div class="media">
+            <img src="images/photography_thumbnail.png" alt="Photography project preview">
+            <div class="grid-caption">
+              <h3>Photography</h3>
+              <p class="grid-desc">Film: digital, People: place, Fluid: frozen.</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- ========== PROJECT: Deal Accelerator, for BizBuySell ========== -->
+      <section class="project" id="bizbuysell">
+        <!-- Title + [ CLOSE ] button (returns to the overview grid) -->
+        <div class="project-header">
+          <h2>Deal Accelerator, for BizBuySell</h2>
+          <button class="close-btn">[ CLOSE ]</button>
+        </div>
+        <div class="media"><img src="images/bizbuysell_lg_thumbnail.png" alt="Deal Accelerator project preview"></div>
+        <div class="case-study-grid">
+          <!-- Background -->
+          <div class="case-study-row" style="--cols: 1">
+            <div>
+              <h4>BACKGROUND</h4>
+              <p>
+                BizBuySell is the largest online marketplace for buying and selling small businesses.
+                Business brokers, who help owners sell their business, were stitching together email, DocuSign, Dropbox, and other tools to qualify buyers
+                and share confidential files. Our goal was to move beyond a lead generation platform into a deal
+                management system, ensuring broker and buyer activity stays on-platform.
+              </p>
+            </div>
+          </div>
+
+          <!-- Role / timeline / team / skills (4 columns) -->
+          <div class="case-study-row" style="--cols: 4">
+            <div>
+              <h4>ROLE</h4>
+              <p>Lead Product Desginer</p>
+            </div>
+            <div>
+              <h4>TIMELINE</h4>
+              <p>Oct 2025 - Oct 2026<br>12 Months</p>
+            </div>
+            <div>
+              <h4>TEAM</h4>
+              <p>Josh Merryman<br>Kavya Valoridi<br>Ludovic Noel<br>Kent Furama</p>
+            </div>
+            <div>
+              <h4>SKILLS</h4>
+              <p>
+                Product Design<br>
+                Design Systems<br>
+                Usability Testing<br>
+                AI Prototyping
+              </p>
+            </div>
+          </div>
+
+          <!-- TLDR -->
+          <div class="case-study-row" style="--cols: 1">
+            <div>
+              <h4>TLDR</h4>
+              <p>
+                I led the design for Deal Accelerator, a two-sided deal management product
+                that helps business brokers close business-for-sale deals,
+                from marketing a listing and qualifying leads to sharing secure
+                files and accepting offers. The experience spans four surfaces
+                (Listing Dashboard, Lead Profile, Virtual Data Room, and Buyer Platform),
+                giving brokers control of the process while guiding buyers through the sale proccess.
+              </p>
+            </div>
+          </div>
+
+          <!-- The four surfaces: image + description pairs -->
+          <div class="case-study-row mini-project" style="--cols: 2">
+            <div class="media">
+              <img src="images/bizbuysell-listing-dashboard.png" alt="Deal Accelerator project preview">
+            </div>
+            <div>
+              <h4>Listing Dashboard, for Brokers</h4>
+              <p>
+                I designed an entirely new surface to replace a single dropdown that previously managed all listing settings.
+                Each listing now has its own dashboard, organized into four tabs: the Dashboard displays listing performance, insights, and next steps;
+                Files is where brokers upload and manage data room files, Contacts shows what files have been shared with which leads
+                and Settings is where brokers configure how leads engage with their listing during the qualification process.
+              </p>
+            </div>
+            <div class="media">
+              <img src="images/bizbuysell-lead-profile.png" alt="Deal Accelerator project preview">
+            </div>
+            <div>
+              <h4>Lead Profile, for Qualifying Buyers</h4>
+              <p>
+                I redesigned the lead experience from a single row in a table into a full profile.
+                The new surface leverages all lead data, from NDA completion to Buyer Profile information
+                and file activity, into clear signals of how serious they are, so brokers can view,
+                disqualify, and take action on their leads from one place.
+              </p>
+            </div>
+            <div class="media">
+              <img src="images/bizbuysell-dataroom.png" alt="Deal Accelerator project preview">
+            </div>
+            <div>
+              <h4>Virtual Data Room, for Secure File Sharing</h4>
+              <p>
+                I led the design for a listing-specific data room where brokers
+                organize confidential documents and share them with qualified buyers.
+                A key challenge was defining the privacy and sharing settings,
+                so I made it clear who can see what and kept confidentiality front
+                and center through Access Groups.
+              </p>
+            </div>
+            <div class="media">
+              <img src="images/bizbuysell-dealnavigator.png" alt="Deal Accelerator project preview">
+            </div>
+            <div>
+              <h4>Deal Navigator, for Buyers</h4>
+              <p>
+                I redesigned the buyer experience from a single table with two buttons (Sign NDA and View CIM)
+                to a guided experience for buyers with a task checklist.
+                Buyers can see exactly which actions they need to take,
+                access Virtual Data Room files, and request next steps from the broker,
+                giving them more control over the process.
+              </p>
+            </div>
+          </div>
+
+          <!-- Contact note (this project is not public) -->
+          <div class="case-study-row" style="--cols: 1">
+            <div>
+              <h4>WANT TO LEARN MORE?</h4>
+              <p>
+                The product and designs for this project are not available to the public, but I am happy to chat more about my process over a call. Reach out at <a href="mailto:kelliakuramoto@gmail.com" class="email">kelliakuramoto@gmail.com</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== PROJECT: Fan Bundles, for Amazon Music ==========
+               The top of this project is public. Everything inside #restricted-content
+               stays hidden until the visitor enters the password (script.js section 5).
+               NOTE (markup): the two <ol> lists below sit inside <p> tags. Browsers repair this
+               silently (leaving an empty <p> after each list), so it is left as-is to keep the page
+               rendering exactly the same. -->
+      <section class="project" id="amazon-music">
+        <div class="project-header">
+          <h2>Fan Bundles, for Amazon Music</h2>
+          <button class="close-btn">[ CLOSE ]</button>
+        </div>
+        <div class="media"><img src="images/amazon_lg_thumbnail.png" alt="Amazon Music project preview"></div>
+        <div class="case-study-grid">
+          <!-- Background -->
+          <div class="case-study-row" style="--cols: 1">
+            <div>
+              <h4>BACKGROUND</h4>
+              <p>
+                One of Amazon Music’s goals for 2023 is to help support Artists by providing them with different monetization strategies. To generate ideas,
+                the Product Design Team at Amazon Music conducted a Design Sprint. As a result, Fan Bundles gained the highest confidence in addressing
+                the customer needs.
+              </p>
+            </div>
+          </div>
+
+          <!-- Role / timeline / team / skills (4 columns) -->
+          <div class="case-study-row" style="--cols: 4">
+            <div>
+              <h4>ROLE</h4>
+              <p>UX Designer<br>Intern</p>
+            </div>
+            <div>
+              <h4>TIMELINE</h4>
+              <p>June 2023 - Aug 2023<br>3 Months</p>
+            </div>
+            <div>
+              <h4>TEAM</h4>
+              <p>Liz Feder<br>Marvin Valarezo<br>Brad Pankop</p>
+            </div>
+            <div>
+              <h4>SKILLS</h4>
+              <p>
+                Competitor Analysis<br>
+                Generative UX Research<br>
+                Evaluative UX Research<br>
+                Product Design<br>
+              </p>
+            </div>
+          </div>
+
+          <!-- TLDR -->
+          <div class="case-study-row" style="--cols: 1">
+            <div>
+              <h4>TLDR</h4>
+              <p>
+                I defined the vision for Fan Bundles, an Amazon Music concept
+                to help smaller artists earn a living beyond streaming while
+                enabling super fans to feel closer to the artists they love
+                by transforming the idea into 3 super fan archetypes,
+                4 research-backed bundle recommendations and designing an
+                end-to-end prototype, spanning Retail and Music experiences,
+                for both artists and fans.
+              </p>
+            </div>
+          </div>
+
+          <!-- Password gate: the button opens a prompt; the right password hides this row and the contact note below -->
+          <div id="password-row" class="case-study-row" style="--cols: 1">
+            <button id="password-btn" class="password-btn">[ ENTER PASSWORD ]</button>
+
+            <!-- Inline form: currently hidden and not used (script.js asks for the password with prompt() instead) -->
+            <form id="password-form" class="password-form" hidden>
+              <input type="password" id="password-input" placeholder="Please Enter Password" autocomplete="off" />
+              <button type="submit">SUBMIT</button>
+              <p id="password-error" class="password-error" hidden>Incorrect password</p>
+            </form>
+          </div>
+
+          <!-- Contact note: hidden after unlocking -->
+          <div id="learn-more-row" class="case-study-row" style="--cols: 1">
+            <div>
+              <h4>WANT TO LEARN MORE?</h4>
+              <p>
+                The product and designs for this project are not available to the public, but I am happy to chat more about my process over a call. Reach out at <a href="mailto:kelliakuramoto@gmail.com" class="email">kelliakuramoto@gmail.com</a>.
+              </p>
+            </div>
+          </div>
+
+          <!-- ===== RESTRICTED CONTENT: revealed by the password ===== -->
+          <div id="restricted-content" hidden>
+            <div class="case-study-grid">
+              <!-- Final design walkthrough videos (fan, then artist) -->
+              <div class="case-study-row" style="--cols: 1">
+                <div>
+                  <h4>FINAL DESIGNS - SUPER FAN</h4>
+                  <video
+                    src="demos/amazon-music-fan-demo.mov"
+                    autoplay
+                    loop
+                    muted
+                    playsinline
+                    poster="assets/fan-bundles-poster.jpg">
+                  </video>
+                </div>
+                <div>
+                  <h4>FINAL DESIGNS - MID-CAREER MUSICIAN</h4>
+                  <video
+                    src="demos/amazon-music-artist-demo.mov"
+                    autoplay
+                    loop
+                    muted
+                    playsinline
+                    poster="assets/fan-bundles-poster.jpg">
+                  </video>
+                </div>
+              </div>
+              <div class="case-study-row" style="--cols: 1">
+                <p>
+                  I attacked the problem of Artist monetization from both sides of
+                  the customer experience: Artist and Fan. Balancing the needs of
+                  both customers was certainly a challenge throughout the entire summer.
+                  However, it was clear that both fans and artists wanted connection
+                  with each other (in one way or another).
+                </p>
+              </div>
+
+              <!-- Problem: two sides of the customer experience -->
+              <div class="case-study-row" style="--cols: 1">
+                <div>
+                  <h4>THE PROBLEM</h4>
+                  <div class="case-study-row" style="--cols: 2">
+                    <div>
+                      <p class="hero-text">
+                        Artists aren’t able to earn a living solely based off streaming revenue
+                      </p>
+                    </div>
+                    <div>
+                      <p class="hero-text">
+                        Fans feel like the Artist doesn’t engage with their community enough
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="case-study-row" style="--cols: 1">
+                <p>So what do our customers actually need? Artists need a way to convert a streaming audience into purchasing customers.
+                  Fans need to anticipate and receive communication from the artists they love. These customer needs became the foundation for my problem statement for the summer.
+                </p>
+              </div>
+
+              <!-- Problem statement -->
+              <div class="case-study-row" style="--cols: 1">
+                <div>
+                  <h4>HOW MIGHT WE</h4>
+                  <p class="hero-text">
+                    Use fan bundles to provide artists with financial stability and a growing fan community, while also strengthening fans' relationships with the artists they love?
+                  </p>
+                </div>
+              </div>
+              <div class="case-study-row" style="--cols: 1">
+                <p>
+                  I started off my summer with research. I knew that in order to define what could be, I had to first understand what currently is.
+                </p>
+              </div>
+
+              <!-- Research 1: competitive analysis (carousel + product bundle definition) -->
+              <div class="case-study-row" style="--cols: 1">
+                <div>
+                  <h4>COMPETITIVE ANALYSIS</h4>
+                  <p class="hero-text">
+                    Analyzed 39+ companies across 11 different industries to gain a better understanding of what “product bundling” meant
+                  </p>
+                </div>
+              </div>
+              <div class="case-study-row" style="--cols: 1">
+                <!-- Carousel: slides are .car-slide images; buttons and counter are wired up in script.js section 8 -->
+                <div class="car" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Super fan archetypes">
+                  <div class="car-stage">
+                    <img class="car-slide" src="images/amazon-competitve-analysis1.png" alt="Super fan archetype 1 of 3">
+                    <img class="car-slide" src="images/amazon-competitve-analysis2.png" alt="Super fan archetype 2 of 3">
+                    <img class="car-slide" src="images/amazon-competitve-analysis3.png" alt="Super fan archetype 3 of 3">
+                  </div>
+                  <div class="fb-bar">
+                    <button type="button" class="car-prev" aria-label="Previous archetype">[ BACK ]</button>
+                    <span class="fb-count" aria-live="polite"></span>
+                    <button type="button" class="car-next" aria-label="Next archetype">[ NEXT ]</button>
+                  </div>
+                </div>
+                <div>
+                  <p>
+                    Across multiple industries and companies, a common definition emerged. Product bundle: curated collection of complementary products or services for sale as one product or service package. <br><br>
+                    Throughout this research I also noted 3 high level advantages of product bundles:
+                    <ol>
+                      <li>Notion of perceived price benefit</li>
+                      <li>Sense of scarcity or ephemerality</li>
+                      <li>Combination of items can create a unique whole</li>
+                    </ol>
+                  </p>
+                </div>
+              </div>
+              <div class="case-study-row" style="--cols: 1">
+                <p>
+                  Once I had a clearer understanding of my problem space, I knew I had to validate my assumptions
+                  and gain actual customer perspective through generative research.
+                </p>
+              </div>
+
+              <!-- Research 2: validating assumptions (card sort, archetypes carousel, artist survey, insights) -->
+              <div class="case-study-row" style="--cols: 1">
+                <div>
+                  <h4>VALIDATING ASSUMPTIONS</h4>
+                  <p class="hero-text">
+                    Ran a card sort with 11 fans to uncover their mental models and preferences around bundles
+                  </p>
+                </div>
+                <div class="case-study-row" style="--cols:1">
+                  <div>
+                    <p>
+                      The biggest takeaway was that <strong>true monetization required
+                        both personalization and range</strong> when it came to purchase conversions.
+                      One bundle won't work for every fan. Leveraging the insights
+                      from the card sort, as well as past UX research from my mentor Marvin,
+                      I developed three archetypes to guide my recommendations:
+                    </p>
+                  </div>
+                  <div class="case-study-row" style="--cols: 1">
+                    <!-- Carousel: the three super fan archetypes -->
+                    <div class="car" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Super fan archetypes">
+                      <div class="car-stage">
+                        <img class="car-slide" src="images/amazon-archetype1.png" alt="Super fan archetype 1 of 3">
+                        <img class="car-slide" src="images/amazon-archetype2.png" alt="Super fan archetype 2 of 3">
+                        <img class="car-slide" src="images/amazon-archetype3.png" alt="Super fan archetype 3 of 3">
+                      </div>
+                      <div class="fb-bar">
+                        <button type="button" class="car-prev" aria-label="Previous archetype">[ BACK ]</button>
+                        <span class="fb-count" aria-live="polite"></span>
+                        <button type="button" class="car-next" aria-label="Next archetype">[ NEXT ]</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <p class="hero-text">
+                      Conducted a survey with 7 artists to better understand what kinds of items and interactions they’d be open to
+                    </p>
+                  </div>
+                  <div>
+                    <p>
+                      High level insights from both the research studies:
+                      <ol>
+                        <li>Most fans placed physical merchandise in their top bundles</li>
+                        <li>86% of artists said they'd be open to multiple types of fan interactions</li>
+                        <li>Fans were highly polarized with regards to participating in Artist interactions </li>
+                        <li>Fans who wanted high-engagement interactions were willing to spend 2x as much on a bundle</li>
+                      </ol>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="case-study-row" style="--cols:1">
+                <div>
+                  <p>
+                    After analyzing what items and interactions artists were willing to offer and overlapping that with what fans were willing to pay, I used this data to inform my 4 different product bundle recommendations.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Bundle recommendations video -->
+              <div class="case-study-row" style="--cols: 1">
+                <div>
+                  <h4>BUNDLE RECOMMENDATIONS</h4>
+                  <video
+                    src="demos/amazon-music-bundle.mov"
+                    autoplay
+                    loop
+                    muted
+                    playsinline
+                    poster="assets/fan-bundles-poster.jpg">
+                  </video>
+                </div>
+              </div>
+              <div class="case-study-row" style="--cols:1">
+                <div>
+                  <p>
+                    I designed around two customers: Dominic, a mid-career musician who's played local venues but can't support himself on streaming alone, and Lauren, one of his biggest fans, who has followed him since his first EP and even caught one of his early shows at Bill Graham Auditorium.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Design: the fan experience (Lauren), image + text pairs -->
+              <div class="case-study-row" style="--cols: 1">
+                <div>
+                  <h4>DESIGNING THE EXPERIENCE - SUPER FAN</h4>
+                  <div class="case-study-row mini-project" style="--cols: 2">
+                    <div>
+                      <img src="images/amazon-fan-anticipation.png" alt="Fan bundle project preview">
+                    </div>
+                    <div>
+                      <h4>Anticipation</h4>
+                      <p>
+                        Lauren gets a push notification that Dominic is releasing an exclusive fan bundle tomorrow. Tapping it opens a preview page where she can explore what's inside and add it to her Amazon List.
+                      </p>
+                    </div>
+                    <div>
+                      <img src="images/amazon-fan-release.png" alt="Fan bundle project preview">
+                    </div>
+                    <div>
+                      <h4>Release Day</h4>
+                      <p>
+                        She opens the Amazon Retail app, finds Dominic's merch shop, and sees the Fan Bundle front and center.
+                      </p>
+                    </div>
+                    <div>
+                      <img src="images/amazon-fan-customization.png" alt="Fan bundle project preview">
+                    </div>
+                    <div>
+                      <h4>Customization</h4>
+                      <p>
+                        On the Retail product page, she chooses a vinyl album for her record player and a small t-shirt for his next concert.
+                      </p>
+                    </div>
+                    <div>
+                      <img src="images/amazon-fan-checkout.png" alt="Fan bundle project preview">
+                    </div>
+                    <div>
+                      <h4>Integrated Checkout</h4>
+                      <p>
+                        As a Prime member, checkout is seamless, and she lands in the Amazon Music app with everything in her Library.
+                      </p>
+                    </div>
+                    <div>
+                      <img src="images/amazon-fan-belonging.png" alt="Fan bundle project preview">
+                    </div>
+                    <div>
+                      <h4>Belonging</h4>
+                      <p>
+                        On Dominic's artist page she sees a personalized widget celebrating her purchase, and on the bundle detail page she can connect with other superfans through comments and share reactions in real time.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Design: the artist experience (Dominic), text + image pairs -->
+              <div class="case-study-row" style="--cols: 1">
+                <div>
+                  <h4>DESIGNING THE EXPERIENCE - MID-CAREER MUSICIAN</h4>
+                  <div class="case-study-row mini-project" style="--cols: 2">
+                    <div>
+                      <h4>Easy Setup</h4>
+                      <p>
+                        In Amazon Music for Artists, he connects his Amazon Merch account and items auto-populate into curated bundle templates.
+                      </p>
+                    </div>
+                    <div>
+                      <img src="images/amazon-musician-setup.png" alt="Fan bundle project preview">
+                    </div>
+                    <div>
+                      <h4>Customization</h4>
+                      <p>
+                        He can add or remove any items or interactions, and set his own price and quantity based on his monetization needs and bandwidth.
+                      </p>
+                    </div>
+                    <div>
+                      <img src="images/amazon-musician-customization.png" alt="Fan bundle project preview">
+                    </div>
+                    <div>
+                      <h4>Track and Promote</h4>
+                      <p>
+                        Once live, he sees real-time stats on engagement and sales, can embed a promo widget on his personal website, and can use Amazon Music's other promo tools like fan reach and promo cards.
+                      </p>
+                    </div>
+                    <div>
+                      <img src="images/amazon-musician-track.png" alt="Fan bundle project preview">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== PROJECT: Happy 24th Birthday, a photobook ========== -->
+      <section class="project" id="photobook">
+        <div class="project-header">
+          <h2>Happy 24th Birthday: A Photobook</h2>
+          <button class="close-btn">[ CLOSE ]</button>
+        </div>
+
+        <!-- Page-flip book: pages are built and animated by script.js section 7 -->
+        <div class="fb" id="fb" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Photobook">
+          <div class="fb-book" id="fbBook"></div>
+          <div class="fb-bar">
+            <button type="button" id="fbPrev" aria-label="Previous page">[ BACK ]</button>
+            <span class="fb-count" id="fbCount" aria-live="polite"></span>
+            <button type="button" id="fbNext" aria-label="Next page">[ NEXT ]</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== PROJECT: Photography ========== -->
+      <section class="project" id="photography">
+        <div class="project-header">
+          <h2>Photography</h2>
+          <button class="close-btn">[ CLOSE ]</button>
+        </div>
+
+        <!-- Photo groups are generated from PHOTO_SECTIONS in script.js (section 4) -->
+        <div id="photoSections"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ========== CONSUME VIEW: a board of quotes, books and podcasts. Items live in script.js (COLLECTION, section 3). ========== -->
+  <section class="consume" id="consumeView" aria-label="Things I consume">
+    <div class="board" id="board"></div>
+  </section>
+
+  <!-- ========== Global toggle, fixed to the bottom of every page (switches body[data-mode]) ========== -->
+  <div class="mode-toggle" role="group" aria-label="View">
+    <button type="button" class="mode-btn" data-mode="create" aria-pressed="true"><span class="br" aria-hidden="true">[ </span>CREATE<span class="br" aria-hidden="true"> ]</span></button>
+    <img class="mode-logo" src="images/logo.png" alt="">
+    <button type="button" class="mode-btn" data-mode="consume" aria-pressed="false"><span class="br" aria-hidden="true">[ </span>CONSUME<span class="br" aria-hidden="true"> ]</span></button>
+  </div>
+
+  <!-- All behaviour lives in script.js (see its table of contents) -->
+  <script src="script.js"></script>
+</body>
+</html>
