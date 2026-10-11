@@ -186,12 +186,6 @@ const COLLECTION = [
     url: 'https://youtu.be/UVhAceBQmpY?si=Xk2LRWulUE9_W7gx'
   },
   {
-    type: 'quote',
-    text: 'Maybe fulfillment is not about what you get out, but how much of yourself you put in.',
-    highlight: 'how much of yourself you put in',
-    by: 'Unknown'
-  },
-  {
     type: 'book',
     title: 'These Impossible Things',
     by: 'Salma El-Wardany',
@@ -233,6 +227,14 @@ const COLLECTION = [
   },
   {
     type: 'book',
+    title: 'This is Water',
+    by: 'David Foster Wallace',
+    color: '#1d3a2b',
+    image: 'images/Consume/this-is-water.jpg',
+    url: 'https://www.goodreads.com/book/show/5986375-this-is-water'
+  },
+  {
+    type: 'book',
     title: 'Beartown',
     by: 'Fredrick Backman',
     color: '#1d3a2b',
@@ -253,6 +255,12 @@ const COLLECTION = [
     text: 'People think simplifying is removing things, and it’s not. Simplifying is understanding something so deeply that you can get to the essence of something.',
     highlight: 'understanding something so deeply that you can get to the essence',
     by: 'Brian Chesky'
+  },
+  {
+    type: 'quote',
+    text: 'Maybe fulfillment is not about what you get out, but how much of yourself you put in.',
+    highlight: 'how much of yourself you put in',
+    by: 'Unknown'
   },
   {
     type: 'book',
