@@ -629,6 +629,10 @@ body[data-mode="consume"] .consume {
   .content section { margin-bottom: 4rem; }
 
   .consume { padding: 1.25rem; }
+
+  .case-study-row[style*="--cols: 4"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* Small phones: one column of tiles */
@@ -641,6 +645,17 @@ body[data-mode="consume"] .consume {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
+
+  .case-study-row[style*="--cols: 4"] {
+    grid-template-columns: 1fr;
+  }
+
+  #mid-career-musician > :nth-child(1) { order: 2; }
+  #mid-career-musician > :nth-child(2) { order: 1; }
+  #mid-career-musician > :nth-child(3) { order: 4; }
+  #mid-career-musician > :nth-child(4) { order: 3; }
+  #mid-career-musician > :nth-child(5) { order: 6; }
+  #mid-career-musician > :nth-child(6) { order: 5; }
 }
 
 /* Reduced motion: no fades */
