@@ -90,19 +90,24 @@ h2, h3 {
 }
 
 /* Case study labels (BACKGROUND, ROLE, TLDR...) take each project's colour */
-#amazon-music h4 {
+.case-study-row h4 {
   margin: 0 0 0.5rem;
   font-size: 1rem;
   font-weight: 400;
+}
+
+#amazon-music h4 {
   color: var(--amazon-music);
 }
 
 #bizbuysell h4 {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-  font-weight: 400;
   color: var(--hover)
 }
+
+#photobook h4 {
+  color: var(--accent);
+}
+
 /* Videos fill their column */
 video {
   width: 100%;
