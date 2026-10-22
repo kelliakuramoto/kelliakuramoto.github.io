@@ -117,6 +117,7 @@ function showDetail(id) {
   const target = document.getElementById(id);
   showView(target);
   scrollToStart(target);
+  setHash(id);
 }
 
 // Back to the overview grid
@@ -124,6 +125,15 @@ function showAll() {
   navLinks.forEach(l => l.classList.remove('active'));
   showView(projectGrid);
   scrollToStart(scrollArea);
+  setHash('');
+}
+
+// NEW: keeps the address bar in step with the open project.
+// pushState doesn't fire hashchange, and it lets the browser Back button work.
+function setHash(id) {
+  const next = id ? '#' + id : '';
+  if (location.hash === next) return;
+  history.pushState(null, '', location.pathname + location.search + next);
 }
 
 // ---- Event wiring ----------------------------------------------
@@ -593,3 +603,26 @@ document.querySelectorAll('.car').forEach(car => {
 
   show(0);
 });
+
+
+// =====================================================
+// 9. UNIQUE URLS FOR PROJECTS
+// Add #projectID to the end of url
+// =====================================================
+const projectIds = projects.map(p => p.id);
+
+function openFromHash() {
+  const id = location.hash.slice(1);
+  if (projectIds.includes(id)) {
+    setMode('create');   // make sure the CREATE view is showing, not CONSUME
+    showDetail(id);
+  } else {
+    showAll();           // no hash (or an unknown one) = overview grid
+  }
+}
+
+// On first load, only act if the link points at a project
+if (projectIds.includes(location.hash.slice(1))) openFromHash();
+
+// Browser Back/Forward, or editing the hash by hand
+window.addEventListener('hashchange', openFromHash);
