@@ -222,6 +222,19 @@ const COLLECTION = [
   },
   {
     type: 'quote',
+    text: 'Strong opinions, loosely held.',
+    highlight: 'loosely held',
+    by: 'Unknown'
+  },
+  {
+    type: 'poem',
+    title: 'The Gardener',
+    by: 'Mary Oliver',
+    image: 'images/Consume/the-gardener.png',
+    url: 'https://www.instagram.com/p/DNnpayAODMo/',
+  },
+  {
+    type: 'quote',
     text: 'When life feels unbearable, I remind myself that I am not a person, I am a piece of software running on the brain of a random ape for a few decades. Its not the worst brain to run on.',
     highlight: 'I am not a person, I am a piece of software',
     by: 'Joscha Basch'
@@ -273,6 +286,13 @@ const COLLECTION = [
     by: 'Unknown'
   },
   {
+    type: 'poem',
+    title: 'The Sun Never Says',
+    by: 'Hafiz',
+    image: 'images/Consume/the-sun-never-says.webp',
+    url: 'https://www.goodreads.com/quotes/60389-even-after-all-this-time-the-sun-never-says-to/',
+  },
+  {
     type: 'book',
     title: 'Think Again',
     by: 'Adam Grant',
@@ -287,6 +307,19 @@ const COLLECTION = [
     color: '#1d3a2b',
     image: 'images/Consume/the-anthropologists.jpg',
     url: 'https://www.goodreads.com/book/show/195391751-the-anthropologists'
+  },
+  {
+    type: 'poem',
+    title: 'Life is Not a Race',
+    by: 'Alan Watts',
+    image: 'images/Consume/life-is-not-a-race.jpg',
+    url: 'https://www.instagram.com/p/DZyN6miE1Am/?img_index=2',
+  },
+  {
+    type: 'quote',
+    text: 'An acorn never berates itself for not being an oak tree, and yet it continues to grow. Because that is what it was encoded to do',
+    highlight: 'what it was encoded to do',
+    by: 'James Clear'
   },
 ];
 
@@ -327,14 +360,37 @@ function cardHTML(it, i) {
       <div class="c-meta"><div><h3 class="c-title">${esc(it.episode)}</h3><p class="c-sub">${esc(it.show)}</p>${mins}</div><span class="c-tag"></span></div>`;
   }
 
+  if (it.type === 'poem') {
+    // With an image: show it as-is (4:5 artwork). Without: render the text.
+    const body = it.image
+      ? `<img class="c-poem-img" src="${esc(it.image)}" alt="${esc(it.title)}">`
+      : `<div class="c-poemtext">${esc(it.text)}</div>`;
+    return `
+      <div class="c-media c-poem">${body}</div>
+      <div class="c-meta"><div><h3 class="c-title">${esc(it.title)}</h3><p class="c-sub">${esc(it.by)}</p></div></div>`;
+  }
+
   // Quote (the default type)
   return `
     <div class="c-media c-quotetext"><blockquote>${quoteHTML(it.text, it.highlight)}</blockquote></div>
     <div class="c-meta"><p class="c-sub">${esc(it.by)}</p><span class="c-tag"></span></div>`;
 }
 
-// Render every item in COLLECTION into the board
-document.getElementById('board').innerHTML = COLLECTION.map((it, i) => {
+// Fisher-Yates shuffle: returns a new, randomly ordered copy of the array
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Render every item in COLLECTION into the board, in a new random order each page load.
+// Each item keeps its original index so generated book colours stay the same.
+document.getElementById('board').innerHTML = shuffle(
+  COLLECTION.map((it, i) => ({ it, i }))
+).map(({ it, i }) => {
   const inner = cardHTML(it, i);
   // Books and podcasts with a url: the whole card is an external link
   if (it.url && it.type !== 'quote') {

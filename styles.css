@@ -414,6 +414,18 @@ body[data-mode="consume"] .consume {
   text-decoration: none;
 }
 
+.c-poem {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+}
+
+.c-poem-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 /* Every card: a grey block on top, a title row underneath */
 .c-media {
   position: relative;
