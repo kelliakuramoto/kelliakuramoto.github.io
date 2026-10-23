@@ -235,9 +235,9 @@ const COLLECTION = [
   },
   {
     type: 'quote',
-    text: 'When life feels unbearable, I remind myself that I am not a person, I am a piece of software running on the brain of a random ape for a few decades. Its not the worst brain to run on.',
+    text: 'When life feels unbearable, I remind myself that I am not a person, I am a piece of software running on the brain of a random ape for a few decades. It’s not the worst brain to run on.',
     highlight: 'I am not a person, I am a piece of software',
-    by: 'Joscha Basch'
+    by: 'Joscha Bach'
   },
   {
     type: 'podcast',
@@ -259,7 +259,7 @@ const COLLECTION = [
   {
     type: 'book',
     title: 'Beartown',
-    by: 'Fredrick Backman',
+    by: 'Fredrik Backman',
     color: '#1d3a2b',
     image: 'images/Consume/beartown.jpg',
     url: 'https://www.goodreads.com/book/show/33413128-beartown'
@@ -317,7 +317,7 @@ const COLLECTION = [
   },
   {
     type: 'quote',
-    text: 'An acorn never berates itself for not being an oak tree, and yet it continues to grow. Because that is what it was encoded to do',
+    text: 'An acorn never berates itself for not being an oak tree, and yet it continues to grow. Because that is what it was encoded to do.',
     highlight: 'what it was encoded to do',
     by: 'James Clear'
   },
