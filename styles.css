@@ -478,12 +478,14 @@ body[data-mode="consume"] .consume {
 .c-progress i { display: block; height: 100%; background: var(--accent); }
 
 /* Quotes: highlight borrows the green marker from "Product designer" */
-.c-quotetext { padding: 1.5rem 1.25rem 2rem; }
+.c-quotetext { 
+  padding: 2rem; 
+}
 
 .c-quotetext blockquote {
   margin: 0;
-  font-size: 1.5rem;
-  line-height: 1.25;
+  font-size: 1.25rem;
+  line-height: 1.35;
   font-weight: 300;
 }
 

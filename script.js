@@ -321,6 +321,21 @@ const COLLECTION = [
     highlight: 'what it was encoded to do',
     by: 'James Clear'
   },
+  {
+    type: 'book',
+    title: 'Letters to a Young Poet',
+    by: 'Rainer Maria Rilke',
+    color: '#7a2a33',
+    image: 'images/Consume/letters-to-a-young-poet.jpeg',
+    url: 'https://www.goodreads.com/en/book/show/46199.Letters_to_a_Young_Poet'
+  },
+  {
+    type: 'poem',
+    title: 'Letters to a Young Creator',
+    by: 'Steve Jobs',
+    image: 'images/Consume/letters-to-a-young-creator.png',
+    url: 'https://letters.stevejobsarchive.com/',
+  },
 ];
 
 // Fallback cover colours for books without a `color` (cycled by position)
@@ -682,3 +697,17 @@ if (projectIds.includes(location.hash.slice(1))) openFromHash();
 
 // Browser Back/Forward, or editing the hash by hand
 window.addEventListener('hashchange', openFromHash);
+
+// =====================================================
+// ARROW KEYS: ← CREATE   → CONSUME
+// =====================================================
+document.addEventListener('keydown', e => {
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;   // leave browser shortcuts alone (Cmd+← = Back)
+
+  // Don't steal arrows from typing, or from the carousels and photobook,
+  // which use ← → to turn their own pages
+  if (e.target.closest('input, textarea, [contenteditable], .car, .fb')) return;
+
+  setMode(e.key === 'ArrowLeft' ? 'create' : 'consume');
+});
