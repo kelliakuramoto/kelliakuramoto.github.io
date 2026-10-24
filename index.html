@@ -14,7 +14,7 @@
 
   <!-- ========== CREATE VIEW: sidebar + scrollable content. Toggled with CONSUME via body[data-mode]. ========== -->
   <div class="layout">
-    <!-- LEFT: sidebar, stays fixed while the right side scrolls. Links open projects (script.js section 1). -->
+    <!-- LEFT: sidebar, stays fixed while the right side scrolls. Links open projects (js/navigation.js). -->
     <aside class="sidebar">
       <div>
         <!-- About: name, job and city each have their own accent style (see CSS section 3) -->
@@ -31,13 +31,7 @@
 
         <!-- Sidebar navigation: one question per project (href must match the project section ids below) -->
         <nav id="sideNav">
-          <h3>at Work</h3>
-          <a href="#bizbuysell" class="nav-link">How might a marketplace become more than a marketing platform?</a>
-          <a href="#amazon-music" class="nav-link">How can we help small to mid-size musicians earn a living?</a>
-          <br>
-          <h3>in Life</h3>
-          <a href="#photobook" class="nav-link">What if on my birthday, I gave gifts to my friends and family instead of receiving them?</a>
-          <a href="#photography" class="nav-link">How can you take the photos that your eyes make?</a>
+          <div id="projectNavItems"></div>
         </nav>
       </div>
     </aside>
@@ -45,44 +39,7 @@
     <!-- RIGHT: scrollable content. Shows the overview grid, or one project at a time. -->
     <main class="content" id="scrollArea">
       <!-- Overview grid: 4 tiles, shown when nothing is selected. Hovering a tile shows its caption. -->
-      <div class="project-grid visible" id="projectGrid">
-        <a href="#bizbuysell" class="grid-item">
-          <div class="media">
-            <img src="images/bizbuysell_thumbnail.png" alt="Deal Accelerator project preview">
-            <div class="grid-caption">
-              <h3>Deal Accelerator, for BizBuySell</h3>
-              <p class="grid-desc">Evolving an online marketplace into a deal management platform</p>
-            </div>
-          </div>
-        </a>
-        <a href="#amazon-music" class="grid-item">
-          <div class="media">
-            <img src="images/amazon_lg_thumbnail.png" alt="Amazon Music project preview">
-            <div class="grid-caption">
-              <h3>Fan Bundles, for Amazon Music</h3>
-              <p class="grid-desc">Leveraging fan engagement while building a sustainable income</p>
-            </div>
-          </div>
-        </a>
-        <a href="#photobook" class="grid-item">
-          <div class="media">
-            <img src="images/photobook_thumbnail.png" alt="Photobook project preview">
-            <div class="grid-caption">
-              <h3>Happy 24th Birthday</h3>
-              <p class="grid-desc">Photobook of my favorite people and the effect they have had this past year</p>
-            </div>
-          </div>
-        </a>
-        <a href="#photography" class="grid-item">
-          <div class="media">
-            <img src="images/photography_thumbnail.png" alt="Photography project preview">
-            <div class="grid-caption">
-              <h3>Photography</h3>
-              <p class="grid-desc">Film + digital, People + places, Fluid + frozen</p>
-            </div>
-          </div>
-        </a>
-      </div>
+      <div class="project-grid visible" id="projectGrid"></div>
 
       <!-- ========== PROJECT: Deal Accelerator, for BizBuySell ========== -->
       <section class="project" id="bizbuysell">
@@ -213,11 +170,8 @@
       </section>
 
       <!-- ========== PROJECT: Fan Bundles, for Amazon Music ==========
-               The top of this project is public. Everything inside #restricted-content
-               stays hidden until the visitor enters the password (script.js section 5).
-               NOTE (markup): the two <ol> lists below sit inside <p> tags. Browsers repair this
-               silently (leaving an empty <p> after each list), so it is left as-is to keep the page
-               rendering exactly the same. -->
+               The detailed designs start hidden and are revealed by the password gate.
+               Keep lists as valid sibling elements rather than nesting them inside paragraphs. -->
       <section class="project" id="amazon-music">
         <div class="project-header">
           <h2>Fan Bundles, for Amazon Music</h2>
@@ -278,16 +232,9 @@
             </div>
           </div>
 
-          <!-- Password gate: the button opens a prompt; the right password hides this row and the contact note below -->
+          <!-- Password gate: uses the browser's native prompt and alert dialogs. This is a presentation gate, not security. -->
           <div id="password-row" class="case-study-row" style="--cols: 1">
-            <button id="password-btn" class="password-btn">[ ENTER PASSWORD ]</button>
-
-            <!-- Inline form: currently hidden and not used (script.js asks for the password with prompt() instead) -->
-            <form id="password-form" class="password-form" hidden>
-              <input type="password" id="password-input" placeholder="Please Enter Password" autocomplete="off" />
-              <button type="submit">SUBMIT</button>
-              <p id="password-error" class="password-error" hidden>Incorrect password</p>
-            </form>
+            <button type="button" id="password-btn" class="password-btn">[ ENTER PASSWORD ]</button>
           </div>
 
           <!-- Contact note: hidden after unlocking -->
@@ -302,7 +249,7 @@
 
           <!-- ===== RESTRICTED CONTENT: revealed by the password ===== -->
           <div id="restricted-content" hidden>
-            <div class="case-study-grid">
+<div class="case-study-grid">
               <!-- Final design walkthrough videos (fan, then artist) -->
               <div class="case-study-row" style="--cols: 1">
                 <div>
@@ -313,7 +260,9 @@
                     loop
                     muted
                     playsinline
+                    preload="none"
                     poster="assets/fan-bundles-poster.jpg">
+                    Your browser does not support embedded video.
                   </video>
                 </div>
                 <div>
@@ -324,7 +273,9 @@
                     loop
                     muted
                     playsinline
+                    preload="none"
                     poster="assets/fan-bundles-poster.jpg">
+                    Your browser does not support embedded video.
                   </video>
                 </div>
               </div>
@@ -401,15 +352,13 @@
                   </div>
                 </div>
                 <div>
-                  <p>
-                    Across multiple industries and companies, a common definition emerged. Product bundle: curated collection of complementary products or services for sale as one product or service package. <br><br>
-                    Throughout this research I also noted 3 high level advantages of product bundles:
-                    <ol>
+                  <p>Across multiple industries and companies, a common definition emerged. Product bundle: curated collection of complementary products or services for sale as one product or service package.</p>
+                  <p>Throughout this research I also noted 3 high level advantages of product bundles:</p>
+                  <ol>
                       <li>Notion of perceived price benefit</li>
                       <li>Sense of scarcity or ephemerality</li>
                       <li>Combination of items can create a unique whole</li>
-                    </ol>
-                  </p>
+                  </ol>
                 </div>
               </div>
               <div class="case-study-row" style="--cols: 1">
@@ -458,15 +407,13 @@
                     </p>
                   </div>
                   <div>
-                    <p>
-                      High level insights from both the research studies:
-                      <ol>
+                    <p>High level insights from both the research studies:</p>
+                    <ol>
                         <li>Most fans placed physical merchandise in their top bundles</li>
                         <li>86% of artists said they'd be open to multiple types of fan interactions</li>
                         <li>Fans were highly polarized with regards to participating in Artist interactions </li>
                         <li>Fans who wanted high-engagement interactions were willing to spend 2x as much on a bundle</li>
-                      </ol>
-                    </p>
+                    </ol>
                   </div>
                 </div>
               </div>
@@ -488,7 +435,9 @@
                     loop
                     muted
                     playsinline
+                    preload="none"
                     poster="assets/fan-bundles-poster.jpg">
+                    Your browser does not support embedded video.
                   </video>
                 </div>
               </div>
@@ -605,7 +554,7 @@
           <button class="close-btn">[ CLOSE ]</button>
         </div>
 
-        <!-- Page-flip book: pages are built and animated by script.js section 7 -->
+        <!-- Page-flip book: pages are built and animated by js/photobook.js -->
         <div class="fb" id="fb" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Photobook">
           <div class="fb-book" id="fbBook"></div>
           <div class="fb-bar">
@@ -647,13 +596,13 @@
           <button class="close-btn">[ CLOSE ]</button>
         </div>
 
-        <!-- Photo groups are generated from PHOTO_SECTIONS in script.js (section 4) -->
+        <!-- Photo groups are generated from js/photography.js -->
         <div id="photoSections"></div>
       </section>
     </main>
   </div>
 
-  <!-- ========== CONSUME VIEW: a board of quotes, books and podcasts. Items live in script.js (COLLECTION, section 3). ========== -->
+  <!-- ========== CONSUME VIEW: a board of quotes, books and podcasts. Items live in js/consume.js. ========== -->
   <section class="consume" id="consumeView" aria-label="Things I consume">
     <div class="board" id="board"></div>
   </section>
@@ -665,7 +614,7 @@
     <button type="button" class="mode-btn" data-mode="consume" aria-pressed="false"><span class="br" aria-hidden="true">[ </span>CONSUME<span class="br" aria-hidden="true"> ]</span></button>
   </div>
 
-  <!-- All behaviour lives in script.js (see its table of contents) -->
-  <script src="script.js"></script>
+  <!-- Application behavior is organized into ES modules under js/. -->
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@
    7.  Case study layout      rows and columns inside a project
    8.  Global toggle          [ CREATE ] logo [ CONSUME ]
    9.  Photography sections
-   10. Responsive             tablet / mobile / reduced motion
+   10. Responsive             tablet / mobile
    11. Photobook              page-flip book
    12. Carousel               looping image slideshow
 */
@@ -29,8 +29,38 @@
   --amazon-music: #DD74F7;
   --surface: #f2f2f2;
   --line: #EF5656;
+  --white: #fff;
+  --black: #000;
+  --caption-text: #E6E6E6;
+  --scrollbar-thumb: #ddd;
+  --highlight: rgba(65, 161, 14, 0.25);
+  --caption-overlay: rgba(29, 29, 29, 0.92);
+
+  /* Type scale */
+  --font-size-base: 1rem;
+  --font-size-lead: 1.25rem;
+  --font-light: 300;
+  --font-regular: 400;
+  --font-medium: 500;
+
+  /* Shared spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  /* Shared interaction timing */
+  --motion-fast: 0.2s;
+  --motion-medium: 0.5s;
+  --motion-fade: 0.6s;
+  --motion-view: 0.8s;
+  --motion-book: 900ms;
+
   --toggle-h: calc(3.5rem + env(safe-area-inset-bottom, 0px));
-  --padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* Padding and borders count toward an element's width */
@@ -47,8 +77,8 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  font-size: 1rem;
-  font-weight: 300;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-light);
   color: var(--text);
   background: var(--bg);
 }
@@ -61,39 +91,44 @@ a[href^="mailto:"] {
 
 /* Numbered lists in case studies */
 ol {
-  margin-top: 0.5rem;
+  margin-top: var(--space-2);
   margin-bottom: 0rem;
 }
 
-strong { font-weight: 500; }
+strong { font-weight: var(--font-medium); }
 
 /* Larger statement text in case studies */
 .hero-text {
-  font-size: 1.25rem;
-  font-weight: 400;
+  font-size: var(--font-size-lead);
+  font-weight: var(--font-regular);
 }
 
 /* Headings share one size; weight and colour are set where they are used */
 h2, h3 {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-medium);
 }
 
-/* Photography headings: base look (layout is added in section 9) */
+/* Photography group headings: shared type, colour and title/date layout */
 .photo-heading {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-  font-weight: 400;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin: 0 0 var(--space-6);
+  padding-top: var(--space-4);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-regular);
   color: var(--line);
   text-transform: uppercase;
 }
 
 /* Case study labels (BACKGROUND, ROLE, TLDR...) take each project's colour */
 .case-study-row h4 {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-  font-weight: 400;
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-regular);
 }
 
 #amazon-music h4 {
@@ -101,7 +136,7 @@ h2, h3 {
 }
 
 #bizbuysell h4 {
-  color: var(--hover)
+  color: var(--hover);
 }
 
 #photobook h4 {
@@ -122,7 +157,7 @@ video {
 /* Both views fade with the same timing */
 .layout,
 .consume {
-  transition: opacity 0.8s ease-out;
+  transition: opacity var(--motion-view) ease-out;
 }
 
 /* CREATE view: sidebar + content side by side */
@@ -142,10 +177,10 @@ video {
   right: 0;
   bottom: var(--toggle-h);
   overflow-y: auto;
-  padding: 2rem;
+  padding: var(--space-8);
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.8s ease-out, visibility 0s linear 0.8s;
+  transition: opacity var(--motion-view) ease-out, visibility 0s linear var(--motion-view);
 }
 
 body[data-mode="consume"] { overflow: hidden; } /* no page scroll behind the board */
@@ -154,14 +189,14 @@ body[data-mode="consume"] { overflow: hidden; } /* no page scroll behind the boa
 body[data-mode="consume"] .layout {
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.8s ease-out, visibility 0s linear 0.8s;
+  transition: opacity var(--motion-view) ease-out, visibility 0s linear var(--motion-view);
 }
 
 /* ...and the CONSUME view in */
 body[data-mode="consume"] .consume {
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.8s ease-out;
+  transition: opacity var(--motion-view) ease-out;
 }
 
 /* =====================================================
@@ -174,7 +209,7 @@ body[data-mode="consume"] .consume {
   width: var(--left-width);
   height: 100%;
   flex-shrink: 0;
-  padding: 2rem;
+  padding: var(--space-8);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -182,12 +217,12 @@ body[data-mode="consume"] .consume {
 }
 
 /* Question links: black, blue on hover/active (.highlighted is set from JS when its grid tile is hovered) */
-.sidebar nav { margin-top: 1rem; }
+.sidebar nav { margin-top: var(--space-4); }
 
 .sidebar nav a {
   display: block;
-  padding: 0.5rem 0;
-  color: #000;
+  padding: var(--space-2) 0;
+  color: var(--black);
   text-decoration: none;
 }
 
@@ -196,11 +231,11 @@ body[data-mode="consume"] .consume {
 
 .sidebar nav a.active {
   color: var(--hover);
-  font-weight: 500;
+  font-weight: var(--font-medium);
 }
 
 /* About text: name, job and city each get their own accent */
-#aboutSection { margin-bottom: 2rem; }
+#aboutSection { margin-bottom: var(--space-8); }
 
 #aboutName {
   display: inline-block;
@@ -220,7 +255,7 @@ body[data-mode="consume"] .consume {
   bottom: 0.5rem;
   width: 100%;
   height: 0.5rem;
-  background-color: rgba(65, 161, 14, 0.25);
+  background-color: var(--highlight);
 }
 
 #aboutCity {
@@ -236,7 +271,7 @@ body[data-mode="consume"] .consume {
   position: relative;
   flex: 1;
   height: 100%;
-  padding: 2rem;
+  padding: var(--space-8);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-gutter: stable;
@@ -244,12 +279,12 @@ body[data-mode="consume"] .consume {
 }
 
 .content::-webkit-scrollbar { width: 0.5rem; }
-.content::-webkit-scrollbar-thumb { background: #ddd; }
+.content::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); }
 
 /* Spacing between projects */
 .content section {
-  margin: 0 auto 6rem;
-  scroll-margin-top: 2rem;
+  margin: 0 auto var(--space-24);
+  scroll-margin-top: var(--space-8);
 }
 
 /* Body text */
@@ -264,7 +299,7 @@ body[data-mode="consume"] .consume {
 .content .media {
   display: block;
   width: 100%;
-  margin: 2rem 0;
+  margin: var(--space-8) 0;
   background: var(--surface);
 }
 
@@ -280,7 +315,7 @@ body[data-mode="consume"] .consume {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.8s ease-out, visibility 0s linear 0.8s, max-height 0s linear 0.8s;
+  transition: opacity var(--motion-view) ease-out, visibility 0s linear var(--motion-view), max-height 0s linear var(--motion-view);
 }
 
 /* Visible state: JS adds .visible to the one view being shown */
@@ -295,7 +330,7 @@ body[data-mode="consume"] .consume {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transition: opacity 0.8s ease-out;
+  transition: opacity var(--motion-view) ease-out;
 }
 
 /* Project title with the [ CLOSE ] button on the right */
@@ -303,8 +338,8 @@ body[data-mode="consume"] .consume {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
 /* Text-style buttons: [ CLOSE ] and [ ENTER PASSWORD ] */
@@ -331,17 +366,21 @@ body[data-mode="consume"] .consume {
 /* =====================================================
    5. CREATE: OVERVIEW GRID
    ===================================================== */
-/* 2-column grid of project tiles */
+/* Two-column desktop overview: four case studies form a 2×2 grid. */
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: row;
+  gap: var(--space-8);
+  /* Keep width automatic: the hidden state uses left/right offsets.
+     An explicit 100% width there can create horizontal overflow on view changes. */
   margin: 0 auto;
 }
 
 /* One tile */
 .grid-item {
   display: block;
+  min-width: 0;
   color: var(--text);
   text-decoration: none;
 }
@@ -373,20 +412,20 @@ body[data-mode="consume"] .consume {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: var(--space-6);
   text-align: center;
-  color: #fff;
-  background: rgba(29, 29, 29, 0.92);
+  color: var(--white);
+  background: var(--caption-overlay);
   opacity: 0;
-  transition: opacity 0.8s ease-out;
+  transition: opacity var(--motion-view) ease-out;
 }
 
-.grid-caption h3 { color: #fff; }
+.grid-caption h3 { color: var(--white); }
 
 .grid-item .grid-caption .grid-desc {
-  margin: 0.25rem 0 0;
+  margin: var(--space-1) 0 0;
   line-height: 1.2;
-  color: #E6E6E6;
+  color: var(--caption-text);
 }
 
 /* Shown on tile hover, sidebar-link hover (.highlighted), or keyboard focus */
@@ -400,7 +439,7 @@ body[data-mode="consume"] .consume {
 /* Masonry layout: columns of cards */
 .board {
   columns: 4 14rem;
-  column-gap: 2rem;
+  column-gap: var(--space-8);
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -409,7 +448,7 @@ body[data-mode="consume"] .consume {
 .c-card {
   display: block;
   break-inside: avoid;
-  margin: 0 0 2rem;
+  margin: 0 0 var(--space-8);
   color: var(--text);
   text-decoration: none;
 }
@@ -430,7 +469,7 @@ body[data-mode="consume"] .consume {
 .c-media {
   position: relative;
   width: 100%;
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-2);
   overflow: hidden;
   background: var(--surface);
 }
@@ -445,10 +484,10 @@ body[data-mode="consume"] .consume {
   justify-content: space-between;
   width: 56%;
   aspect-ratio: 2 / 3;
-  padding: 0.5rem 0.5rem;
-  font-size: 1rem;
+  padding: var(--space-2);
+  font-size: var(--font-size-base);
   line-height: 1.2;
-  color: #fff;
+  color: var(--white);
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
 }
 
@@ -461,7 +500,7 @@ body[data-mode="consume"] .consume {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
 }
 
-.c-cover strong { font-weight: 500; }
+.c-cover strong { font-weight: var(--font-medium); }
 .c-cover span { opacity: 0.8; }
 
 /* Podcasts */
@@ -479,19 +518,19 @@ body[data-mode="consume"] .consume {
 
 /* Quotes: highlight borrows the green marker from "Product designer" */
 .c-quotetext { 
-  padding: 2rem; 
+  padding: var(--space-8); 
 }
 
 .c-quotetext blockquote {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: var(--font-size-lead);
   line-height: 1.35;
-  font-weight: 300;
+  font-weight: var(--font-light);
 }
 
 .c-quotetext mark {
   color: inherit;
-  background: linear-gradient(transparent 62%, rgba(65, 161, 14, 0.25) 62%);
+  background: linear-gradient(transparent 62%, var(--highlight) 62%);
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
@@ -501,9 +540,9 @@ body[data-mode="consume"] .consume {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-4);
 }
-.c-title { transition: color 0.2s ease; }
+.c-title { transition: color var(--motion-fast) ease; }
 .c-sub { margin: 0; color: var(--muted); }
 .c-tag { white-space: nowrap; color: var(--muted); }
 .c-card:hover .c-title { color: var(--hover); }
@@ -516,15 +555,17 @@ body[data-mode="consume"] .consume {
 /* Stack of rows */
 .case-study-grid {
   display: grid;
-  gap: 2rem;
+  gap: var(--space-8);
 }
 
 /* One row: --cols equal columns (default 1) */
 .case-study-row {
   display: grid;
-  grid-template-columns: repeat(var(--cols, 1), 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
+  gap: var(--space-8);
 }
+
+.case-study-row > * { min-width: 0; }
 
 /* Image + text pairs, vertically centred */
 .case-study-row.mini-project {
@@ -550,7 +591,7 @@ body[data-mode="consume"] .consume {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
+  gap: var(--space-8);
   background: var(--bg);
   border-top: 0.08rem solid var(--line);
 }
@@ -558,9 +599,9 @@ body[data-mode="consume"] .consume {
 /* CREATE / CONSUME buttons */
 .mode-btn {
   min-width: 8rem; /* equal widths keep the logo centred */
-  padding: 0.25rem 0.5rem;
+  padding: var(--space-1) var(--space-2);
   font: inherit;
-  font-weight: 300;
+  font-weight: var(--font-light);
   letter-spacing: 0.03em;
   text-align: center;
   white-space: nowrap;
@@ -573,7 +614,7 @@ body[data-mode="consume"] .consume {
 /* Brackets show only on the selected tab; they keep their space so nothing shifts */
 .mode-btn .br { visibility: hidden; }
 .mode-btn[aria-pressed="true"] .br { visibility: visible; }
-.mode-btn[aria-pressed="true"] { color: var(--hover); font-weight: 500; }
+.mode-btn[aria-pressed="true"] { color: var(--hover); font-weight: var(--font-medium); }
 .mode-btn:hover { color: var(--hover); }
 .mode-btn:focus-visible { outline: 0.125rem solid var(--hover); outline-offset: 0.125rem; }
 
@@ -589,34 +630,20 @@ body[data-mode="consume"] .consume {
    Groups of photos inside the Photography project.
    ===================================================== */
 /* One location/series */
-.photo-group { margin: 0 0 2rem; }
+.photo-group { margin: 0 0 var(--space-8); }
 .photo-group:last-child { margin-bottom: 0; }
 
-/* Heading row: title on the left, date on the right (extends the base .photo-heading above; margin here wins) */
-.photo-heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  margin: 0 0 1.5rem;
-  padding-top: 1rem;
-}
-.photo-meta { font-weight: 300; color: var(--muted); }
+/* Title/date metadata shares the heading's baseline */
+.photo-meta { font-weight: var(--font-light); color: var(--muted); }
 
 /* Masonry columns of photos */
-.photo-board { columns: 3 12rem; column-gap: 2rem; }
+.photo-board { columns: 3 12rem; column-gap: var(--space-8); }
 .photo-board .c-media img { margin: 0; }
 .photo-board .c-sub { margin: 0; line-height: inherit; color: var(--muted); }
 
-/* Phones: one column of photos */
-@media (max-width: 500px) {
-  .photo-board { columns: 1; column-gap: 1rem; }
-}
-
 /* =====================================================
    10. RESPONSIVE
-   (placed after the base styles above so these win; the photobook and
-   carousel styles below don't overlap with them)
+   Breakpoint rules are grouped here; reduced-motion overrides live at the end.
    ===================================================== */
 
 /* Tablet: keep the split, give the sidebar more room */
@@ -645,24 +672,26 @@ body[data-mode="consume"] .consume {
   }
 
   .content { height: auto; overflow-y: visible; }
-  .content section { margin-bottom: 4rem; }
+  .content section { margin-bottom: var(--space-16); }
 
-  .consume { padding: 1.25rem; }
+  .consume { padding: var(--space-5); }
 
   .case-study-row[style*="--cols: 4"] {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 /* Small phones: one column of tiles */
 @media (max-width: 500px) {
+  .photo-board { columns: 1; column-gap: var(--space-4); }
+
   .project-grid {
     grid-template-columns: 1fr;
   }
 
   .case-study-row {
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: var(--space-4);
   }
 
   .case-study-row[style*="--cols: 4"] {
@@ -677,25 +706,17 @@ body[data-mode="consume"] .consume {
   #mid-career-musician > :nth-child(6) { order: 5; }
 }
 
-/* Reduced motion: no fades */
-@media (prefers-reduced-motion: reduce) {
-  .layout, .consume, .grid-caption, .project, .project-grid,
-  body[data-mode="consume"] .layout,
-  body[data-mode="consume"] .consume { transition: none; }
-}
-
 /* =====================================================
    11. PHOTOBOOK
-   Animated by script.js (section 7). --dur here is meant to match DUR there
-   (currently 0.8s here vs 900ms in the script).
+   Animated by js/photobook.js. --dur matches the script's 900ms flip timing.
    ===================================================== */
 /* Wrapper: --ratio is width:height of the open book, --dur/--ease drive the flip */
 .fb {
   --ratio: 2;
-  --dur: 0.8s;
+  --dur: var(--motion-book);
   --ease: cubic-bezier(0.5, 0, 0.25, 1);
   width: min(100%, 1100px);
-  margin: 2rem 0;
+  margin: var(--space-8) 0;
   font: inherit;
   color: var(--text);
   outline: none;
@@ -722,7 +743,7 @@ body[data-mode="consume"] .consume {
   height: 100%;
   background: var(--bg);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: opacity 0.6s;
+  transition: opacity var(--motion-fade);
 }
 
 .fb-base.all {
@@ -752,7 +773,7 @@ body[data-mode="consume"] .consume {
   pointer-events: none;
   z-index: 999;
   background: linear-gradient(90deg, transparent 49%, rgba(0, 0, 0, 0.025) 50%, transparent 51%);
-  transition: opacity 0.5s;
+  transition: opacity var(--motion-medium);
 }
 
 .fb-book.cover::after {
@@ -845,8 +866,8 @@ body[data-mode="consume"] .consume {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
 }
 
 .fb-bar button {
@@ -874,16 +895,9 @@ body[data-mode="consume"] .consume {
   font-variant-numeric: tabular-nums;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .fb-leaf,
-  .fb-book {
-    transition-duration: 0.01s;
-  }
-}
-
 /* =====================================================
    12. CAROUSEL
-   Looping image slideshow; script.js (section 8) toggles .active on one slide.
+   Looping image slideshow; js/media.js toggles .active on one slide.
    ===================================================== */
 .car {
   width: min(100%);
@@ -900,4 +914,28 @@ body[data-mode="consume"] .consume {
 
 .car .car-slide.active {
   display: block;
+}
+
+
+/* =====================================================
+   13. ACCESSIBILITY & INTERACTION BASELINES
+   ===================================================== */
+:where(a, button, [tabindex]):focus-visible {
+  outline: 0.125rem solid var(--hover);
+  outline-offset: 0.2rem;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
 }
