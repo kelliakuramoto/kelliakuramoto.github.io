@@ -1,10 +1,13 @@
-import { $, esc } from './dom.js';
+import { $ } from './dom.js';
+import { bookCard, imageCard, podcastCard, quoteCard } from './cards.js';
 
 // =====================================================
-// 3. Consume board
+// Consume board
 // Add, remove or reorder items here. Layout and book cover colours are automatic.
-//   book:    { type, title, by, color? (cover colour), url? (external link) }
-//   podcast: { type, show, episode, minutes, progress? (0-100), image? (path), url? (external link) }
+// Every item can have `url` (external link) except quotes.
+//   book:    { type, title, by, image? (cover), color? (generated cover colour) }
+//   podcast: { type, show, episode, minutes, progress? (0-100), image? }
+//   poem:    { type, title, by, image }
 //   quote:   { type, text, highlight? (exact words to mark), by }
 // =====================================================
 const COLLECTION = [
@@ -163,72 +166,29 @@ const COLLECTION = [
 // Fallback cover colours for books without a `color` (cycled by position)
 const BOOK_COLORS = ['#2f4858', '#1d3a2b', '#7a2a33', '#5b5266'];
 
-// Wraps only the `highlight` substring in <mark>. No highlight (or no match) = no underline.
-function quoteHTML(text, highlight) {
-  const i = highlight ? text.indexOf(highlight) : -1;
-  if (i === -1) return esc(text);
-  return esc(text.slice(0, i)) + '<mark>' + esc(highlight) + '</mark>' + esc(text.slice(i + highlight.length));
-}
-
-// Returns the inner HTML for one board card, based on its type
-function cardHTML(it, i) {
-  if (it.type === 'book') {
-    const color = it.color || BOOK_COLORS[i % BOOK_COLORS.length];
-    // With an image: show the real cover. Without: the generated colour cover.
-    const cover = it.image
-      ? `<img class="c-cover-img" src="${esc(it.image)}" alt="${esc(it.title)} cover">`
-      : `<div class="c-cover" style="background:${esc(color)}"><strong>${esc(it.title)}</strong><span>${esc(it.by)}</span></div>`;
-    return `
-      <div class="c-media c-book">${cover}</div>
-      <div class="c-meta"><div><h3 class="c-title">${esc(it.title)}</h3><p class="c-sub">${esc(it.by)}</p></div></div>`;
-  }
-
-  if (it.type === 'podcast') {
-    const img  = it.image ? `<img src="${esc(it.image)}" alt="">` : '';
-    const progress = Math.min(100, Math.max(0, Number(it.progress) || 0));
-    const prog = it.progress != null ? `<div class="c-progress" role="progressbar" aria-label="Listening progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><i style="width:${progress}%"></i></div>` : '';
-    const mins = it.minutes ? `<p class="c-sub">${esc(it.minutes)} min</p>` : '';
-    return `
-      <div class="c-media c-podcast">${img}${prog}</div>
-      <div class="c-meta"><div><h3 class="c-title">${esc(it.episode)}</h3><p class="c-sub">${esc(it.show)}</p>${mins}</div><span class="c-tag"></span></div>`;
-  }
-
-  if (it.type === 'poem') {
-    // With an image: show it as-is (4:5 artwork). Without: render the text.
-    const body = it.image
-      ? `<img class="c-poem-img" src="${esc(it.image)}" alt="${esc(it.title)}">`
-      : `<div class="c-poemtext">${esc(it.text)}</div>`;
-    return `
-      <div class="c-media c-poem">${body}</div>
-      <div class="c-meta"><div><h3 class="c-title">${esc(it.title)}</h3><p class="c-sub">${esc(it.by)}</p></div></div>`;
-  }
-
-  // Quote (the default type)
-  return `
-    <div class="c-media c-quotetext"><blockquote>${quoteHTML(it.text, it.highlight)}</blockquote></div>
-    <div class="c-meta"><p class="c-sub">${esc(it.by)}</p><span class="c-tag"></span></div>`;
-}
+// Each item type is drawn by one shared card component (js/cards.js).
+// `i` is the item's original position, so generated book colours stay put when the board is shuffled.
+const CARDS = {
+  book:    (item, i) => bookCard({ ...item, color: item.color || BOOK_COLORS[i % BOOK_COLORS.length], href: item.url }),
+  podcast: item => podcastCard({ ...item, href: item.url }),
+  poem:    item => imageCard({ src: item.image, ratio: '4/5', title: item.title, sub: item.by, href: item.url }),
+  quote:   item => quoteCard(item),
+};
 
 // Fisher-Yates shuffle: returns a new, randomly ordered copy of the array
-function shuffle(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
+function shuffle(items) {
+  const copy = items.slice();
+  for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+    [copy[i], copy[j]] = [copy[j], copy[i]];
   }
-  return a;
+  return copy;
 }
 
-// Render every item in COLLECTION into the board, in a new random order each page load.
-// Each item keeps its original index so generated book colours stay the same.
+// A new random order on every page load
 const board = $('#board');
-if (board) board.innerHTML = shuffle(
-  COLLECTION.map((it, i) => ({ it, i }))
-).map(({ it, i }) => {
-  const inner = cardHTML(it, i);
-  // Books and podcasts with a url: the whole card is an external link
-  if (it.url && it.type !== 'quote') {
-    return `<a class="c-card" data-type="${esc(it.type)}" href="${esc(it.url)}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
-  }
-  return `<article class="c-card" data-type="${esc(it.type)}">${inner}</article>`;
-}).join('');
+if (board) {
+  board.innerHTML = shuffle(COLLECTION.map((item, i) => [item, i]))
+    .map(([item, i]) => CARDS[item.type](item, i))
+    .join('');
+}

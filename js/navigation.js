@@ -1,4 +1,4 @@
-import { $, $$, on, esc } from './dom.js';
+import { $, $$, on, esc, showOnly } from './dom.js';
 import { PROJECTS } from './project-data.js';
 
 // =====================================================
@@ -17,7 +17,7 @@ if (gridRoot) {
 const navLinks = $$('.nav-link');
 const gridItems = $$('.grid-item');
 const projects = $$('.project');
-const closeBtns = $$('.close-btn');
+const closeBtns = $$('.project .close-btn');   // only the case studies: the Knowledge reader has its own [ CLOSE ]
 const projectGrid = $('#projectGrid');
 
 // Media queries (the first matches the stacked mobile layout breakpoint in the CSS)
@@ -25,9 +25,9 @@ const isMobile      = window.matchMedia('(max-width: 800px)');
 const reduceMotion  = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // ---- Scroll animation ------------------------------------------
-// Same 0.8s ease-out as the CSS fades.
+// Same duration and ease-out as the CSS fades (--motion-view).
 // (Native smooth scrolling can't be given a duration or curve, so this is done by hand.)
-const SCROLL_MS = 800;
+const SCROLL_MS = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--motion-view')) * 1000;
 
 // Builds an easing function from CSS-style cubic-bezier control points.
 // The curve is defined by x(t) and y(t), so Newton's method solves for the t
@@ -61,7 +61,7 @@ const stopScroll = () => cancelAnimationFrame(scrollFrame);
 on(scrollArea, 'wheel', stopScroll, { passive: true });
 
 // Animate `container` (the window, or the scrollable right panel) to `top`
-function animateScrollTo(container, top) {
+export function animateScrollTo(container, top) {
   const isWindow = container === window;
   const read  = () => (isWindow ? window.scrollY : container.scrollTop);
   const write = y => (isWindow ? window.scrollTo(0, y) : (container.scrollTop = y));
@@ -106,8 +106,7 @@ const views = [projectGrid, ...projects];
 
 // Show `view` (the grid or one project) and hide the rest
 function showView(view) {
-  if (!view) return;
-  views.forEach(candidate => candidate.classList.toggle('visible', candidate === view));
+  if (view) showOnly(views, view);
 }
 
 // Open a project by id: highlight its sidebar link, show it, scroll to its start
@@ -128,7 +127,7 @@ function showAll() {
   setHash('');
 }
 
-// NEW: keeps the address bar in step with the open project.
+// Keeps the address bar in step with the open project.
 // pushState doesn't fire hashchange, and it lets the browser Back button work.
 function setHash(id) {
   const next = id ? '#' + id : '';
@@ -173,6 +172,7 @@ const modeBtns = $$('.mode-btn');
 function setMode(mode) {
   document.body.dataset.mode = mode;
   modeBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+  document.dispatchEvent(new CustomEvent('mode:changed'));   // js/knowledge.js closes itself on this
 }
 
 modeBtns.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));

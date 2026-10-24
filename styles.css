@@ -1,25 +1,24 @@
 /* styles.css: Kelli Kuramoto portfolio
 
-   1.  Tokens & base          colours, type, shared element styles
-   2.  View switching         CREATE <-> CONSUME crossfade
-   3.  Create: sidebar
-   4.  Create: content panel  project show/hide, buttons
-   5.  Create: overview grid  project tiles
-   6.  Consume: board         quotes, books, podcasts
-   7.  Case study layout      rows and columns inside a project
-   8.  Global toggle          [ CREATE ] logo [ CONSUME ]
-   9.  Photography sections
-   10. Responsive             tablet / mobile
-   11. Photobook              page-flip book
-   12. Carousel               looping image slideshow
+  1.  Tokens                 every colour, size, space and timing lives here
+  2.  Base                   reset, type, buttons, focus
+  3.  Views                  one fading-panel pattern for CREATE / CONSUME / projects / KNOWLEDGE
+  4.  Create                 sidebar, content panel, overview grid, case studies
+  5.  Cards                  one card system shared by Consume, Knowledge and Photography
+  6.  Boards                 Consume board + Photography board
+  7.  Mode toggle            [ CREATE ] logo [ CONSUME ]
+  8.  Photobook + carousel
+  9.  Knowledge              overview columns, article rows, reader
+  10. Responsive             all breakpoints in one place (1000 / 800 / 500)
 */
 
 /* =====================================================
-   1. TOKENS & BASE
-   ===================================================== */
-/* Design tokens: change colours and sizes here */
-:root {
-  --left-width: 32%;
+  1. TOKENS
+  Components never hard-code a value that appears here.
+  Breakpoints override tokens (see section 10) instead of overriding rules.
+  ===================================================== */
+  :root {
+  /* Colour */
   --bg: #FDFDFD;
   --text: #1D1D1D;
   --body: #333333;
@@ -27,310 +26,409 @@
   --hover: #2493D9;
   --accent: #41A10E;
   --amazon-music: #DD74F7;
-  --surface: #f2f2f2;
   --line: #EF5656;
-  --white: #fff;
-  --black: #000;
+  --border: #DDDDDD;
+  --surface: #F2F2F2;
+  --white: #FFFFFF;
   --caption-text: #E6E6E6;
-  --scrollbar-thumb: #ddd;
-  --highlight: rgba(65, 161, 14, 0.25);
-  --caption-overlay: rgba(29, 29, 29, 0.92);
+  --ink: 0 0 0;                 /* shadow colour as r g b: rgb(var(--ink) / 0.1) */
+  --highlight: color-mix(in srgb, var(--accent) 25%, transparent);
+  --caption-overlay: color-mix(in srgb, var(--text) 92%, transparent);
+  --shadow-cover: 0 0.5rem 1rem rgb(var(--ink) / 0.12);
+  --shadow-book: 0 18px 40px rgb(var(--ink) / 0.18), 0 2px 6px rgb(var(--ink) / 0.1);
 
-  /* Type scale */
-  --font-size-base: 1rem;
-  --font-size-lead: 1.25rem;
+  /* Type */
+  --font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+
+  /* Text sizes: named by role, smallest to largest */
+  --text-label: 0.75rem;                            /* small muted labels and statuses */
+  --text-caption: 0.875rem;                         /* dates, bylines, image captions */
+  --text-body: 1rem;                                /* default text */
+  --text-heading: 1rem;                             /* titles and section headings (h2, h3, h4) */
+  --text-lead: 1.25rem;                             /* larger statement text and quotes */
+  --text-deck: clamp(1.2rem, 2vw, 1.5rem);          /* article subtitle */
+  --text-article: clamp(1.05rem, 1.35vw, 1.22rem);  /* article body */
+  --text-article-heading: 1.65em;                   /* article h2 (em: scales with article body) */
+  --text-article-subheading: 1.25em;                /* article h3 (em) */
+  --text-article-quote: 1.35em;                     /* article pull quote (em) */
+  --text-display: clamp(2.4rem, 4vw, 4rem);         /* article title */
+
   --font-light: 300;
   --font-regular: 400;
   --font-medium: 500;
+  --tracking-ui: 0.03em;
+  --tracking-label: 0.08em;
+  --tracking-tight: -0.035em;
 
-  /* Shared spacing scale */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-16: 4rem;
-  --space-24: 6rem;
+  /* Spacing: four steps, doubling */
+  --space-s: 0.5rem;
+  --space-m: 1rem;
+  --space-l: 2rem;
+  --space-xl: 4rem;
 
-  /* Shared interaction timing */
+  /* Spacing roles: components use these; breakpoints change these */
+  --gutter: var(--space-l);                         /* padding of every full-height panel */
+  --grid-gap: var(--space-l);                       /* gap between cards, tiles and columns */
+  --section-gap: calc(var(--space-xl) * 1.5);       /* space between projects */
+
+  /* Lines, focus, layout */
+  --line-width: 0.08rem;
+  --focus-ring: 0.125rem solid var(--hover);
+  --focus-offset: 0.2rem;
+  --left-width: 32%;
+  --board-max: 1400px;
+  --knowledge-max: 1800px;
+  --book-max: 1100px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --toggle-h: calc(3.5rem + var(--safe-bottom));
+  --z-toggle: 50;
+  --z-overlay: 100;
+
+  /* Motion (js/navigation.js and js/photobook.js read --motion-view and --motion-book) */
   --motion-fast: 0.2s;
   --motion-medium: 0.5s;
   --motion-fade: 0.6s;
   --motion-view: 0.8s;
   --motion-book: 900ms;
-
-  --toggle-h: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  --ease: ease;
+  --ease-out: ease-out;
+  --ease-book: cubic-bezier(0.5, 0, 0.25, 1);
 }
 
-/* Padding and borders count toward an element's width */
-* { box-sizing: border-box; }
+/* Reduced motion: every duration is a token, so zeroing them is enough */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0s;
+    --motion-medium: 0s;
+    --motion-fade: 0s;
+    --motion-view: 0s;
+    --motion-book: 0ms;
+  }
+}
 
-/* Keeps scroll targets clear of the phone notch */
+/* =====================================================
+    2. BASE
+    ===================================================== */
+* {
+  box-sizing: border-box;
+}
+
 html {
-  scroll-padding-top: env(safe-area-inset-top, 0px);
+  scroll-padding-top: var(--safe-top);
 }
 
-/* Page-wide defaults: full height, font, colours */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  font-size: var(--text-body);
   font-weight: var(--font-light);
   color: var(--text);
   background: var(--bg);
 }
 
-/* Email links */
-a[href^="mailto:"] {
-  text-decoration: none;
-  color: var(--hover);
-}
-
-/* Numbered lists in case studies */
-ol {
-  margin-top: var(--space-2);
-  margin-bottom: 0rem;
-}
-
-strong { font-weight: var(--font-medium); }
-
-/* Larger statement text in case studies */
-.hero-text {
-  font-size: var(--font-size-lead);
-  font-weight: var(--font-regular);
-}
-
-/* Headings share one size; weight and colour are set where they are used */
 h2, h3 {
   margin: 0;
-  font-size: var(--font-size-base);
+  font-size: var(--text-heading);
   font-weight: var(--font-medium);
 }
 
-/* Photography group headings: shared type, colour and title/date layout */
-.photo-heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-4);
-  margin: 0 0 var(--space-6);
-  padding-top: var(--space-4);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-regular);
-  color: var(--line);
-  text-transform: uppercase;
+strong {
+  font-weight: var(--font-medium);
 }
 
-/* Case study labels (BACKGROUND, ROLE, TLDR...) take each project's colour */
-.case-study-row h4 {
-  margin: 0 0 var(--space-2);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-regular);
+ol {
+  margin: var(--space-s) 0 0;
 }
 
-#amazon-music h4 {
-  color: var(--amazon-music);
-}
-
-#bizbuysell h4 {
-  color: var(--hover);
-}
-
-#photobook h4 {
-  color: var(--accent);
-}
-
-/* Videos fill their column */
 video {
   width: 100%;
   height: auto;
 }
 
-/* =====================================================
-   2. VIEW SWITCHING (CREATE <-> CONSUME crossfade)
-   Both views stay in the page; the hidden one fades out
-   and becomes unclickable after the fade finishes.
-   ===================================================== */
-/* Both views fade with the same timing */
-.layout,
-.consume {
-  transition: opacity var(--motion-view) ease-out;
+a[href^="mailto:"] {
+  text-decoration: none;
+  color: var(--hover);
 }
 
-/* CREATE view: sidebar + content side by side */
+/* Larger statement text in case studies */
+.hero-text {
+  font-size: var(--text-lead);
+  font-weight: var(--font-regular);
+}
+
+/* Small muted caps-style text: kickers, statuses, reader labels */
+.label {
+  font-size: var(--text-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--muted);
+}
+
+/* Small muted supporting text: dates, bylines, captions */
+.c-article-copy time,
+.knowledge-byline,
+.knowledge-inline-image figcaption {
+  font-size: var(--text-caption);
+  color: var(--muted);
+}
+
+/* The hidden attribute always wins (password gate) */
+[hidden] {
+  display: none !important;
+}
+
+/* Buttons start unstyled; components add what they need */
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Text buttons: [ CLOSE ] [ ENTER PASSWORD ] [ CREATE ] [ BACK ] [ NEXT ] */
+.close-btn,
+.password-btn,
+.mode-btn,
+.fb-bar button {
+  letter-spacing: var(--tracking-ui);
+  white-space: nowrap;
+}
+
+:is(.close-btn, .password-btn, .mode-btn, .fb-bar button):hover {
+  color: var(--hover);
+}
+
+.close-btn,
+.password-btn {
+  height: 1.3125rem;
+  flex-shrink: 0;
+}
+
+:where(a, button, [tabindex]):focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* =====================================================
+    3. VIEWS
+    Every switchable panel (CREATE, CONSUME, each project, the overview grid, KNOWLEDGE)
+    shares one pattern: closed = invisible and unclickable, open = faded in.
+    Visibility switches off after the fade so the fade-out is seen.
+    Open state comes from body[data-mode] (CREATE / CONSUME) or .is-open (set from JS).
+    A panel can change its own speed with --fade.
+    ===================================================== */
+.layout,
+.consume,
+.project,
+.project-grid,
+.knowledge-view,
+.knowledge-overview,
+.knowledge-reader {
+  --fade: var(--motion-view);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--fade) var(--ease-out),
+              transform var(--fade) var(--ease-out),
+              visibility 0s linear var(--fade),
+              max-height 0s linear var(--fade);
+}
+
+body[data-mode="create"] .layout,
+body[data-mode="consume"] .consume,
+.project.is-open,
+.project-grid.is-open,
+.knowledge-view.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity var(--fade) var(--ease-out),
+              transform var(--fade) var(--ease-out);
+}
+
+/* Knowledge overview / reader live inside .knowledge-view, so they must inherit its
+    visibility and pointer-events. */
+.knowledge-overview.is-open,
+.knowledge-reader.is-open {
+  opacity: 1;
+  visibility: inherit;
+  pointer-events: inherit;
+  transition: opacity var(--fade) var(--ease-out),
+              transform var(--fade) var(--ease-out);
+}
+
+/* CREATE: sidebar + content side by side */
 .layout {
   display: flex;
-  height: calc(100vh - var(--toggle-h) - env(safe-area-inset-top, 0px));
-  overflow: hidden; /* each panel scrolls itself */
-  opacity: 1;
-  visibility: visible;
+  height: calc(100vh - var(--toggle-h) - var(--safe-top));
+  overflow: hidden;             /* each panel scrolls itself */
 }
 
-/* CONSUME view: fixed full-screen board, hidden until selected */
-.consume {
+/* CONSUME and KNOWLEDGE: full-screen panels between the top inset and the toggle bar */
+.consume,
+.knowledge-view {
   position: fixed;
-  top: env(safe-area-inset-top, 0px);
-  left: 0;
-  right: 0;
-  bottom: var(--toggle-h);
-  overflow-y: auto;
-  padding: var(--space-8);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity var(--motion-view) ease-out, visibility 0s linear var(--motion-view);
+  inset: var(--safe-top) 0 var(--toggle-h);
+  padding: var(--gutter);
+  overflow: auto;
 }
 
-body[data-mode="consume"] { overflow: hidden; } /* no page scroll behind the board */
-
-/* When body[data-mode="consume"]: fade the CREATE view out... */
-body[data-mode="consume"] .layout {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity var(--motion-view) ease-out, visibility 0s linear var(--motion-view);
+.knowledge-view {
+  --fade: var(--motion-medium);
+  z-index: var(--z-overlay);
+  background: var(--bg);
+  transform: translateY(var(--space-s));
 }
 
-/* ...and the CONSUME view in */
-body[data-mode="consume"] .consume {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity var(--motion-view) ease-out;
+.knowledge-view.is-open {
+  transform: none;
+}
+
+/* No page scroll behind a full-screen panel, and nothing behind it can be clicked */
+body[data-mode="consume"],
+body.knowledge-open {
+  overflow: hidden;
+}
+
+body.knowledge-open :is(.layout, .consume) {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* =====================================================
-   3. CREATE: SIDEBAR
-   ===================================================== */
-/* Left column: stays put while the right side scrolls */
+    4. CREATE
+    ===================================================== */
+/* Sidebar: stays put while the content scrolls */
 .sidebar {
   position: sticky;
   top: 0;
   width: var(--left-width);
   height: 100%;
   flex-shrink: 0;
-  padding: var(--space-8);
+  padding: var(--gutter);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 0.08rem solid var(--line);
+  border-right: var(--line-width) solid var(--line);
 }
 
-/* Question links: black, blue on hover/active (.highlighted is set from JS when its grid tile is hovered) */
-.sidebar nav { margin-top: var(--space-4); }
+.sidebar nav {
+  margin-top: var(--space-m);
+}
 
+/* .highlighted is set from JS while the matching grid tile is hovered */
 .sidebar nav a {
   display: block;
-  padding: var(--space-2) 0;
-  color: var(--black);
+  padding: var(--space-s) 0;
+  color: var(--text);
   text-decoration: none;
 }
 
 .sidebar nav a:hover,
-.sidebar nav a.highlighted { color: var(--hover); }
-
+.sidebar nav a.highlighted,
 .sidebar nav a.active {
   color: var(--hover);
+}
+
+.sidebar nav a.active {
   font-weight: var(--font-medium);
 }
 
 /* About text: name, job and city each get their own accent */
-#aboutSection { margin-bottom: var(--space-8); }
+.about {
+  margin-bottom: var(--space-l);
+}
 
-#aboutName {
+.about-name {
   display: inline-block;
   color: var(--hover);
   text-decoration: none;
 }
 
-#aboutJob {
+.about-job {
   position: relative;
   text-decoration: none;
 }
 
-#aboutJob::after {
+.about-job::after {
   content: "";
   position: absolute;
   left: 0;
-  bottom: 0.5rem;
+  bottom: var(--space-s);
   width: 100%;
-  height: 0.5rem;
-  background-color: var(--highlight);
+  height: var(--space-s);
+  background: var(--highlight);
 }
 
-#aboutCity {
-  text-decoration: underline solid var(--line) 0.08rem;
-  text-underline-offset: 0.25rem;
+.about-city {
+  text-decoration: underline solid var(--line) var(--line-width);
+  text-underline-offset: calc(var(--space-s) / 2);
 }
 
-/* =====================================================
-   4. CREATE: CONTENT PANEL
-   ===================================================== */
-/* Right column: the only thing that scrolls on desktop */
+/* Content: the only thing that scrolls on desktop */
 .content {
   position: relative;
   flex: 1;
   height: 100%;
-  padding: var(--space-8);
+  padding: var(--gutter);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-gutter: stable;
-
 }
 
-.content::-webkit-scrollbar { width: 0.5rem; }
-.content::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); }
+.content::-webkit-scrollbar {
+  width: var(--space-s);
+}
 
-/* Spacing between projects */
+.content::-webkit-scrollbar-thumb {
+  background: var(--border);
+}
+
 .content section {
-  margin: 0 auto var(--space-24);
-  scroll-margin-top: var(--space-8);
+  margin: 0 auto var(--section-gap);
+  scroll-margin-top: var(--gutter);
 }
 
-/* Body text */
-.content p {
+/* Zero-specificity defaults for content: any component class below overrides them without a fight */
+:where(.content p) {
   margin: 0;
-  line-height: 1.4;
   color: var(--body);
 }
 
-/* Images and image wrappers fill the column */
-.content img,
-.content .media {
+:where(.content :is(img, .media)) {
   display: block;
   width: 100%;
-  margin: var(--space-8) 0;
+  margin-block: var(--space-l);
   background: var(--surface);
 }
 
-/* Hidden state: the grid and every project sit on top of each other, faded out */
+/* Closed projects, the grid and the Knowledge overview / reader stack on top of each other and collapse after the fade */
 .project,
-.project-grid {
+.project-grid,
+.knowledge-overview,
+.knowledge-reader {
   position: absolute;
-  top: 2rem;
-  left: 2rem;
-  right: 2rem;
-  max-height: 0;      /* collapses after the fade, so hidden views add no scroll height */
+  inset: var(--gutter) var(--gutter) auto;
+  max-height: 0;
   overflow: hidden;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity var(--motion-view) ease-out, visibility 0s linear var(--motion-view), max-height 0s linear var(--motion-view);
 }
 
-/* Visible state: JS adds .visible to the one view being shown */
-.project.visible,
-.project-grid.visible {
+.project.is-open,
+.project-grid.is-open,
+.knowledge-overview.is-open,
+.knowledge-reader.is-open {
   position: relative;
-  top: auto;
-  left: auto;
-  right: auto;
-  max-height: 100000px;   /* must be a length, not "none", or the delayed collapse won't work */
+  inset: auto;
+  max-height: 100000px;         /* a length, not "none", or the delayed collapse won't work */
   overflow: visible;
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transition: opacity var(--motion-view) ease-out;
 }
 
 /* Project title with the [ CLOSE ] button on the right */
@@ -338,46 +436,30 @@ body[data-mode="consume"] .consume {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
-  margin-bottom: var(--space-4);
+  gap: var(--space-m);
+  margin-bottom: var(--space-m);
 }
 
-/* Text-style buttons: [ CLOSE ] and [ ENTER PASSWORD ] */
-.close-btn, .password-btn {
-  height: 21px;
-  flex-shrink: 0;
-  font: inherit;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
-  color: var(--text);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-.close-btn:hover, .password-btn:hover {
-  color: var(--hover);
-}
+/* Project colour: case study labels (BACKGROUND, ROLE...) read --project-color */
+#amazon-music { --project-color: var(--amazon-music); }
+#bizbuysell   { --project-color: var(--hover); }
+#photobook    { --project-color: var(--accent); }
 
-/* Makes the hidden attribute always win (used by the password gate) */
-[hidden] {
-  display: none !important;
-}
-
-/* =====================================================
-   5. CREATE: OVERVIEW GRID
-   ===================================================== */
-/* Two-column desktop overview: four case studies form a 2×2 grid. */
-.project-grid {
+/* Grids: one gap token everywhere */
+.project-grid,
+.case-study-grid,
+.case-study-row,
+.knowledge-overview {
   display: grid;
+  gap: var(--grid-gap);
+}
+
+/* Overview: 2x2 tiles */
+.project-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-auto-flow: row;
-  gap: var(--space-8);
-  /* Keep width automatic: the hidden state uses left/right offsets.
-     An explicit 100% width there can create horizontal overflow on view changes. */
   margin: 0 auto;
 }
 
-/* One tile */
 .grid-item {
   display: block;
   min-width: 0;
@@ -385,26 +467,7 @@ body[data-mode="consume"] .consume {
   text-decoration: none;
 }
 
-/* Tile images and case study row images share a 5:4 frame */
-.grid-item .media, .case-study-row .media img {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 5 / 4;
-  margin: 0;
-  overflow: hidden;
-  background: var(--surface);
-}
-
-/* Tile image crops to fill the frame */
-.grid-item .media img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  object-fit: cover;
-}
-
-/* Hover caption: fills the tile, fades in. Dark background keeps white text above AA contrast. */
+/* Hover caption fills the tile. The dark overlay keeps white text above AA contrast. */
 .grid-caption {
   position: absolute;
   inset: 0;
@@ -412,213 +475,292 @@ body[data-mode="consume"] .consume {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--space-6);
+  padding: var(--space-m);
   text-align: center;
   color: var(--white);
   background: var(--caption-overlay);
   opacity: 0;
-  transition: opacity var(--motion-view) ease-out;
+  transition: opacity var(--motion-view) var(--ease-out);
 }
 
-.grid-caption h3 { color: var(--white); }
-
-.grid-item .grid-caption .grid-desc {
-  margin: var(--space-1) 0 0;
-  line-height: 1.2;
+.grid-caption .grid-desc {
+  margin: calc(var(--space-s) / 2) 0 0;
   color: var(--caption-text);
 }
 
-/* Shown on tile hover, sidebar-link hover (.highlighted), or keyboard focus */
-.grid-item:hover .grid-caption,
-.grid-item.highlighted .grid-caption,
-.grid-item:focus-visible .grid-caption { opacity: 1; }
-
-/* =====================================================
-   6. CONSUME: BOARD
-   ===================================================== */
-/* Masonry layout: columns of cards */
-.board {
-  columns: 4 14rem;
-  column-gap: var(--space-8);
-  max-width: 1400px;
-  margin: 0 auto;
+.grid-item:is(:hover, .highlighted, :focus-visible) .grid-caption {
+  opacity: 1;
 }
 
-/* A single card (book, podcast or quote) */
+/* Case study: rows stack in .case-study-grid; each row splits into --cols columns (set inline in the HTML) */
+.case-study-row {
+  grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
+}
+
+.case-study-row > * {
+  min-width: 0;
+}
+
+.case-study-row h4 {
+  margin: 0 0 var(--space-s);
+  font-size: var(--text-heading);
+  font-weight: var(--font-regular);
+  color: var(--project-color, var(--text));
+}
+
+/* Images inside rows sit flush; image + text pairs are vertically centred */
+.case-study-row :is(img, .media) {
+  margin: 0;
+}
+
+.case-study-row .media {
+  --ratio: 5 / 4;
+}
+
+.mini-project {
+  align-items: center;
+}
+
+/* =====================================================
+    5. CARDS
+    One card system (js/cards.js): a .c-media block on top, a title/sub block underneath.
+    Used by the Consume board, the Photography board and the Knowledge view.
+    Tell a card what shape it is with --ratio.
+    ===================================================== */
+/* Any grey frame an image or text sits in (.media: project images, .c-media: cards) */
+.media,
+.c-media {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  aspect-ratio: var(--ratio, auto);
+}
+
+.media img,
+.c-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+}
+
+.grid-item .media {
+  --ratio: 5 / 4;
+  margin: 0;
+}
+
 .c-card {
   display: block;
   break-inside: avoid;
-  margin: 0 0 var(--space-8);
+  margin: 0 0 var(--grid-gap);
   color: var(--text);
   text-decoration: none;
 }
 
-.c-poem {
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-}
-
-.c-poem-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Every card: a grey block on top, a title row underneath */
 .c-media {
-  position: relative;
-  width: 100%;
-  margin: 0 0 var(--space-2);
-  overflow: hidden;
-  background: var(--surface);
-}
-.c-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
-
-/* Books */
-.c-book { display: grid; place-items: center; aspect-ratio: 4 / 5; }
-
-.c-cover {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 56%;
-  aspect-ratio: 2 / 3;
-  padding: var(--space-2);
-  font-size: var(--font-size-base);
-  line-height: 1.2;
-  color: var(--white);
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+  margin: 0 0 var(--space-s);
 }
 
-/* Real book cover image: same size and shadow as the generated cover */
-.c-media .c-cover-img {
-  width: 56%;
-  height: auto;
-  aspect-ratio: 2 / 3;
-  object-fit: cover;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+.c-media:last-child {
+  margin-bottom: 0;
 }
 
-.c-cover strong { font-weight: var(--font-medium); }
-.c-cover span { opacity: 0.8; }
-
-/* Podcasts */
-.c-podcast { aspect-ratio: 1 / 1; }
-
-.c-progress {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 0.2rem;
-  background: rgba(0, 0, 0, 0.08);
-}
-.c-progress i { display: block; height: 100%; background: var(--accent); }
-
-/* Quotes: highlight borrows the green marker from "Product designer" */
-.c-quotetext { 
-  padding: var(--space-8); 
+.c-title {
+  transition: color var(--motion-fast) var(--ease);
 }
 
-.c-quotetext blockquote {
+.c-card:is(:hover, :focus-visible) .c-title {
+  color: var(--hover);
+}
+
+.c-sub {
   margin: 0;
-  font-size: var(--font-size-lead);
-  line-height: 1.35;
+  color: var(--muted);
+}
+
+/* Clickable cards (Knowledge articles and experiments) */
+.c-card[role="button"] {
+  cursor: pointer;
+}
+
+/* Article card (articleCard in cards.js): text left, thumbnail right.
+    Change --article-image to resize the thumbnail, --ratio to reshape it (1 = square, 4 / 3 = wider). */
+.c-article {
+  --article-image: clamp(5rem, 10vw, 10rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--article-image);
+  gap: var(--space-m);
+  align-items: center;
+  padding: 0 0 var(--space-m);
+  border-bottom: var(--line-width) solid var(--border);
+}
+
+.c-article-copy {
+  display: grid;
+  gap: var(--space-s);
+  min-width: 0;
+}
+
+.c-article-image {
+  --ratio: 1;
+}
+
+/* Quote */
+.c-quote {
+  padding: var(--space-l);
+}
+
+.c-quote blockquote {
+  margin: 0;
+  font-size: var(--text-lead);
   font-weight: var(--font-light);
 }
 
-.c-quotetext mark {
+.c-quote mark {
   color: inherit;
   background: linear-gradient(transparent 62%, var(--highlight) 62%);
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
 
-/* Title row */
-.c-meta {
+/* Book: generated colour cover, or a real cover image at the same size */
+.c-book {
+  --ratio: 4 / 5;
+  display: grid;
+  place-items: center;
+}
+
+.c-cover,
+.c-book .c-cover-img {
+  width: 56%;
+  aspect-ratio: 2 / 3;
+  box-shadow: var(--shadow-cover);
+}
+
+.c-cover {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
   justify-content: space-between;
-  gap: var(--space-4);
-}
-.c-title { transition: color var(--motion-fast) ease; }
-.c-sub { margin: 0; color: var(--muted); }
-.c-tag { white-space: nowrap; color: var(--muted); }
-.c-card:hover .c-title { color: var(--hover); }
-
-/* =====================================================
-   7. CASE STUDY LAYOUT
-   Rows stack in .case-study-grid; each row splits into --cols columns (set inline in the HTML).
-   ===================================================== */
-
-/* Stack of rows */
-.case-study-grid {
-  display: grid;
-  gap: var(--space-8);
+  padding: var(--space-s);
+  color: var(--white);
 }
 
-/* One row: --cols equal columns (default 1) */
-.case-study-row {
-  display: grid;
-  grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
-  gap: var(--space-8);
+.c-cover span {
+  opacity: 0.8;
 }
 
-.case-study-row > * { min-width: 0; }
-
-/* Image + text pairs, vertically centred */
-.case-study-row.mini-project {
-  align-items: center;
+.c-book .c-cover-img {
+  height: auto;
 }
 
-.case-study-row.mini-project img{
-  margin: 0;
+/* Podcast */
+.c-podcast {
+  --ratio: 1;
+}
+
+.c-progress {
+  position: absolute;
+  inset: auto 0 0;
+  height: 0.2rem;
+  background: rgb(var(--ink) / 0.08);
+}
+
+.c-progress i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
 }
 
 /* =====================================================
-   8. GLOBAL TOGGLE: [ CREATE ] logo [ CONSUME ]
-   ===================================================== */
-/* Bar fixed to the bottom of every page */
+    6. BOARDS
+    Masonry columns of cards. Column gap and card margin both use --grid-gap.
+    ===================================================== */
+.board,
+.photo-board {
+  column-gap: var(--grid-gap);
+}
+
+.board {
+  columns: 4 14rem;
+  max-width: var(--board-max);
+  margin: 0 auto;
+}
+
+.photo-board {
+  columns: 3 12rem;
+}
+
+.photo-group {
+  margin: 0 0 var(--space-l);
+}
+
+.photo-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Group heading: title left, date right, same baseline */
+.photo-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-m);
+  margin: 0 0 var(--space-m);
+  padding-top: var(--space-m);
+  font-weight: var(--font-regular);
+  text-transform: uppercase;
+  color: var(--line);
+}
+
+.photo-meta {
+  font-weight: var(--font-light);
+  color: var(--muted);
+}
+
+/* =====================================================
+    7. MODE TOGGLE
+    ===================================================== */
 .mode-toggle {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 50;
+  inset: auto 0 0;
+  z-index: var(--z-toggle);
   height: var(--toggle-h);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: var(--safe-bottom);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-8);
+  gap: var(--space-l);
   background: var(--bg);
-  border-top: 0.08rem solid var(--line);
+  border-top: var(--line-width) solid var(--line);
 }
 
-/* CREATE / CONSUME buttons */
 .mode-btn {
-  min-width: 8rem; /* equal widths keep the logo centred */
-  padding: var(--space-1) var(--space-2);
-  font: inherit;
+  min-width: 8rem;              /* equal widths keep the logo centred */
+  padding: calc(var(--space-s) / 2) var(--space-s);
   font-weight: var(--font-light);
-  letter-spacing: 0.03em;
   text-align: center;
-  white-space: nowrap;
-  color: var(--text);
-  background: none;
-  border: none;
-  cursor: pointer;
 }
 
 /* Brackets show only on the selected tab; they keep their space so nothing shifts */
-.mode-btn .br { visibility: hidden; }
-.mode-btn[aria-pressed="true"] .br { visibility: visible; }
-.mode-btn[aria-pressed="true"] { color: var(--hover); font-weight: var(--font-medium); }
-.mode-btn:hover { color: var(--hover); }
-.mode-btn:focus-visible { outline: 0.125rem solid var(--hover); outline-offset: 0.125rem; }
+.mode-btn .br {
+  visibility: hidden;
+}
 
-/* Logo between the two buttons */
+.mode-btn[aria-pressed="true"] {
+  color: var(--hover);
+  font-weight: var(--font-medium);
+}
+
+.mode-btn[aria-pressed="true"] .br {
+  visibility: visible;
+}
+
+/* The logo is a button that opens Knowledge */
+.mode-logo-button {
+  display: flex;
+  padding: 0;
+}
+
 .mode-logo {
   display: block;
   height: 2rem;
@@ -626,110 +768,23 @@ body[data-mode="consume"] .consume {
 }
 
 /* =====================================================
-   9. PHOTOGRAPHY SECTIONS
-   Groups of photos inside the Photography project.
-   ===================================================== */
-/* One location/series */
-.photo-group { margin: 0 0 var(--space-8); }
-.photo-group:last-child { margin-bottom: 0; }
-
-/* Title/date metadata shares the heading's baseline */
-.photo-meta { font-weight: var(--font-light); color: var(--muted); }
-
-/* Masonry columns of photos */
-.photo-board { columns: 3 12rem; column-gap: var(--space-8); }
-.photo-board .c-media img { margin: 0; }
-.photo-board .c-sub { margin: 0; line-height: inherit; color: var(--muted); }
-
-/* =====================================================
-   10. RESPONSIVE
-   Breakpoint rules are grouped here; reduced-motion overrides live at the end.
-   ===================================================== */
-
-/* Tablet: keep the split, give the sidebar more room */
-@media (max-width: 1000px) and (min-width: 801px) {
-  :root { --left-width: 40%; }
-}
-
-/* Mobile: stack instead of split */
-@media (max-width: 800px) {
-  /* Let the page grow with its content so the bottom padding clears the fixed bar */
-  html, body { height: auto; min-height: 100%; }
-  body { padding-bottom: var(--toggle-h); }
-
-  .layout {
-    flex-direction: column;
-    height: auto;
-    overflow: visible;
-  }
-
-  .sidebar {
-    position: relative;
-    width: 100%;
-    height: auto;
-    border-right: none;
-    border-bottom: 0.08rem solid var(--line);
-  }
-
-  .content { height: auto; overflow-y: visible; }
-  .content section { margin-bottom: var(--space-16); }
-
-  .consume { padding: var(--space-5); }
-
-  .case-study-row[style*="--cols: 4"] {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* Small phones: one column of tiles */
-@media (max-width: 500px) {
-  .photo-board { columns: 1; column-gap: var(--space-4); }
-
-  .project-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .case-study-row {
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-  }
-
-  .case-study-row[style*="--cols: 4"] {
-    grid-template-columns: 1fr;
-  }
-
-  #mid-career-musician > :nth-child(1) { order: 2; }
-  #mid-career-musician > :nth-child(2) { order: 1; }
-  #mid-career-musician > :nth-child(3) { order: 4; }
-  #mid-career-musician > :nth-child(4) { order: 3; }
-  #mid-career-musician > :nth-child(5) { order: 6; }
-  #mid-career-musician > :nth-child(6) { order: 5; }
-}
-
-/* =====================================================
-   11. PHOTOBOOK
-   Animated by js/photobook.js. --dur matches the script's 900ms flip timing.
-   ===================================================== */
-/* Wrapper: --ratio is width:height of the open book, --dur/--ease drive the flip */
+    8. PHOTOBOOK + CAROUSEL
+    js/photobook.js reads --motion-book for its flip timing.
+    ===================================================== */
 .fb {
-  --ratio: 2;
-  --dur: var(--motion-book);
-  --ease: cubic-bezier(0.5, 0, 0.25, 1);
-  width: min(100%, 1100px);
-  margin: var(--space-8) 0;
-  font: inherit;
-  color: var(--text);
+  width: min(100%, var(--book-max));
+  margin: var(--space-l) 0;
   outline: none;
   user-select: none;
 }
 
-/* The book itself; slides left when closed so the cover sits centred */
+/* The book slides left when closed so the cover sits centred */
 .fb-book {
   position: relative;
-  aspect-ratio: var(--ratio);
+  aspect-ratio: 2;              /* width : height of the open book */
   perspective: 2000px;
   cursor: pointer;
-  transition: transform var(--dur) var(--ease);
+  transition: transform var(--motion-book) var(--ease-book);
 }
 
 .fb-book.cover {
@@ -742,7 +797,7 @@ body[data-mode="consume"] .consume {
   top: 0;
   height: 100%;
   background: var(--bg);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-book);
   transition: opacity var(--motion-fade);
 }
 
@@ -765,14 +820,14 @@ body[data-mode="consume"] .consume {
   opacity: 1;
 }
 
-/* Centre gutter line */
+/* Centre gutter line (z-index sits above every leaf, which JS stacks from 1 to 18) */
 .fb-book::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 999;
-  background: linear-gradient(90deg, transparent 49%, rgba(0, 0, 0, 0.025) 50%, transparent 51%);
+  background: linear-gradient(90deg, transparent 49%, rgb(var(--ink) / 0.025) 50%, transparent 51%);
   transition: opacity var(--motion-medium);
 }
 
@@ -780,7 +835,7 @@ body[data-mode="consume"] .consume {
   opacity: 0;
 }
 
-/* shadows cast onto the pages under the turning leaf (animated from JS) */
+/* Shadows cast onto the pages under the turning leaf (animated from JS) */
 .fb-sh {
   position: absolute;
   top: 0;
@@ -792,12 +847,12 @@ body[data-mode="consume"] .consume {
 
 .fb-sh.r {
   left: 50%;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.35), transparent 75%);
+  background: linear-gradient(90deg, rgb(var(--ink) / 0.35), transparent 75%);
 }
 
 .fb-sh.l {
   left: 0;
-  background: linear-gradient(270deg, rgba(0, 0, 0, 0.35), transparent 75%);
+  background: linear-gradient(270deg, rgb(var(--ink) / 0.35), transparent 75%);
 }
 
 /* One sheet of paper; rotates around the spine when flipped (.f) */
@@ -809,7 +864,7 @@ body[data-mode="consume"] .consume {
   height: 100%;
   transform-origin: left center;
   transform-style: preserve-3d;
-  transition: transform var(--dur) var(--ease);
+  transition: transform var(--motion-book) var(--ease-book);
 }
 
 .fb-leaf.f {
@@ -821,7 +876,7 @@ body[data-mode="consume"] .consume {
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
-  background: var(--bg) 100% 0/200% 100% no-repeat;
+  background: var(--bg) 100% 0 / 200% 100% no-repeat;
 }
 
 .fb-pg.l {
@@ -829,30 +884,27 @@ body[data-mode="consume"] .consume {
   transform: rotateY(180deg);
 }
 
-/* spine crease */
-.fb-pg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.05), transparent 6%);
-}
-
-/* lighting: the page darkens as it turns away */
+.fb-pg::before,
 .fb-pg::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5));
+}
+
+/* Spine crease */
+.fb-pg::before {
+  background: linear-gradient(90deg, rgb(var(--ink) / 0.05), transparent 6%);
+}
+
+/* Lighting: the page darkens as it turns away */
+.fb-pg::after {
+  background: linear-gradient(90deg, rgb(var(--ink) / 0.1), rgb(var(--ink) / 0.5));
   opacity: 0;
-  transition: opacity var(--dur) var(--ease);
+  transition: opacity var(--motion-book) var(--ease-book);
 }
 
-.fb-pg.l::after {
-  opacity: 1;
-}
-
+.fb-pg.l::after,
 .f .fb-pg.r::after {
   opacity: 1;
 }
@@ -861,81 +913,242 @@ body[data-mode="consume"] .consume {
   opacity: 0;
 }
 
-/* [ BACK ]  1 / 16  [ NEXT ] controls (also used by the carousel) */
+/* [ BACK ]  1 / 16  [ NEXT ] (shared with the carousel) */
 .fb-bar {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
-  margin-top: var(--space-8);
+  gap: var(--space-m);
+  margin-top: var(--space-l);
 }
 
-.fb-bar button {
-  font: inherit;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
-  color: var(--text);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.fb-bar button:hover {
-  color: var(--hover);
-}
-
-.fb-bar button:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
-.fb-count{
+.fb-count {
   min-width: 5.5em;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
-/* =====================================================
-   12. CAROUSEL
-   Looping image slideshow; js/media.js toggles .active on one slide.
-   ===================================================== */
+/* Carousel: js/media.js toggles .active on one slide */
 .car {
-  width: min(100%);
-  margin: 0rem auto;
+  margin: 0 auto;
   outline: none;
   user-select: none;
 }
 
-.car .car-slide {
+.car-slide {
   display: none;
-  width: 100%;
-  margin: 0;          /* overrides the global .content img margin */
+  margin: 0;
 }
 
-.car .car-slide.active {
+.car-slide.active {
   display: block;
 }
 
+/* =====================================================
+    9. KNOWLEDGE
+    Questions are quote cards, articles are article cards, experiments are book cards (section 5).
+    Only the overview columns and the reader are Knowledge-specific.
+    ===================================================== */
+.knowledge-overview {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+  align-items: start;
+  max-width: var(--knowledge-max);
+  margin: 0 auto;
+}
+
+.knowledge-column {
+  min-width: 0;
+}
+
+.knowledge-column-title {
+  margin: 0 0 var(--space-m);
+  text-transform: uppercase;
+}
+
+/* Reader */
+.knowledge-reader.is-open {
+  min-height: 100%;
+}
+
+.knowledge-reader-header {
+  margin-bottom: var(--space-l);
+}
+
+.knowledge-reader-content {
+  width: min(60%, 52rem);
+  margin: 0 auto;
+  padding: 0 0 var(--section-gap);
+}
+
+.knowledge-article-header {
+  margin-bottom: var(--space-xl);
+}
+
+.knowledge-article-header h1 {
+  margin: 0 0 var(--space-m);
+  font-size: var(--text-display);
+  font-weight: var(--font-regular);
+  letter-spacing: var(--tracking-tight);
+}
+
+.knowledge-deck {
+  margin: 0 0 var(--space-m);
+  font-size: var(--text-deck);
+  color: var(--muted);
+}
+
+.knowledge-byline {
+  margin-bottom: var(--space-l);
+}
+
+.knowledge-hero-image,
+.knowledge-inline-image {
+  margin: var(--space-l) 0;
+}
+
+.knowledge-hero-image img,
+.knowledge-inline-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.knowledge-inline-image figcaption {
+  margin-top: var(--space-s);
+}
+
+/* Article body: sizes in em so headings and quotes scale with the prose size */
+.knowledge-prose {
+  font-size: var(--text-article);
+}
+
+.knowledge-prose p {
+  margin: 0 0 1.45em;
+}
+
+.knowledge-prose h2 {
+  margin: 2.2em 0 0.7em;
+  font-size: var(--text-article-heading);
+}
+
+.knowledge-prose h3 {
+  margin: 1.8em 0 0.6em;
+  font-size: var(--text-article-subheading);
+}
+
+.knowledge-quote {
+  margin: 2em 0;
+  padding: 0.2em 0 0.2em 1.1em;
+  border-left: 0.2rem solid var(--accent);
+  font-size: var(--text-article-quote);
+  font-weight: var(--font-light);
+}
+
+.knowledge-underline {
+  text-decoration: underline solid var(--accent) 0.12em;
+  text-underline-offset: 0.18em;
+}
+
+.knowledge-divider {
+  margin: 2.5em 0;
+  border: 0;
+  border-top: var(--line-width) solid var(--border);
+}
 
 /* =====================================================
-   13. ACCESSIBILITY & INTERACTION BASELINES
-   ===================================================== */
-:where(a, button, [tabindex]):focus-visible {
-  outline: 0.125rem solid var(--hover);
-  outline-offset: 0.2rem;
-}
-
-button:disabled {
-  cursor: not-allowed;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-delay: 0ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    transition-delay: 0ms !important;
+    10. RESPONSIVE
+    Media queries can't read variables, so the three breakpoints live here.
+    Most of the work is done by overriding tokens.
+    ===================================================== */
+@media (max-width: 1000px) {
+  :root {
+    --left-width: 40%;
   }
+
+  .knowledge-reader-content {
+    width: min(78%, 52rem);
+  }
+}
+
+/* Mobile: stack instead of split */
+@media (max-width: 800px) {
+  :root {
+    --gutter: var(--space-m);
+    --section-gap: var(--space-xl);
+  }
+
+  /* Let the page grow with its content so the bottom padding clears the fixed bar */
+  html, body {
+    height: auto;
+    min-height: 100%;
+  }
+
+  body {
+    padding-bottom: var(--toggle-h);
+  }
+
+  .layout {
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+  }
+
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-right: 0;
+    border-bottom: var(--line-width) solid var(--line);
+  }
+
+  .content {
+    height: auto;
+    overflow-y: visible;
+  }
+
+  /* Rows can name a smaller column count with --cols-sm (e.g. 4 columns become 2) */
+  .case-study-row {
+    grid-template-columns: repeat(var(--cols-sm, var(--cols, 1)), minmax(0, 1fr));
+  }
+
+  .knowledge-overview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .knowledge-reader-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: var(--space-s) 0;
+    background: var(--bg);
+  }
+
+  .knowledge-reader-content {
+    width: 100%;
+  }
+}
+
+/* Small phones: one column */
+@media (max-width: 500px) {
+  .project-grid,
+  .case-study-row {
+    grid-template-columns: 1fr;
+  }
+
+  .case-study-row {
+    gap: var(--space-m);
+  }
+
+  /* Article card: the thumbnail drops below the text */
+  .c-article {
+    grid-template-columns: 1fr;
+  }
+
+  /* This row lists text before image; on phones each image goes above its text */
+  #mid-career-musician > :nth-child(1) { order: 2; }
+  #mid-career-musician > :nth-child(2) { order: 1; }
+  #mid-career-musician > :nth-child(3) { order: 4; }
+  #mid-career-musician > :nth-child(4) { order: 3; }
+  #mid-career-musician > :nth-child(5) { order: 6; }
+  #mid-career-musician > :nth-child(6) { order: 5; }
 }

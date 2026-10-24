@@ -17,11 +17,11 @@
     <!-- LEFT: sidebar, stays fixed while the right side scrolls. Links open projects (js/navigation.js). -->
     <aside class="sidebar">
       <div>
-        <!-- About: name, job and city each have their own accent style (see CSS section 3) -->
-        <div id="aboutSection">
-          <a id="aboutName">Hi, I’m Kelli with an i.</a>
-          <a id="aboutJob">Product designer</a> by trade, lover of questions at heart.
-          My body resides in <a id="aboutCity">San Francisco</a>, but my being is rooted in
+        <!-- About: name, job and city each have their own accent style (see CSS section 4) -->
+        <div class="about">
+          <a class="about-name">Hi, I’m Kelli with an i.</a>
+          <a class="about-job">Product designer</a> by trade, lover of questions at heart.
+          My body resides in <a class="about-city">San Francisco</a>, but my being is rooted in
           curiosity, care, and conviction for all things that I create.
         </div>
         <div>
@@ -39,7 +39,7 @@
     <!-- RIGHT: scrollable content. Shows the overview grid, or one project at a time. -->
     <main class="content" id="scrollArea">
       <!-- Overview grid: 4 tiles, shown when nothing is selected. Hovering a tile shows its caption. -->
-      <div class="project-grid visible" id="projectGrid"></div>
+      <div class="project-grid is-open" id="projectGrid"></div>
 
       <!-- ========== PROJECT: Deal Accelerator, for BizBuySell ========== -->
       <section class="project" id="bizbuysell">
@@ -64,7 +64,7 @@
           </div>
 
           <!-- Role / timeline / team / skills (4 columns) -->
-          <div class="case-study-row" style="--cols: 4">
+          <div class="case-study-row" style="--cols: 4; --cols-sm: 2">
             <div>
               <h4>ROLE</h4>
               <p>Lead Product Designer</p>
@@ -192,7 +192,7 @@
           </div>
 
           <!-- Role / timeline / team / skills (4 columns) -->
-          <div class="case-study-row" style="--cols: 4">
+          <div class="case-study-row" style="--cols: 4; --cols-sm: 2">
             <div>
               <h4>ROLE</h4>
               <p>UX Designer<br>Intern</p>
@@ -338,7 +338,7 @@
                 </div>
               </div>
               <div class="case-study-row" style="--cols: 1">
-                <!-- Carousel: slides are .car-slide images; buttons and counter are wired up in script.js section 8 -->
+                <!-- Carousel: slides are .car-slide images; buttons and counter are wired up in js/media.js -->
                 <div class="car" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Super fan archetypes">
                   <div class="car-stage">
                     <img class="car-slide" src="images/amazon-competitve-analysis1.png" alt="Super fan archetype 1 of 3">
@@ -607,10 +607,37 @@
     <div class="board" id="board"></div>
   </section>
 
+  <!-- ========== KNOWLEDGE VIEW: questions, articles, experiments ========== -->
+  <section class="knowledge-view" id="knowledgeView" aria-label="Knowledge" aria-hidden="true">
+    <div class="knowledge-overview is-open" id="knowledgeOverview">
+      <section class="knowledge-column" aria-labelledby="questionsHeading">
+        <h2 class="knowledge-column-title" id="questionsHeading">What I don't know</h2>
+        <div id="knowledgeQuestions"></div>
+      </section>
+      <section class="knowledge-column" aria-labelledby="articlesHeading">
+        <h2 class="knowledge-column-title" id="articlesHeading">What I think I know</h2>
+        <div id="knowledgeArticles"></div>
+      </section>
+      <section class="knowledge-column" aria-labelledby="experimentsHeading">
+        <h2 class="knowledge-column-title" id="experimentsHeading">What I want to know</h2>
+        <div id="knowledgeExperiments"></div>
+      </section>
+    </div>
+    <article class="knowledge-reader" id="knowledgeReader" aria-live="polite">
+      <header class="project-header knowledge-reader-header">
+        <h2 id="knowledgeReaderType">ARTICLE</h2>
+        <button type="button" class="close-btn" id="knowledgeClose">[ CLOSE ]</button>
+      </header>
+      <div class="knowledge-reader-content" id="knowledgeReaderContent"></div>
+    </article>
+  </section>
+
   <!-- ========== Global toggle, fixed to the bottom of every page (switches body[data-mode]) ========== -->
   <div class="mode-toggle" role="group" aria-label="View">
     <button type="button" class="mode-btn" data-mode="create" aria-pressed="true"><span class="br" aria-hidden="true">[ </span>CREATE<span class="br" aria-hidden="true"> ]</span></button>
-    <img class="mode-logo" src="images/logo.png" alt="">
+    <button type="button" class="mode-logo-button" id="knowledgeToggle" aria-label="Open Knowledge view" aria-pressed="false">
+      <img class="mode-logo" src="images/logo.png" alt="">
+    </button>
     <button type="button" class="mode-btn" data-mode="consume" aria-pressed="false"><span class="br" aria-hidden="true">[ </span>CONSUME<span class="br" aria-hidden="true"> ]</span></button>
   </div>
 

@@ -10,8 +10,10 @@
   const fb = $('fb'), book = $('fbBook'), prev = $('fbPrev'), next = $('fbNext'), count = $('fbCount');
   if (!book) return;
 
-  // N = total pages, START = first image number, DUR = flip time in ms
-  const N = 16, START = 1, DUR = 900;               // DUR must match --dur in the CSS
+  // N = total pages, START = first image number
+  const N = 16, START = 1;
+  // Flip time in ms, read from --motion-book in the CSS so the two can't drift apart
+  const DUR = parseFloat(getComputedStyle(fb).getPropertyValue('--motion-book')) || 0;
   const url = i => `url(images/Photobook/page-${i + START}.png)`;
   const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const mk = cls => Object.assign(document.createElement('div'), { className: cls });
@@ -111,3 +113,5 @@
 
   render();
 })();
+
+
