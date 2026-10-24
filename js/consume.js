@@ -1,7 +1,7 @@
 import { $, esc } from './dom.js';
 
 // =====================================================
-// 3. consume board
+// 3. Consume board
 // Add, remove or reorder items here. Layout and book cover colours are automatic.
 //   book:    { type, title, by, color? (cover colour), url? (external link) }
 //   podcast: { type, show, episode, minutes, progress? (0-100), image? (path), url? (external link) }
@@ -14,7 +14,7 @@ const COLLECTION = [
     episode: 'Lera Boroditsky: How Language Secretly Changes Your Personality',
     minutes: 111,
     progress: 21,
-    image: 'images/consume/what-now.png',
+    image: 'images/Consume/what-now.png',
     url: 'https://youtu.be/UVhAceBQmpY?si=Xk2LRWulUE9_W7gx'
   },
   {
@@ -22,7 +22,7 @@ const COLLECTION = [
     title: 'These Impossible Things',
     by: 'Salma El-Wardany',
     color: '#7a2a33',
-    image: 'images/consume/these-impossible-things.jpg',
+    image: 'images/Consume/these-impossible-things.jpg',
     url: 'https://www.goodreads.com/book/show/59228196-these-impossible-things'
   },
   {
@@ -30,7 +30,7 @@ const COLLECTION = [
     title: 'Everything is Tuberculosis',
     by: 'John Green',
     color: '#1d3a2b',
-    image: 'images/consume/everything-is-tuberculosis.jpg',
+    image: 'images/Consume/everything-is-tuberculosis.jpg',
     url: 'https://www.goodreads.com/book/show/220341389-everything-is-tuberculosis',
   },
   {
@@ -39,7 +39,7 @@ const COLLECTION = [
     episode: 'The Art of Learning & Living Life | Josh Waitzkin',
     minutes: 197,
     progress: 62,
-    image: 'images/consume/huberman-lab.png',
+    image: 'images/Consume/huberman-lab.png',
     url: 'https://www.youtube.com/watch?v=wAnDWfEIwoE'
   },
   {
@@ -52,7 +52,7 @@ const COLLECTION = [
     type: 'poem',
     title: 'The Gardener',
     by: 'Mary Oliver',
-    image: 'images/consume/the-gardener.png',
+    image: 'images/Consume/the-gardener.png',
     url: 'https://www.instagram.com/p/DNnpayAODMo/',
   },
   {
@@ -67,7 +67,7 @@ const COLLECTION = [
     episode: 'The Score',
     minutes: 26,
     progress: 52,
-    image: 'images/consume/99-pi.png',
+    image: 'images/Consume/99-pi.png',
     url: 'https://youtu.be/QWG6u9yP7uQ?si=5euluw3dWN3DBamp'
   },
   {
@@ -75,7 +75,7 @@ const COLLECTION = [
     title: 'This is Water',
     by: 'David Foster Wallace',
     color: '#1d3a2b',
-    image: 'images/consume/this-is-water.jpg',
+    image: 'images/Consume/this-is-water.jpg',
     url: 'https://www.goodreads.com/book/show/5986375-this-is-water'
   },
   {
@@ -83,7 +83,7 @@ const COLLECTION = [
     title: 'Beartown',
     by: 'Fredrik Backman',
     color: '#1d3a2b',
-    image: 'images/consume/beartown.jpg',
+    image: 'images/Consume/beartown.jpg',
     url: 'https://www.goodreads.com/book/show/33413128-beartown'
   },
   {
@@ -92,7 +92,7 @@ const COLLECTION = [
     episode: 'Arthur C Brooks: Are We Happy Yet?',
     minutes: 127,
     progress: 98,
-    image: 'images/consume/what-now.png',
+    image: 'images/Consume/what-now.png',
     url: 'https://youtu.be/xHZmw3JhT48?si=9_TKbWKsrs1-dklP'
   },
   {
@@ -111,7 +111,7 @@ const COLLECTION = [
     type: 'poem',
     title: 'The Sun Never Says',
     by: 'Hafiz',
-    image: 'images/consume/the-sun-never-says.webp',
+    image: 'images/Consume/the-sun-never-says.webp',
     url: 'https://www.goodreads.com/quotes/60389-even-after-all-this-time-the-sun-never-says-to/',
   },
   {
@@ -119,7 +119,7 @@ const COLLECTION = [
     title: 'Think Again',
     by: 'Adam Grant',
     color: '#1d3a2b',
-    image: 'images/consume/think-again.jpeg',
+    image: 'images/Consume/think-again.jpeg',
     url: 'https://www.goodreads.com/book/show/55539565-think-again'
   },
   {
@@ -127,14 +127,14 @@ const COLLECTION = [
     title: 'The Anthropologists',
     by: 'Ayşegül Savaş',
     color: '#1d3a2b',
-    image: 'images/consume/the-anthropologists.jpg',
+    image: 'images/Consume/the-anthropologists.jpg',
     url: 'https://www.goodreads.com/book/show/195391751-the-anthropologists'
   },
   {
     type: 'poem',
     title: 'Life is Not a Race',
     by: 'Alan Watts',
-    image: 'images/consume/life-is-not-a-race.jpg',
+    image: 'images/Consume/life-is-not-a-race.jpg',
     url: 'https://www.instagram.com/p/DZyN6miE1Am/?img_index=2',
   },
   {
@@ -148,14 +148,14 @@ const COLLECTION = [
     title: 'Letters to a Young Poet',
     by: 'Rainer Maria Rilke',
     color: '#7a2a33',
-    image: 'images/consume/letters-to-a-young-poet.jpeg',
+    image: 'images/Consume/letters-to-a-young-poet.jpeg',
     url: 'https://www.goodreads.com/en/book/show/46199.Letters_to_a_Young_Poet'
   },
   {
     type: 'poem',
     title: 'Letters to a Young Creator',
     by: 'Steve Jobs',
-    image: 'images/consume/letters-to-a-young-creator.png',
+    image: 'images/Consume/letters-to-a-young-creator.png',
     url: 'https://letters.stevejobsarchive.com/',
   },
 ];
