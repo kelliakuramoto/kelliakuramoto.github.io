@@ -48,9 +48,9 @@
   --text-lead: 1.25rem;                             /* larger statement text and quotes */
   --text-deck: clamp(1.2rem, 2vw, 1.5rem);          /* article subtitle */
   --text-article: clamp(1.05rem, 1.35vw, 1.22rem);  /* article body */
-  --text-article-heading: 1.65em;                   /* article h2 (em: scales with article body) */
+  --text-article-heading: 1.5em;                   /* article h2 (em: scales with article body) */
   --text-article-subheading: 1.25em;                /* article h3 (em) */
-  --text-article-quote: 1.35em;                     /* article pull quote (em) */
+  --text-article-quote: 1.25em;                     /* article pull quote (em) */
   --text-display: clamp(2.4rem, 4vw, 4rem);         /* article title */
 
   --font-light: 300;
@@ -613,7 +613,7 @@ body.knowledge-open :is(.layout, .consume) {
 
 .c-quote blockquote {
   margin: 0;
-  font-size: var(--text-lead);
+  font-size: var(--text-body);
   font-weight: var(--font-light);
 }
 

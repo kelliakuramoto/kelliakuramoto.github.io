@@ -19,6 +19,15 @@ const QUESTIONS = [
   { 
     text: 'How do you know what to believe in, if you know that your brain lies to you?' 
   },
+  { 
+    text: 'What differentiates comfort from complacency?' 
+  },
+  { 
+    text: 'How do you define goals?' 
+  },
+  { 
+    text: 'If you were living in a preindustrial society where money is not the currency, what value would you provide?' 
+  },
 ];
 
 const ARTICLES = [
