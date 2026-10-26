@@ -163,7 +163,7 @@ const COLLECTION = [
   },
   {
     type: 'quote',
-    text: 'I would say sometimes society is much more open to the idea that technology can change the way we live, and they’re much more conservative about the idea that we can do things differently. I often found that people are very receptive and open to this idea that we can innovate our way out of a problem through technology.',
+    text: 'I often found that people are very receptive and open to this idea that we can innovate our way out of a problem through technology, and they’re much more conservative about the idea that we can do things differently.',
     highlight: 'idea that we can do things differently',
     by: 'Wen-Yu Weng, Ellen MacArthur Foundation’s Critical Minerals Lead'
   },
