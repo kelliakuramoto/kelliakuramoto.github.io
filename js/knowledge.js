@@ -11,6 +11,9 @@ import { animateScrollTo } from './navigation.js';
 // =====================================================
 const QUESTIONS = [
   { 
+    text: 'What would you do with your life if you knew you couldn’t fail at it', 
+  },
+  { 
     text: 'What does the playground of your mind look like?', 
   },
   { 
