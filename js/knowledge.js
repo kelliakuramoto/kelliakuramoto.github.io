@@ -16,6 +16,9 @@ const QUESTIONS = [
   { 
     text: 'What does the playground of your mind look like?', 
   },
+    { 
+    text: 'Why is it so hard to go to the grocery store?', 
+  },
   { 
     text: 'What jobs are processing in the background of your brain?', 
   },
