@@ -11,7 +11,7 @@ import { animateScrollTo } from './navigation.js';
 // =====================================================
 const QUESTIONS = [
   { 
-    text: 'What would you do with your life if you knew you couldn’t fail at it', 
+    text: 'What would you do with your life if you knew you couldn’t fail at it?', 
   },
   { 
     text: 'What does the playground of your mind look like?', 
@@ -25,8 +25,8 @@ const QUESTIONS = [
   { 
     text: 'What differentiates comfort from complacency?' 
   },
-  { 
-    text: 'How do you define goals?' 
+    { 
+    text: 'If you couldn’t tell anyone what you did, how would you spend your days?', 
   },
   { 
     text: 'If you were living in a preindustrial society where money is not the currency, what value would you provide?' 
