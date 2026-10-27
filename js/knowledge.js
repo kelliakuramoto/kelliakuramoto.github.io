@@ -167,6 +167,7 @@ function openReader(kind, id, trigger) {
       <h1>${esc(item.title || item.text)}</h1>
       <p class="knowledge-deck">${esc(item.subheader || item.byline || '')}</p>
       ${byline}
+      ${kind === 'question' && editorPassword ? `<button type="button" class="question-delete" data-delete-question="${esc(item.id)}">[ DELETE QUESTION ]</button>` : ''}
       ${hero}
     </header>
     <div class="knowledge-prose">${kind === 'question' ? responsesSection(item) : (item.blocks || []).map(blockHTML).join('')}</div>`;
@@ -350,6 +351,24 @@ on(questionForm, 'submit', async event => {
 
   questionForm.reset();
   closeModal();
+  loadQuestions();
+});
+
+// Delete a question (editor only): removes it and its responses, then returns to the overview
+on(readerContent, 'click', async event => {
+  const button = event.target.closest('[data-delete-question]');
+  if (!button || !editorPassword) return;
+  if (!window.confirm('Delete this question and all of its responses permanently?')) return;
+
+  button.disabled = true;
+  const { error } = await supabase.rpc('delete_question', { pw: editorPassword, qid: button.dataset.deleteQuestion });
+  if (error) {
+    button.disabled = false;
+    if (error.code === '28000') setEditor(null);   // password no longer valid: hide editing again
+    else window.alert('Something went wrong. Please try again.');
+    return;
+  }
+  closeReader();
   loadQuestions();
 });
 
