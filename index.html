@@ -249,7 +249,7 @@
 
           <!-- ===== RESTRICTED CONTENT: revealed by the password ===== -->
           <div id="restricted-content" hidden>
-<div class="case-study-grid">
+            <div class="case-study-grid">
               <!-- Final design walkthrough videos (fan, then artist) -->
               <div class="case-study-row" style="--cols: 1">
                 <div>
@@ -611,7 +611,10 @@
   <section class="knowledge-view" id="knowledgeView" aria-label="Knowledge" aria-hidden="true">
     <div class="knowledge-overview is-open" id="knowledgeOverview">
       <section class="knowledge-column" aria-labelledby="questionsHeading">
-        <h2 class="knowledge-column-title" id="questionsHeading">What I don't know</h2>
+        <div class="project-header" id="what-i-dont-know">
+          <h2 class="knowledge-column-title" id="questionsHeading">What I don't know</h2>
+          <button type="button" class="question-add" id="addQuestionBtn" aria-label="Add a question" aria-haspopup="dialog" hidden>[ + ]</button>
+        </div>
         <div id="knowledgeQuestions"></div>
       </section>
       <section class="knowledge-column" aria-labelledby="articlesHeading">
@@ -631,6 +634,20 @@
       <div class="knowledge-reader-content" id="knowledgeReaderContent"></div>
     </article>
   </section>
+
+  <div class="modal" id="questionModal" role="dialog" aria-modal="true" aria-labelledby="questionModalTitle" aria-hidden="true">
+    <div class="modal-panel">
+      <header class="project-header">
+        <h2 id="questionModalTitle">ADD A QUESTION</h2>
+        <button type="button" class="close-btn" id="questionModalClose">[ CLOSE ]</button>
+      </header>
+      <form class="question-form" id="questionForm">
+        <textarea id="questionInput" maxlength="300" placeholder="What don’t you know?" aria-label="New question" required></textarea>
+        <button type="submit">[ ADD ]</button>
+        <p class="c-sub" id="questionStatus" role="status"></p>
+      </form>
+    </div>
+  </div>
 
   <!-- ========== Global toggle, fixed to the bottom of every page (switches body[data-mode]) ========== -->
   <div class="mode-toggle" role="group" aria-label="View">

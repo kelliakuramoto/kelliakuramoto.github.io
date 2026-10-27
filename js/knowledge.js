@@ -1,40 +1,16 @@
 import { $, $$, esc, on, showOnly } from './dom.js';
 import { articleCard, bookCard, quoteCard } from './cards.js';
 import { animateScrollTo } from './navigation.js';
+import { supabase } from './supabase.js';
 
 // =====================================================
 // KNOWLEDGE VIEW
-// Add questions, articles and experiments in the collections below.
-// Questions are Consume quote cards; experiments are Consume book cards (js/cards.js).
+// Questions live in Supabase (visitors can respond, the editor can add questions).
+// Add articles and experiments in the collections below.
+// Experiments are Consume book cards (js/cards.js).
 // Article body blocks support: paragraph, heading, subheading, quote,
 // underline, image, and divider. Images use paths relative to index.html.
 // =====================================================
-const QUESTIONS = [
-  { 
-    text: 'What would you do with your life if you knew you couldn’t fail at it?', 
-  },
-  { 
-    text: 'What does the playground of your mind look like?', 
-  },
-    { 
-    text: 'Why is it so hard to go to the grocery store?', 
-  },
-  { 
-    text: 'What jobs are processing in the background of your brain?', 
-  },
-  { 
-    text: 'How do you know what to believe in, if you know that your brain lies to you?' 
-  },
-  { 
-    text: 'What differentiates comfort from complacency?' 
-  },
-    { 
-    text: 'If you couldn’t tell anyone what you did, how would you spend your days?', 
-  },
-  { 
-    text: 'If you were living in a preindustrial society where money is not the currency, what value would you provide?' 
-  },
-];
 
 const ARTICLES = [
   {
@@ -90,7 +66,7 @@ const formatDate = (iso, month) =>
 
 // Attributes that make a card open the reader (the click and key handlers below look for these)
 const openAttrs = (kind, item) =>
-  `data-knowledge-kind="${kind}" data-knowledge-id="${esc(item.id)}" tabindex="0" role="button" aria-label="Open ${kind}: ${esc(item.title)}"`;
+  `data-knowledge-kind="${kind}" data-knowledge-id="${esc(item.id)}" tabindex="0" role="button" aria-label="Open ${kind}: ${esc(item.title || item.text)}"`;
 
 const articleRow = article => articleCard({
   title: article.title,
@@ -116,7 +92,25 @@ function renderInto(selector, items, toHTML) {
   if (root) root.innerHTML = items.map(item => toHTML(item)).join('');
 }
 
-renderInto('#knowledgeQuestions', QUESTIONS, quoteCard);
+// Questions come from Supabase. Each one is a Consume quote card that opens the reader,
+// the same way articles and experiments do.
+let QUESTIONS = [];
+
+const questionCard = q => quoteCard({ text: q.text, attrs: openAttrs('question', q) });
+
+async function loadQuestions() {
+  const { data, error } = await supabase.from('questions').select('*').order('created_at');
+  if (error) { console.error('Questions failed to load:', error.code, error.message); return; }
+  // date and subheader feed the same reader header that articles use
+  QUESTIONS = data.map(q => ({
+    ...q,
+    // date: q.created_at.slice(0, 10),
+    // subheader: 'Add your thoughts, or read what others have said.',
+  }));
+  renderInto('#knowledgeQuestions', QUESTIONS, questionCard);
+}
+loadQuestions();
+
 renderInto('#knowledgeArticles', ARTICLES, articleRow);
 renderInto('#knowledgeExperiments', EXPERIMENTS, experimentCard);
 
@@ -144,35 +138,42 @@ const closeButton = $('#knowledgeClose');
 const knowledgeToggle = $('#knowledgeToggle');
 const modeButtons = $$('.mode-btn');
 
+const READER_LABELS = {
+  article: 'WHAT I THINK I KNOW',
+  experiment: 'WHAT I WANT TO KNOW',
+  question: 'WHAT I DON’T KNOW',
+};
+
 let returnFocus = null;
 
 function openReader(kind, id, trigger) {
-  const item = (kind === 'article' ? ARTICLES : EXPERIMENTS).find(entry => entry.id === id);
+  const item = { article: ARTICLES, experiment: EXPERIMENTS, question: QUESTIONS }[kind]?.find(entry => entry.id === id);
   if (!item) return;
   returnFocus = trigger;
-  readerType.textContent = kind === 'article' ? 'WHAT I THINK I KNOW' : 'WHAT I WANT TO KNOW';
+  readerType.textContent = READER_LABELS[kind];
 
-  // Only articles have a date; experiments get no byline
+  // Articles and questions have a date; experiments get no byline
   const byline = item.date
   ? `<div class="knowledge-byline"><time datetime="${esc(item.date)}">${formatDate(item.date, 'long')}</time></div>`
   : '';
-  
+
   const hero = item.image
   ? `<figure class="knowledge-hero-image"><img src="${esc(item.image)}" alt="${esc(item.imageAlt || '')}"></figure>`
   : '';
 
   readerContent.innerHTML = `
     <header class="knowledge-article-header">
-      <h1>${esc(item.title)}</h1>
+      <h1>${esc(item.title || item.text)}</h1>
       <p class="knowledge-deck">${esc(item.subheader || item.byline || '')}</p>
       ${byline}
       ${hero}
     </header>
-    <div class="knowledge-prose">${(item.blocks || []).map(blockHTML).join('')}</div>`;
+    <div class="knowledge-prose">${kind === 'question' ? responsesSection(item) : (item.blocks || []).map(blockHTML).join('')}</div>`;
 
   showOnly([overview, reader], reader);
   animateScrollTo(view, 0);
   closeButton.focus({ preventScroll: true });
+  if (kind === 'question') loadResponses(item.id);
 }
 
 function closeReader() {
@@ -192,7 +193,7 @@ const syncModeButtons = () => modeButtons.forEach(button =>
 
 function setKnowledge(open) {
   if (open === isOpen()) return;
-  if (!open) closeReader();
+  if (!open) { closeReader(); closeModal(); }
 
   view.classList.toggle('is-open', open);
   view.setAttribute('aria-hidden', String(!open));
@@ -202,20 +203,137 @@ function setKnowledge(open) {
   syncModeButtons();
 }
 
+// ---- Responses (visitors) ---------------------------------------
+// A question opens in the reader like an article: the question is the title, the approved
+// responses are pull quotes, and the form sits underneath. Only approved responses are shown.
+
+const responseHTML = r =>
+  `<blockquote class="knowledge-quote">${esc(r.body)}</blockquote>`;
+
+const responsesSection = q => `
+  <div id="knowledgeResponses"><p class="c-sub">Loading…</p></div>
+  <form class="response-form" data-question-id="${esc(q.id)}">
+    <textarea maxlength="1000" placeholder="Waiting for your mind to marinate..." aria-label="Your response" required></textarea>
+    <button type="submit">[ SHARE ]</button>
+    <p class="c-sub" role="status"></p>
+  </form>`;
+
+async function loadResponses(questionId) {
+  const target = $('#knowledgeResponses');
+  const { data, error } = await supabase.from('responses')
+    .select('body').eq('question_id', questionId).order('created_at');
+  if (!target) return;
+  target.innerHTML = error ? '<p>Responses could not be loaded.</p>'
+    : data.length ? data.map(responseHTML).join('')
+    : '<p>I do not have a penny, but please feel free to leave a thought :-)</p>';
+}
+
+on(readerContent, 'submit', async event => {
+  event.preventDefault();
+  const form = event.target;
+  const status = form.querySelector('[role="status"]');
+  const body = form.querySelector('textarea').value.trim();
+  if (!body) return;
+
+  const { error } = await supabase.from('responses')
+    .insert({ question_id: form.dataset.questionId, body });
+  status.textContent = error ? 'Something went wrong.' : 'Thanks! Your response will appear once approved.';
+  if (!error) form.reset();
+});
+
+// ---- Add a question (editor only) -------------------------------
+// The editor password is never stored in this file. It is checked by Supabase
+// (check_editor / add_question), so the [ + ] button and modal are only a convenience.
+// Their markup lives in index.html (#addQuestionBtn, #questionModal).
+
+let editorPassword = null;   // memory only, gone on reload
+
+const addBtn = $('#addQuestionBtn');
+const modal = $('#questionModal');
+const modalClose = $('#questionModalClose');
+const questionForm = $('#questionForm');
+const questionInput = $('#questionInput');
+const questionStatus = $('#questionStatus');
+
+const isModalOpen = () => modal.classList.contains('is-open');
+
+function openModal() {
+  questionStatus.textContent = '';
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+  questionInput.focus({ preventScroll: true });
+}
+
+function closeModal() {
+  if (!isModalOpen()) return;
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+  addBtn.focus({ preventScroll: true });
+}
+
+function setEditor(password) {
+  editorPassword = password;
+  addBtn.hidden = !password;
+  if (!password) closeModal();
+}
+
+on(addBtn, 'click', openModal);
+on(modalClose, 'click', closeModal);
+on(modal, 'click', event => { if (event.target === modal) closeModal(); });   // click outside the panel
+
+on(document, 'keydown', event => {
+  if (!isModalOpen()) return;
+  if (event.key === 'Escape') closeModal();
+  if (event.key !== 'Tab') return;
+
+  // Keep Tab inside the dialog
+  const items = $$('textarea, button', modal);
+  const first = items[0];
+  const last = items[items.length - 1];
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+});
+
+on(questionForm, 'submit', async event => {
+  event.preventDefault();
+  const text = questionInput.value.trim();
+  if (!text) return;
+
+  const { error } = await supabase.rpc('add_question', { pw: editorPassword, q: text });
+  if (error) {
+    if (error.code === '28000') setEditor(null);   // password no longer valid: hide editing again
+    else questionStatus.textContent = 'Something went wrong. Please try again.';
+    return;
+  }
+
+  questionForm.reset();
+  closeModal();
+  loadQuestions();
+});
+
 // ---- Password gate ----------------------------------------------
-// Lightweight presentation gate only, same as js/password-gate.js: the password and the
+// Lightweight presentation gate only, same as js/password-gate.js: this password and the
 // Knowledge content are both visible in client-side code, so this must not protect confidential data.
+// "cd mymind" opens the view (read + respond). The editor password lives only in Supabase.
 const KNOWLEDGE_PASSWORD = 'cd mymind';
 let unlocked = false;   // stays unlocked until the page is reloaded, like the Amazon Music case study
 
 // Logo click: closing never needs the password; opening asks for it once.
 // A wrong password or a cancelled prompt does nothing.
-function requestKnowledge() {
+async function requestKnowledge() {
   if (isOpen()) { setKnowledge(false); return; }
   if (!unlocked) {
     const entered = window.prompt('Please enter password:');
-    if (entered !== KNOWLEDGE_PASSWORD) return;
-    unlocked = true;
+    if (entered === null) return;
+
+    if (entered === KNOWLEDGE_PASSWORD) {
+      unlocked = true;                                   // viewer: can read and respond
+    } else {
+      const { data: isEditor } = await supabase.rpc('check_editor', { pw: entered });
+      if (!isEditor) return;                             // wrong password does nothing
+      unlocked = true;
+      setEditor(entered);                                // editor: also sees the add button
+    }
   }
   setKnowledge(true);
 }

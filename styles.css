@@ -36,6 +36,8 @@
   --caption-overlay: color-mix(in srgb, var(--text) 92%, transparent);
   --shadow-cover: 0 0.5rem 1rem rgb(var(--ink) / 0.12);
   --shadow-book: 0 18px 40px rgb(var(--ink) / 0.18), 0 2px 6px rgb(var(--ink) / 0.1);
+  --z-modal: 150;
+  --modal-max: 32rem;
 
   /* Type */
   --font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
@@ -186,6 +188,7 @@ button {
   background: none;
   border: 0;
   cursor: pointer;
+  padding: 0;
 }
 
 button:disabled {
@@ -207,7 +210,8 @@ button:disabled {
 }
 
 .close-btn,
-.password-btn {
+.password-btn, 
+.question-add {
   height: 1.3125rem;
   flex-shrink: 0;
 }
@@ -231,7 +235,7 @@ button:disabled {
 .project-grid,
 .knowledge-view,
 .knowledge-overview,
-.knowledge-reader {
+.knowledge-reader, .modal {
   --fade: var(--motion-view);
   opacity: 0;
   visibility: hidden;
@@ -246,7 +250,7 @@ body[data-mode="create"] .layout,
 body[data-mode="consume"] .consume,
 .project.is-open,
 .project-grid.is-open,
-.knowledge-view.is-open {
+.knowledge-view.is-open, .modal.is-open {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -434,7 +438,7 @@ body.knowledge-open :is(.layout, .consume) {
 /* Project title with the [ CLOSE ] button on the right */
 .project-header {
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: space-between;
   gap: var(--space-m);
   margin-bottom: var(--space-m);
@@ -615,6 +619,7 @@ body.knowledge-open :is(.layout, .consume) {
   margin: 0;
   font-size: var(--text-body);
   font-weight: var(--font-light);
+  transition: color var(--motion-fast) var(--ease);
 }
 
 .c-quote mark {
@@ -1017,6 +1022,52 @@ body.knowledge-open :is(.layout, .consume) {
   margin-top: var(--space-s);
 }
 
+/* Modal: the shared fade pattern (section 3) over a dimmed page */
+.modal {
+  --fade: var(--motion-medium);
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+  background: rgb(var(--ink) / 0.4);
+}
+
+.modal-panel {
+  width: min(100%, var(--modal-max));
+  padding: var(--gutter);
+  background: var(--bg);
+  border: var(--line-width) solid var(--border);
+  box-shadow: var(--shadow-book);
+  transform: translateY(var(--space-s));
+  transition: transform var(--motion-medium) var(--ease-out);
+}
+
+.modal.is-open .modal-panel {
+  transform: none;
+}
+
+.modal .question-form {
+  margin: 0;
+}
+
+:is(.question-form, .response-form) textarea {
+  width: 100%;
+  min-height: 5rem;
+  padding: var(--space-s);
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: var(--line-width) solid var(--border);
+  border-radius: 0;
+  resize: vertical;
+}
+
+:is(.question-form, .response-form) textarea::placeholder {
+  color: var(--muted);
+}
+
 /* Article body: sizes in em so headings and quotes scale with the prose size */
 .knowledge-prose {
   font-size: var(--text-article);
@@ -1053,6 +1104,15 @@ body.knowledge-open :is(.layout, .consume) {
   margin: 2.5em 0;
   border: 0;
   border-top: var(--line-width) solid var(--border);
+}
+
+/* Question cards open the reader, so the quote reacts like a card title */
+.c-card[role="button"]:is(:hover, :focus-visible) .c-quote blockquote {
+  color: var(--hover);
+}
+
+#knowledgeResponses .knowledge-quote {
+  white-space: pre-line;   /* keeps line breaks visitors type */
 }
 
 /* =====================================================
