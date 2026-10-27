@@ -184,11 +184,16 @@ a[href^="mailto:"] {
 /* Buttons start unstyled; components add what they need */
 button {
   font: inherit;
+  font-size: var(--text-body);
   color: inherit;
   background: none;
   border: 0;
   cursor: pointer;
   padding: 0;
+}
+
+button:is(:hover, :focus-visible) {
+  color: var(--hover);
 }
 
 button:disabled {
@@ -211,7 +216,9 @@ button:disabled {
 
 .close-btn,
 .password-btn, 
-.question-add {
+.question-add, 
+.response-actions button, 
+.response-form button {
   height: 1.3125rem;
   flex-shrink: 0;
 }
@@ -1140,25 +1147,6 @@ body.knowledge-open :is(.layout, .consume) {
   align-items: baseline;
   gap: var(--space-m);              /* minimum space between buttons if the card gets narrow */
   margin: calc(var(--space-s) * -1) 0 var(--grid-gap);
-}
-
-
-.response-actions button {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--text);
-  font: inherit;
-  cursor: pointer;
-}
-
-.response-actions button:is(:hover, :focus-visible) {
-  color: var(--hover);
-}
-
-.response-actions button:disabled {
-  opacity: 0.4;
-  cursor: default;
 }
 
 #knowledgeResponses .c-quote blockquote {
