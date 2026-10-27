@@ -145,6 +145,7 @@ const READER_LABELS = {
 };
 
 let returnFocus = null;
+let currentQuestionId = null;
 
 function openReader(kind, id, trigger) {
   const item = { article: ARTICLES, experiment: EXPERIMENTS, question: QUESTIONS }[kind]?.find(entry => entry.id === id);
@@ -173,6 +174,7 @@ function openReader(kind, id, trigger) {
   showOnly([overview, reader], reader);
   animateScrollTo(view, 0);
   closeButton.focus({ preventScroll: true });
+  currentQuestionId = kind === 'question' ? item.id : null;
   if (kind === 'question') loadResponses(item.id);
 }
 
@@ -217,15 +219,56 @@ const responsesSection = q => `
     <p class="c-sub" role="status"></p>
   </form>`;
 
+// Moderator view: every response (pending ones too) with [ APPROVE ] / [ DELETE ] under each card
+const moderatorItem = r => `
+  <div class="response-item${r.approved ? '' : ' is-pending'}">
+    ${quoteCard({ text: r.body })}
+    <div class="response-actions">
+      ${r.approved ? '' : `<button type="button" data-response-action="approve" data-response-id="${esc(r.id)}">[ APPROVE ]</button>`}
+      <button type="button" data-response-action="delete" data-response-id="${esc(r.id)}">[ DELETE ]</button>
+    </div>
+  </div>`;
+
 async function loadResponses(questionId) {
   const target = $('#knowledgeResponses');
-  const { data, error } = await supabase.from('responses')
-    .select('body').eq('question_id', questionId).order('created_at');
+  const { data, error } = moderatorPassword
+    ? await supabase.rpc('list_responses_admin', { pw: moderatorPassword, qid: questionId })
+    : await supabase.from('responses').select('body').eq('question_id', questionId).order('created_at');
+  console.log('moderator mode:', !!moderatorPassword, 'rows:', data?.length, error);
   if (!target) return;
+  if (error?.code === '28000') setModerator(null);   // password no longer valid: back to the visitor view
+  const toHTML = moderatorPassword ? moderatorItem : responseHTML;
   target.innerHTML = error ? '<p>Responses could not be loaded.</p>'
-    : data.length ? `<div class="response-board">${data.map(responseHTML).join('')}</div>`
+    : data.length ? `<div class="response-board">${data.map(toHTML).join('')}</div>`
     : '<p>I do not have a penny, but please feel free to leave a thought :-)</p>';
 }
+
+// ---- Moderation (moderator only) --------------------------------
+// The moderator password is checked by Supabase (check_moderator, list_responses_admin,
+// approve_response, delete_response; see moderation.sql). It is never stored in this file.
+let moderatorPassword = null;   // memory only, gone on reload
+
+function setModerator(password) {
+  moderatorPassword = password;
+  if (currentQuestionId && !password) loadResponses(currentQuestionId);
+}
+
+on(readerContent, 'click', async event => {
+  const button = event.target.closest('[data-response-action]');
+  if (!button || !moderatorPassword) return;
+  const { responseAction: action, responseId: rid } = button.dataset;
+  if (action === 'delete' && !window.confirm('Delete this response permanently?')) return;
+
+  button.disabled = true;
+  const { error } = await supabase.rpc(action === 'approve' ? 'approve_response' : 'delete_response',
+    { pw: moderatorPassword, rid });
+  if (error) {
+    button.disabled = false;
+    if (error.code === '28000') setModerator(null);
+    return;
+  }
+  loadResponses(currentQuestionId);
+});
 
 on(readerContent, 'submit', async event => {
   event.preventDefault();
@@ -319,6 +362,7 @@ let unlocked = false;   // stays unlocked until the page is reloaded, like the A
 
 // Logo click: closing never needs the password; opening asks for it once.
 // A wrong password or a cancelled prompt does nothing.
+
 async function requestKnowledge() {
   if (isOpen()) { setKnowledge(false); return; }
   if (!unlocked) {
@@ -327,11 +371,16 @@ async function requestKnowledge() {
 
     if (entered === KNOWLEDGE_PASSWORD) {
       unlocked = true;                                   // viewer: can read and respond
-    } else {
-      const { data: isEditor } = await supabase.rpc('check_editor', { pw: entered });
-      if (!isEditor) return;                             // wrong password does nothing
+    } 
+    else {
+      const [{ data: isEditor }, { data: isModerator }] = await Promise.all([
+        supabase.rpc('check_editor', { pw: entered }),
+        supabase.rpc('check_moderator', { pw: entered }),
+      ]);
+      if (!isEditor && !isModerator) return;             // wrong password does nothing
       unlocked = true;
-      setEditor(entered);                                // editor: also sees the add button
+      if (isEditor) setEditor(entered);                  // editor: also sees the add button
+      if (isModerator) setModerator(entered);            // moderator: also approves / deletes responses
     }
   }
   setKnowledge(true);

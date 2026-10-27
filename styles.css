@@ -1118,13 +1118,52 @@ body.knowledge-open :is(.layout, .consume) {
   margin: 0 0 2em;
 }
  
+/* Visitor responses: quote cards in a two-column masonry board (same cards as Consume) */
+.response-board {
+  columns: 2 14rem;
+  column-gap: var(--grid-gap);
+  margin: 0 0 2em;
+}
+
+/* Moderator-only controls under each response card */
+.response-item {
+  break-inside: avoid;
+}
+
+.response-item.is-pending .c-quote {
+  opacity: 0.55;
+}
+
+.response-actions {
+  display: flex;
+  justify-content: space-between;   /* spare space goes between the buttons, button widths unchanged */
+  align-items: baseline;
+  gap: var(--space-m);              /* minimum space between buttons if the card gets narrow */
+  margin: calc(var(--space-s) * -1) 0 var(--grid-gap);
+}
+
+
+.response-actions button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.response-actions button:is(:hover, :focus-visible) {
+  color: var(--hover);
+}
+
+.response-actions button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 #knowledgeResponses .c-quote blockquote {
   white-space: pre-line;   /* keeps line breaks visitors type */
   overflow-wrap: anywhere;
-}
-
-#knowledgeResponses .knowledge-quote {
-  white-space: pre-line;   /* keeps line breaks visitors type */
 }
 
 /* =====================================================
