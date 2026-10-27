@@ -1111,6 +1111,18 @@ body.knowledge-open :is(.layout, .consume) {
   color: var(--hover);
 }
 
+/* Visitor responses: quote cards in a two-column masonry board (same cards as Consume) */
+.response-board {
+  columns: 2 14rem;
+  column-gap: var(--grid-gap);
+  margin: 0 0 2em;
+}
+ 
+#knowledgeResponses .c-quote blockquote {
+  white-space: pre-line;   /* keeps line breaks visitors type */
+  overflow-wrap: anywhere;
+}
+
 #knowledgeResponses .knowledge-quote {
   white-space: pre-line;   /* keeps line breaks visitors type */
 }

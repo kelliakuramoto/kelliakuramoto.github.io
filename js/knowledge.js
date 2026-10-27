@@ -207,8 +207,7 @@ function setKnowledge(open) {
 // A question opens in the reader like an article: the question is the title, the approved
 // responses are pull quotes, and the form sits underneath. Only approved responses are shown.
 
-const responseHTML = r =>
-  `<blockquote class="knowledge-quote">${esc(r.body)}</blockquote>`;
+const responseHTML = r => quoteCard({ text: r.body });
 
 const responsesSection = q => `
   <div id="knowledgeResponses"><p class="c-sub">Loading…</p></div>
@@ -224,7 +223,7 @@ async function loadResponses(questionId) {
     .select('body').eq('question_id', questionId).order('created_at');
   if (!target) return;
   target.innerHTML = error ? '<p>Responses could not be loaded.</p>'
-    : data.length ? data.map(responseHTML).join('')
+    : data.length ? `<div class="response-board">${data.map(responseHTML).join('')}</div>`
     : '<p>I do not have a penny, but please feel free to leave a thought :-)</p>';
 }
 
