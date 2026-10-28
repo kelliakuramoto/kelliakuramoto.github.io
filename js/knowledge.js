@@ -39,6 +39,7 @@ const ARTICLES = [
       { type: 'paragraph', text: 'I really believe that any decision that you can learn from, will be the right decision for you.' },
       { type: 'quote', text: 'Sometimes you win, sometimes you learn.' },
     ],
+    access: ['friends', 'professional'],
   },
 ];
 
@@ -56,6 +57,7 @@ const EXPERIMENTS = [
       // { type: 'paragraph', text: 'Does a regular question practice make curiosity more active in everyday life? I will track which questions recur, which lead to action, and which change as I learn.' },
       // { type: 'quote', text: 'The goal is not to collect answers. It is to get better at asking.' },
     ],
+    access: ['friends', 'professional'],
   },
 ];
 
@@ -111,8 +113,16 @@ async function loadQuestions() {
 }
 loadQuestions();
 
-renderInto('#knowledgeArticles', ARTICLES, articleRow);
-renderInto('#knowledgeExperiments', EXPERIMENTS, experimentCard);
+// Which password group is signed in: null until unlocked, 'all' for the editor / moderator.
+// An article or experiment with `access: ['friends']` only shows for that group; no `access` = everyone.
+let accessGroup = null;
+const canSee = item => accessGroup === 'all' || !item.access || item.access.includes(accessGroup);
+
+function renderCollections() {
+  renderInto('#knowledgeArticles', ARTICLES.filter(canSee), articleRow);
+  renderInto('#knowledgeExperiments', EXPERIMENTS.filter(canSee), experimentCard);
+}
+renderCollections();   // everyone-items only, until a password is entered
 
 function blockHTML(block) {
   const text = esc(block.text || '');
@@ -375,8 +385,12 @@ on(readerContent, 'click', async event => {
 // ---- Password gate ----------------------------------------------
 // Lightweight presentation gate only, same as js/password-gate.js: this password and the
 // Knowledge content are both visible in client-side code, so this must not protect confidential data.
-// "cd mymind" opens the view (read + respond). The editor password lives only in Supabase.
-const KNOWLEDGE_PASSWORD = 'cd mymind';
+// Either of these opens the view (read + respond). The editor and moderator passwords live only in Supabase.
+// password -> group name. Use the group names in an article's or experiment's `access: [...]`.
+const KNOWLEDGE_PASSWORDS = new Map([
+  ['cd mymind', 'friends'],
+  ['opensesame', 'professional'],   // replace with your own password and group name
+]);
 let unlocked = false;   // stays unlocked until the page is reloaded, like the Amazon Music case study
 
 // Logo click: closing never needs the password; opening asks for it once.
@@ -388,8 +402,10 @@ async function requestKnowledge() {
     const entered = window.prompt('Please enter password:');
     if (entered === null) return;
 
-    if (entered === KNOWLEDGE_PASSWORD) {
+    const group = KNOWLEDGE_PASSWORDS.get(entered);
+    if (group) {
       unlocked = true;                                   // viewer: can read and respond
+      accessGroup = group;                               // ...and sees only the items for this group
     } 
     else {
       const [{ data: isEditor }, { data: isModerator }] = await Promise.all([
@@ -398,10 +414,12 @@ async function requestKnowledge() {
       ]);
       if (!isEditor && !isModerator) return;             // wrong password does nothing
       unlocked = true;
+      accessGroup = 'all';                               // editor / moderator: sees everything
       if (isEditor) setEditor(entered);                  // editor: also sees the add button
       if (isModerator) setModerator(entered);            // moderator: also approves / deletes responses
     }
   }
+  renderCollections();                                   // show only what this password allows
   setKnowledge(true);
 }
 
