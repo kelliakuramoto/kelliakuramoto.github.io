@@ -448,7 +448,6 @@ body.knowledge-open :is(.layout, .consume) {
   align-items: start;
   justify-content: space-between;
   gap: var(--space-m);
-  margin-bottom: var(--space-m);
 }
 
 /* Project colour: case study labels (BACKGROUND, ROLE...) read --project-color */
@@ -748,7 +747,6 @@ body.knowledge-open :is(.layout, .consume) {
 
 .mode-btn {
   min-width: 8rem;              /* equal widths keep the logo centred */
-  padding: calc(var(--space-s) / 2) var(--space-s);
   font-weight: var(--font-light);
   text-align: center;
 }
@@ -1055,6 +1053,18 @@ body.knowledge-open :is(.layout, .consume) {
   transform: none;
 }
 
+/* Textarea on its own row; button and status message share the row below it */
+:is(.question-form, .response-form) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-s) var(--space-m);
+}
+
+:is(.question-form, .response-form) textarea {
+  flex: 1 0 100%;
+}
+
 :is(.question-form, .response-form) textarea {
   width: 100%;
   min-height: 5rem;
@@ -1130,12 +1140,17 @@ body.knowledge-open :is(.layout, .consume) {
   opacity: 0.55;
 }
 
+/* The card above owns the small gap; the actions own the space before the next response */
+.response-item .c-card {
+  margin-bottom: var(--space-s);
+}
+
 .response-actions {
   display: flex;
-  justify-content: space-between;   /* spare space goes between the buttons, button widths unchanged */
+  justify-content: space-between;
   align-items: baseline;
-  gap: var(--space-m);              /* minimum space between buttons if the card gets narrow */
-  margin: calc(var(--space-s) * -1) 0 var(--grid-gap);
+  gap: var(--space-m);
+  margin: 0 0 var(--grid-gap);
 }
 
 #knowledgeResponses .c-quote blockquote {
