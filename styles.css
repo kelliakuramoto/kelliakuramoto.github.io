@@ -598,7 +598,7 @@ body.knowledge-open :is(.layout, .consume) {
 /* Article card (articleCard in cards.js): text left, thumbnail right.
     Change --article-image to resize the thumbnail, --ratio to reshape it (1 = square, 4 / 3 = wider). */
 .c-article {
-  --article-image: clamp(5rem, 10vw, 10rem);
+  --article-image: clamp(4rem, 8vw, 8rem);
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--article-image);
   gap: var(--space-m);
