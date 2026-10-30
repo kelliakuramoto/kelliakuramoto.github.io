@@ -46,7 +46,7 @@ const ARTICLES = [
   title: 'Life is a sprint (part 2)',
   subheader: 'Running a retrospective on my life',
   date: '2026-10-28',
-  image: 'images/Writing/free-advice.JPG',
+  image: 'images/Writing/girl-on-train.JPG',
   imageAlt: 'Photo of man talking with another man in front of a sign that says Free Advice',
   blocks: [
     { type: 'paragraph', text: 'If there’s one thing I’m passionate about in life its walking. And naturally I get a lot of questions about what I do on my walks.' },
@@ -71,7 +71,7 @@ const ARTICLES = [
   title: 'Life is a sprint',
   subheader: 'What UX design has taught me about life',
   date: '2025-08-15',
-  image: 'images/Writing/free-advice.JPG',
+  image: 'images/Writing/truck-graffiti.jpg',
   imageAlt: 'Photo of man talking with another man in front of a sign that says Free Advice',
   blocks: [
     { type: 'paragraph', text: 'Whenever someone asks me what I do for work I’m a bit reluctant to give them my actual job title because as soon as I say “designer” they immediately think that I can draw or paint or do anything remotely artistic (which would be super cool) but then I have to quickly explain that I’m not an artist in the traditional sense and instead of drawing characters, I design experiences.' },

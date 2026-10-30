@@ -1055,10 +1055,6 @@ body.knowledge-open :is(.layout, .consume) {
   transform: none;
 }
 
-.modal .question-form {
-  margin: 0;
-}
-
 :is(.question-form, .response-form) textarea {
   width: 100%;
   min-height: 5rem;
@@ -1118,13 +1114,6 @@ body.knowledge-open :is(.layout, .consume) {
   color: var(--hover);
 }
 
-/* Visitor responses: quote cards in a two-column masonry board (same cards as Consume) */
-.response-board {
-  columns: 2 14rem;
-  column-gap: var(--grid-gap);
-  margin: 0 0 2em;
-}
- 
 /* Visitor responses: quote cards in a two-column masonry board (same cards as Consume) */
 .response-board {
   columns: 2 14rem;
