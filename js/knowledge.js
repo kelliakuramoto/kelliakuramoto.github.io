@@ -40,7 +40,7 @@ const ARTICLES = [
       { type: 'paragraph', text: 'I really believe that any decision that you can learn from, will be the right decision for you.' },
       { type: 'quote', text: 'Sometimes you win, sometimes you learn.' },
     ],
-    access: ['friends', 'professional'],
+    access: ['friends'],
   },
   // Life is a sprint (part 2)
   {
