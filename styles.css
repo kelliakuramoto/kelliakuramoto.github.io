@@ -1080,7 +1080,7 @@ body.knowledge-open :is(.layout, .consume) {
   font-size: var(--text-article);
 }
 
-.knowledge-prose p {
+.knowledge-prose p, .knowledge-prose :is(ul, ol) {
   margin: 0 0 1.45em;
 }
 
