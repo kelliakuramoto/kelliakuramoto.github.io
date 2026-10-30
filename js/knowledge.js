@@ -18,7 +18,7 @@ const ARTICLES = [
     id: 'no-advice',
     title: 'I don’t believe in giving advice',
     subheader: 'My response to the question: What should I do?',
-    date: '2026-10-24',
+    date: '2026-9-24',
     image: 'images/Writing/free-advice.JPG',
     imageAlt: 'Photo of man talking with another man in front of a sign that says Free Advice',
     blocks: [
