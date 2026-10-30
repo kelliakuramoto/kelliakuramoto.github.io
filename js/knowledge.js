@@ -13,6 +13,7 @@ import { supabase } from './supabase.js';
 // =====================================================
 
 const ARTICLES = [
+  // I dont believe in giving advice
   {
     id: 'no-advice',
     title: 'I don’t believe in giving advice',
@@ -41,6 +42,7 @@ const ARTICLES = [
     ],
     access: ['friends', 'professional'],
   },
+  // Life is a sprint (part 2)
   {
   id: 'life-is-a-sprint-2',
   title: 'Life is a sprint (part 2)',
@@ -66,7 +68,8 @@ const ARTICLES = [
   ],
   access: ['friends', 'professional'],
   },
-    {
+  // Life is a sprint
+  {
   id: 'life-is-a-sprint',
   title: 'Life is a sprint',
   subheader: 'What UX design has taught me about life',
@@ -100,6 +103,7 @@ const ARTICLES = [
   ],
   access: ['friends', 'professional'],
   },
+  // Some infinities are bigger than other infinities
 ];
 
 const EXPERIMENTS = [
