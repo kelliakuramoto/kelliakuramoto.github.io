@@ -649,6 +649,24 @@
     </div>
   </div>
 
+  <!-- Photo lightbox: the shared modal + carousel. Slides are built by js/photography.js on first open. -->
+  <div class="modal modal--photo" id="photoModal" role="dialog" aria-modal="true" aria-label="Photography" aria-hidden="true">
+    <div class="modal-panel">
+      <header class="project-header">
+        <h2 class="photo-heading" id="photoModalTitle"></h2>
+        <button type="button" class="close-btn" id="photoModalClose">[ CLOSE ]</button>
+      </header>
+      <div class="car" id="photoCar" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Photographs">
+        <div class="car-stage"></div>
+        <div class="fb-bar">
+          <button type="button" class="car-prev" aria-label="Previous photo">[ BACK ]</button>
+          <span class="fb-count" aria-live="polite"></span>
+          <button type="button" class="car-next" aria-label="Next photo">[ NEXT ]</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ========== Global toggle, fixed to the bottom of every page (switches body[data-mode]) ========== -->
   <div class="mode-toggle" role="group" aria-label="View">
     <button type="button" class="mode-btn" data-mode="create" aria-pressed="true"><span class="br" aria-hidden="true">[ </span>CREATE<span class="br" aria-hidden="true"> ]</span></button>

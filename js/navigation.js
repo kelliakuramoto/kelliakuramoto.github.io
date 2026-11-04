@@ -1,6 +1,7 @@
 import { $, $$, on, esc, showOnly } from './dom.js';
 import { PROJECTS } from './project-data.js';
 
+
 // =====================================================
 // 1. CREATE: project grid + sidebar
 // =====================================================
@@ -21,7 +22,7 @@ const closeBtns = $$('.project .close-btn');   // only the case studies: the Kno
 const projectGrid = $('#projectGrid');
 
 // Media queries (the first matches the stacked mobile layout breakpoint in the CSS)
-const isMobile      = window.matchMedia('(max-width: 800px)');
+export const isMobile      = window.matchMedia('(max-width: 800px)');
 const reduceMotion  = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // ---- Scroll animation ------------------------------------------
@@ -187,7 +188,7 @@ document.addEventListener('keydown', e => {
 
   // Don't steal arrows from typing, or from the carousels and photobook,
   // which use ← → to turn their own pages
-  if (e.target instanceof Element && e.target.closest('input, textarea, [contenteditable], .car, .fb')) return;
+  if (e.target instanceof Element && e.target.closest('input, textarea, [contenteditable], .car, .fb, .modal')) return;   // <- edited line
 
   setMode(e.key === 'ArrowLeft' ? 'create' : 'consume');
 });

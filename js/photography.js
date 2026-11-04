@@ -1,5 +1,7 @@
-import { esc } from './dom.js';
+import { $, on, esc } from './dom.js';
 import { imageCard } from './cards.js';
+import { initCarousels } from './media.js';
+import { isMobile } from './navigation.js';
 
 // =====================================================
 // Photography sections (inside the Photography project)
@@ -57,12 +59,84 @@ const PHOTO_SECTIONS = [
   },
 ];
 
+// // Each section: a heading with its date, then a masonry board of photo cards (js/cards.js)
+// const photoRoot = document.getElementById('photoSections');
+// if (photoRoot) {
+//   photoRoot.innerHTML = PHOTO_SECTIONS.map(section => `
+//     <div class="photo-group">
+//       <h3 class="photo-heading"><span>${esc(section.title)}</span>${section.meta ? `<span class="photo-meta">${esc(section.meta)}</span>` : ''}</h3>
+//       <div class="photo-board">${section.photos.map(photo => imageCard(photo)).join('')}</div>
+//     </div>`).join('');
+// }
+
+// Every photo in order, so the lightbox can step through all sections
+const ALL_PHOTOS = PHOTO_SECTIONS.flatMap(section => section.photos);
+
+// Attributes that make a photo card open the lightbox: which section it is in, and its position there
+const photoAttrs = (s, p) =>
+  `data-section="${s}" data-photo="${p}" tabindex="0" role="button" aria-label="View photo full screen"`;
+
+  // The heading contents shared by the section list and the lightbox: title, then date
+const headingHTML = section =>
+`<span>${esc(section.title)}</span>${section.meta ? `<span class="photo-meta">${esc(section.meta)}</span>` : ''}`;
+
 // Each section: a heading with its date, then a masonry board of photo cards (js/cards.js)
 const photoRoot = document.getElementById('photoSections');
 if (photoRoot) {
-  photoRoot.innerHTML = PHOTO_SECTIONS.map(section => `
+  photoRoot.innerHTML = PHOTO_SECTIONS.map((section, s) => `
     <div class="photo-group">
-      <h3 class="photo-heading"><span>${esc(section.title)}</span>${section.meta ? `<span class="photo-meta">${esc(section.meta)}</span>` : ''}</h3>
-      <div class="photo-board">${section.photos.map(photo => imageCard(photo)).join('')}</div>
+      <h3 class="photo-heading">${headingHTML(section)}</h3>
+      <div class="photo-board">${section.photos.map((photo, p) => imageCard({ ...photo, attrs: photoAttrs(s, p) })).join('')}</div>
     </div>`).join('');
+
+  // ---- Lightbox: the shared modal + carousel (#photoModal) ----
+  const modal = $('#photoModal');
+  const heading = $('#photoModalTitle');
+  const template = $('#photoCar').cloneNode(true);   // a clean, unwired copy to start each section from
+  let car = $('#photoCar');
+  let openSection = -1;                              // which section the carousel currently holds
+  let trigger = null;                                // the card that opened it, so focus can return there
+
+  const openPhoto = card => {
+    if (isMobile.matches) return;   // no lightbox on mobile: photos just stay in the grid
+    trigger = card;
+    const s = Number(card.dataset.section);
+    heading.innerHTML = headingHTML(PHOTO_SECTIONS[s]);   // header matches the section's heading
+
+    // New section: swap in a fresh carousel holding only that section's photos
+    if (s !== openSection) {
+      const fresh = template.cloneNode(true);
+      fresh.querySelector('.car-stage').innerHTML = PHOTO_SECTIONS[s].photos
+        .map(photo => `<img class="car-slide" src="${esc(photo.src)}" alt="${esc(photo.alt || 'Photograph')}">`)
+        .join('');
+      car.replaceWith(fresh);
+      car = fresh;
+      openSection = s;
+      initCarousels(modal);
+    }
+
+    car.show(Number(card.dataset.photo));   // jump to the clicked photo while the modal is still hidden
+    void modal.offsetWidth;                  // flush styles so that jump is instant, not a crossfade
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    car.focus({ preventScroll: true });      // so ← → work straight away
+  };
+
+  const closePhoto = () => {
+    if (!modal.classList.contains('is-open')) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    trigger?.focus({ preventScroll: true });
+  };
+
+  on(photoRoot, 'click', event => {
+    const card = event.target.closest('[data-photo]');
+    if (card) openPhoto(card);
+  });
+  on(photoRoot, 'keydown', event => {
+    const card = event.target.closest('[data-photo]');
+    if (card && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openPhoto(card); }
+  });
+  on($('#photoModalClose'), 'click', closePhoto);
+  on(document, 'keydown', event => { if (event.key === 'Escape') closePhoto(); });
 }

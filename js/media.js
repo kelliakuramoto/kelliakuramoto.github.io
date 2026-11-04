@@ -28,6 +28,7 @@ export function initCarousels(root = document) {
       slides.forEach((slide, slideIndex) => slide.classList.toggle('active', slideIndex === index));
       count.textContent = `${index + 1} / ${slides.length}`;
     };
+    car.show = show;   // lets other modules jump to a slide (used by the photo lightbox)
     previous.addEventListener('click', () => show(index - 1));
     next.addEventListener('click', () => show(index + 1));
     car.addEventListener('keydown', event => {

@@ -1149,6 +1149,68 @@ body.knowledge-open :is(.layout, .consume) {
   overflow-wrap: anywhere;
 }
 
+/* Photo lightbox: the same modal, but only over the right-hand panel (sidebar and toggle stay visible) */
+.modal.modal--photo {
+  --modal-max: 100%;
+  inset: var(--safe-top) 0 var(--toggle-h) var(--left-width);
+  padding: 0;
+  background: var(--bg);
+  display: block;   /* the panel just fills the modal: nothing centres or offsets it */
+}
+
+.modal.modal--photo .modal-panel {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+  box-shadow: none;
+  transform: none;    /* removes the translateY(var(--space-s)) offset */
+  transition: none;
+}
+
+/* The section heading inside the lightbox header: no page spacing, fills the space left of [ CLOSE ] */
+.modal.modal--photo .photo-heading {
+  flex: 1;
+  margin: 0;
+  padding-top: 0;
+}
+
+/* The carousel fills the space between the header and the bar */
+.modal.modal--photo .car {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The image area has one fixed height, so every photo is the same height */
+.modal.modal--photo .car-stage {
+  flex: 1;
+  min-height: 0;
+  max-height: 90vh;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  justify-items: center;   /* narrower (portrait) photos sit in the middle */
+}
+
+.modal.modal--photo .car-slide {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  min-height: 0;
+  align-self: stretch;
+  aspect-ratio: var(--ratio, auto);   /* box shape comes from your data, not the file */
+  object-fit: cover;                  /* fills that box; a file that's a hair off the ratio is trimmed, not squashed */
+}
+
+/* While a modal is closed, slides can't be seen or clicked, and change instantly */
+.modal:not(.is-open) .car-slide {
+  transition: none;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 /* =====================================================
     10. RESPONSIVE
     Media queries can't read variables, so the three breakpoints live here.
@@ -1211,6 +1273,10 @@ body.knowledge-open :is(.layout, .consume) {
 
   .knowledge-reader-content {
     width: 100%;
+  }
+
+  .modal.modal--photo {
+    left: 0;
   }
 }
 
