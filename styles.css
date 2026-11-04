@@ -352,24 +352,21 @@ body.knowledge-open :is(.layout, .consume) {
   text-decoration: none;
 }
 
-.about-job {
-  position: relative;
+.about-job,
+.about-city {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;   /* the effect repeats on every wrapped line */
   text-decoration: none;
 }
 
-.about-job::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: var(--space-s);
-  width: 100%;
-  height: var(--space-s);
-  background: var(--highlight);
+/* Green highlight: same gradient as the quote <mark> */
+.about-job {
+  background: linear-gradient(transparent 62%, var(--highlight) 62%);
 }
 
+/* Red underline: a background line instead of text-decoration, so it never rounds away */
 .about-city {
-  text-decoration: underline solid var(--line) var(--line-width);
-  text-underline-offset: calc(var(--space-s) / 2);
+  background: linear-gradient(var(--line), var(--line)) 0 100% / 100% var(--line-width) no-repeat;
 }
 
 /* Content: the only thing that scrolls on desktop */
