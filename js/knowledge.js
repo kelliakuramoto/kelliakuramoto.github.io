@@ -749,6 +749,21 @@ function requestKnowledge() {
 
 // Anything with data-term (inline links, the "Peek into my mind" button) opens that definition,
 // unlocking and opening Knowledge first if needed. It works from the Consume board too.
+on(document, 'click', async event => {
+  const link = event.target.closest('[data-term]');
+  if (!link) return;
+  event.preventDefault();
+  if (isOpen()) { openDefinitions(link.dataset.term, link); return; }
+
+  // Knowledge is closed (e.g. Peek on the Consume board): set the definition up while the layer is hidden,
+  // then fade the layer in, exactly like opening Knowledge from its toggle.
+  if (!(await prepareKnowledge())) return;
+  trail = ['outside'];                                 // closing it closes the whole layer
+  openDefinitions(link.dataset.term, link);
+  setKnowledge(true);
+  $('.car', readerContent)?.focus({ preventScroll: true });
+});
+
 // The "Read the essay" peek button opens that article, unlocking and opening Knowledge first if needed.
 on(document, 'click', async event => {
   const link = event.target.closest('[data-essay]');
