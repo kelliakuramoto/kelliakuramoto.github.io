@@ -1,6 +1,6 @@
 import { $, $$, esc, on, showOnly } from './dom.js';
 import { articleCard, bookCard, quoteCard, flashCard } from './cards.js';
-import { animateScrollTo } from './navigation.js';
+import { animateScrollTo, isMobile } from './navigation.js';
 import { supabase } from './supabase.js';
 import { DEFINITIONS, linkTerms, mentions } from './definitions.js';
 import { COLLECTION, consumeCard } from './consume.js';
@@ -30,7 +30,7 @@ const ARTICLES = [
       { type: 'paragraph', text: 'Before, when my friends came to me for advice, I used to think deeply about what I thought was the best course of action given all of the conditions of the situation . But after a while, I noticed that I was always left with this sour and unsatisfying taste in my mouth. I later recognized this to be the result of my friend’s utter lack of acknowledgement of my advice, and indeed doing the complete opposite of what I said to do.' },
       { type: 'paragraph', text: 'I want to pause here and recognize two things. First, I no longer believe in "telling people what to do" and that was a mismatched expectations on my part. I now intentionally frame everything as a suggestion and they can take or leave as much as they want. I do not presume to have the respect or authority over anybody to tell what to do. Second, I have 100% in the past and probably will in the future, asked for "advice" from my friends and completely ignored what they said. I know my sister can definitely attest to this. This is all to say that I am not immune to the same actions that I get annoyed with in others. But I am trying to communicate what I need in any situation, even if most of the time it’s just for someone to listen.' },
       { type: 'paragraph', text: 'Going back to the original thread, I stopped giving advice because what I realized was that my friends weren’t asking for advice, but for assurance. They wanted permission to do what they want to do, and more often than not, they wanted permission to continue persisting the behavior that got them into the predicament in the first place. And so, I give them it.' },
-      { type: 'paragraph', text: 'I do so because sometimes you win and sometimes you learn. Sometimes you have to play the tape to the very end to know that this wasn’t the path for you. As Rainier Maria Rilke said in "Letters to a Young Poet"'},
+      { type: 'paragraph', text: 'I do so because sometimes you win and sometimes you learn. Sometimes you have to play the tape to the very end to know that this wasn’t the path for you. As Rainier Maria Rilke said in "{{letters-to-a-young-poet|Letters to a Young Poet}}"'},
       { type: 'quote', text: 'Do not now seek the answers, which cannot be given you because you would not be able to live them. And the point is, to live everything. Live the questions now.' },
       { type: 'paragraph', text: 'Hindsight will always be 20/20 and you can’t blame your past self for “not knowing better”. You quite literally could not have known. Just because you have a hypothesis, doesn’t mean that you shouldn’t run the experiment. In fact, it is probably an huge indicator that you should.'},
       { type: 'paragraph', text: 'All that we can do in life is make the best decisions we can, with the most amount of information that we have at the time. And the only way to get more information in life is by living it.' },
@@ -57,7 +57,7 @@ const ARTICLES = [
     { type: 'paragraph', text: 'If there’s one thing I’m passionate about in life its walking. And naturally I get a lot of questions about what I do on my walks.' },
     { type: 'paragraph', text: 'For reference, I walk anywhere between 6-10 miles on the weekdays and 12-15 miles on the weekends; which as I’m saying this out loud sounds like a lot but trust me it’s not as hard as you think if you live in a city with poor public transport and easily get motion sick.' },
     { type: 'paragraph', text: 'Anyways, I usually respond with either listening to a podcast, calling a friend to catch up, or figuring out the logistics of my day which actually takes up a surprising amount of time. For example, let’s say I know that I have to be at this place at this time and it takes me 17 minutes to walk a mile; How far are the two places from each other? What is the route with the least amount of hills? Do I need to stop for food on the way because I know I’m going to be hungry… you get the idea.' },
-    { type: 'paragraph', text: 'But my favorite thing to think about when I’m walking is when I’m coming back from hanging out with my friends and I basically run a [[retrospective]] of our hang out.' },
+    { type: 'paragraph', text: 'But my favorite thing to think about when I’m walking is when I’m coming back from hanging out with my friends and I basically run a retrospective of our hang out.' },
     { type: 'paragraph', text: 'If you don’t know what a retrospective is, that’s probably a good thing but essentially it’s a meeting where engineers come together and look back on the complete work during the sprint, evaluate what went well, what failed, and how to improve for the future. It’s like mindfulness, but for tech companies.' },
     { type: 'paragraph', text: 'But in my case, instead trying to figure out how to be more efficient, I ask myself questions like: How do I feel after hanging out with them? Do I think I showed up as a good friend that day? Did my actions align with my beliefs and values? And if any of the answers are no, I run a root cause analysis and ask myself the 5 why’s? Which is a UX research method where when someone gives you an answer, you respond with why, and then when they answer, you respond with why again and this keeps going until you’ve identity the root cause (I know crazy where the name comes from).' },
     { type: 'paragraph', text: 'If this all sounds a bit weird in theory, let me give you a good example. So one day my friends and I were doing the Crosstown Trail and every mile, we made a letter of the word with our bodies, so that at the end we could collage them together. During this walk, I was telling one of my friends that the day before I was dancing in public and my other friend told me to stop, which really annoyed me for a couple reasons 1. Just because he might have felt embarrassed doesn’t mean that I should feel embarrassed too and 2. I don’t like being told what to do and more importantly I don’t believe that you should tell someone what to do especially if it’ not harming anyone, which my dancing wasn’t.' },
@@ -205,8 +205,20 @@ function renderCollections() {
 
 renderCollections();   // everyone-items only, until a password is entered
 
+// Escapes `text`, then turns [[id]] into definition links and {{id}} / {{id|label}} into Consume links.
+// An unknown id is left as typed so a typo is easy to spot.
+const richText = text => linkTerms(text).replace(/\{\{([\w-]+)(?:\|([^}]+))?\}\}/g, (match, id, label) => {
+  const item = COLLECTION.find(entry => entry.id === id);
+  if (!item) return match;
+  const words = label || esc(item.title || item.episode || id);
+  // Same link as the Consume card: opens the item's url in a new tab. Items without a url (quotes) just show the card.
+  return item.url
+    ? `<a href="${esc(item.url)}" class="consume-link" data-consume="${id}" target="_blank" rel="noopener noreferrer">${words}</a>`
+    : `<span class="consume-link" data-consume="${id}" tabindex="0">${words}</span>`;
+});
+
 function blockHTML(block) {
-  const text = linkTerms(block.text || '');
+  const text = richText(block.text || '');
   switch (block.type) {
     case 'heading': return `<h2>${text}</h2>`;
     case 'subheading': return `<h3>${text}</h3>`;
@@ -214,8 +226,8 @@ function blockHTML(block) {
     case 'underline': return `<p><span class="knowledge-underline">${text}</span></p>`;
     case 'image': return `<figure class="knowledge-inline-image"><img src="${esc(block.src || '')}" alt="${esc(block.alt || '')}">${block.caption ? `<figcaption>${esc(block.caption)}</figcaption>` : ''}</figure>`;
     case 'divider': return '<hr class="knowledge-divider">';
-    case 'list': return `<ul>${(block.items || []).map(item => `<li>${linkTerms(item)}</li>`).join('')}</ul>`;
-    case 'numbered-list': return `<ol>${(block.items || []).map(item => `<li>${linkTerms(item)}</li>`).join('')}</ol>`;
+    case 'list': return `<ul>${(block.items || []).map(item => `<li>${richText(item)}</li>`).join('')}</ul>`;
+    case 'numbered-list': return `<ol>${(block.items || []).map(item => `<li>${richText(item)}</li>`).join('')}</ol>`;
     default: return `<p>${text}</p>`;
   }
 }
@@ -330,17 +342,27 @@ function openReader(kind, id, trigger, back = null) {
     ? `<figure class="knowledge-hero-image"><img src="${esc(item.image)}" alt="${esc(item.imageAlt || '')}"></figure>`
     : '';
 
-    readerContent.innerHTML = `
+    const header = `
       <header class="knowledge-article-header">
         <h1>${esc(item.title || item.text)}</h1>
         <p class="knowledge-deck">${esc(item.subheader || item.byline || '')}</p>
         ${byline}
         ${kind === 'question' && editorPassword ? `<button type="button" class="question-delete" data-delete-question="${esc(item.id)}">[ DELETE QUESTION ]</button>` : ''}
         ${hero}
-      </header>
-      <div class="knowledge-prose">${kind === 'question' ? responsesSection(item) : (item.blocks || []).map(blockHTML).join('')}</div>`;
+      </header>`;
+    const prose = `<div class="knowledge-prose">${kind === 'question' ? responsesSection(item) : (item.blocks || []).map(blockHTML).join('')}</div>`;
 
-    showReader(READER_LABELS[kind], false, back?.scroll);
+    // Articles and experiments use the Knowledge overview's three columns: the text in the middle, and the right
+    // column holds the Consume card for whichever {{link}} is hovered. Questions keep the single narrow column.
+    const essay = kind !== 'question';
+    readerContent.innerHTML = essay
+      ? `<div class="essay">
+          <div class="knowledge-column">${header}${prose}</div>
+          <aside class="knowledge-column essay-aside" aria-hidden="true"><div class="consume-peek"></div></aside>
+        </div>`
+      : header + prose;
+
+    showReader(READER_LABELS[kind], essay, back?.scroll);
     currentQuestionId = kind === 'question' ? item.id : null;
     if (kind === 'question') loadResponses(item.id);
   });
@@ -441,6 +463,31 @@ on(readerContent, 'click', event => {
   car.show(Number(termLink.dataset.termIndex));
   car.focus({ preventScroll: true });                      // so ← → keep turning the cards instead of switching CREATE / CONSUME
 });
+
+// ---- Consume card beside the essay ------------------------------
+// Hovering (or focusing) a .consume-link shows that Consume card in the essay's right column, level with the link.
+// On mobile (no room beside the essay) CSS floats it above the toggle bar instead.
+function showConsumePeek(link) {
+  const item = COLLECTION.find(entry => entry.id === link.dataset.consume);
+  const peek = $('.consume-peek', readerContent);
+  if (!item || !peek) return;
+  peek.innerHTML = consumeCard(item);
+  if (!isMobile.matches) {
+    // Keep the card on screen: level with the link, but never above the top or below the bottom of the view
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const box = view.getBoundingClientRect();
+    const y = Math.max(box.top + rem, Math.min(link.getBoundingClientRect().top, box.bottom - peek.offsetHeight - rem));
+    peek.style.top = `${y - peek.parentElement.getBoundingClientRect().top}px`;
+  }
+  peek.classList.add('is-visible');
+}
+
+const hideConsumePeek = () => $('.consume-peek', readerContent)?.classList.remove('is-visible');
+
+on(readerContent, 'mouseover', event => { const link = event.target.closest('[data-consume]'); if (link) showConsumePeek(link); });
+on(readerContent, 'mouseout', event => { if (event.target.closest('[data-consume]')) hideConsumePeek(); });
+on(readerContent, 'focusin', event => { const link = event.target.closest('[data-consume]'); if (link) showConsumePeek(link); });
+on(readerContent, 'focusout', hideConsumePeek);
 
 // ---- Open / close Knowledge -------------------------------------
 

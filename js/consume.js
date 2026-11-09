@@ -154,7 +154,8 @@ export const COLLECTION = [
     by: 'Rainer Maria Rilke',
     color: '#7a2a33',
     image: 'images/Consume/letters-to-a-young-poet.jpeg',
-    url: 'https://www.goodreads.com/en/book/show/46199.Letters_to_a_Young_Poet'
+    url: 'https://www.goodreads.com/en/book/show/46199.Letters_to_a_Young_Poet',
+    id: 'letters-to-a-young-poet',
   },
   {
     type: 'poem',
