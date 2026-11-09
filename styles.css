@@ -78,7 +78,6 @@ Breakpoints override tokens (see section 10) instead of overriding rules.
   --focus-offset: 0.2rem;
   --left-width: 32%;
   --screen-max: 1920px;
-  /* --book-max: 1100px; */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --toggle-h: calc(3.5rem + var(--safe-bottom));

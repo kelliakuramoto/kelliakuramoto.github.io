@@ -95,12 +95,14 @@ export function flashCard({ front, back, label = 'Concept', backLabel = 'Definit
 // and never the title and text underneath. No termId = the card comes back untouched.
 // The button opens that definition through [data-term] (that handler calls preventDefault,
 // so on a card that is a link the click doesn't also follow the link).
-export const peekFrame = (card, termId) => {
-  if (!termId) return card;
+export const peekFrame = (card, termId, essayId) => {
+  const target = termId ? `data-term="${esc(termId)}"` : essayId ? `data-essay="${esc(essayId)}"` : '';
+  if (!target) return card;
+  const label = termId ? '[ PEEK INTO MY MIND ]' : '[ PEEK INTO MY MIND ]';
   const template = document.createElement('template');
   template.innerHTML = card;
   const media = template.content.querySelector('.c-media');
   if (!media) return card;
-  media.insertAdjacentHTML('beforeend', `<div class="c-peek"><button type="button" data-term="${esc(termId)}">[ PEEK INTO MY MIND ]</button></div>`);
+  media.insertAdjacentHTML('beforeend', `<div class="c-peek"><button type="button" ${target}>${label}</button></div>`);
   return `<div class="c-peek-frame">${template.innerHTML}</div>`;
 };

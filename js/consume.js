@@ -156,6 +156,7 @@ export const COLLECTION = [
     image: 'images/Consume/letters-to-a-young-poet.jpeg',
     url: 'https://www.goodreads.com/en/book/show/46199.Letters_to_a_Young_Poet',
     id: 'letters-to-a-young-poet',
+    essay: 'no-advice',
   },
   {
     type: 'poem',
@@ -198,7 +199,7 @@ function shuffle(items) {
 export const consumeCard = item => CARDS[item.type](item, COLLECTION.indexOf(item));
 
 // A new random order on every page load. Items with a `term` get the "Peek into my mind" overlay.
-const boardCard = item => peekFrame(consumeCard(item), item.term);
+const boardCard = item => peekFrame(consumeCard(item), item.term, item.essay);
 
 const board = $('#board');
 if (board) board.innerHTML = shuffle(COLLECTION).map(boardCard).join('');
