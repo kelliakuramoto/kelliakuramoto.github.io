@@ -77,9 +77,8 @@
   --focus-ring: 0.125rem solid var(--hover);
   --focus-offset: 0.2rem;
   --left-width: 32%;
-  --board-max: 1400px;
-  --knowledge-max: 1800px;
-  --book-max: 1100px;
+  --screen-max: 1920px;
+  /* --book-max: 1100px; */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --toggle-h: calc(3.5rem + var(--safe-bottom));
@@ -324,7 +323,8 @@ body.knowledge-open :is(.layout, .consume) {
 }
 
 /* .highlighted is set from JS while the matching grid tile is hovered */
-.sidebar nav a {
+.sidebar nav a,
+.definitions-nav a {
   display: block;
   padding: var(--space-s) 0;
   color: var(--text);
@@ -333,11 +333,14 @@ body.knowledge-open :is(.layout, .consume) {
 
 .sidebar nav a:hover,
 .sidebar nav a.highlighted,
-.sidebar nav a.active {
+.sidebar nav a.active,
+.definitions-nav a:hover,
+.definitions-nav a.active {
   color: var(--hover);
 }
 
-.sidebar nav a.active {
+.sidebar nav a.active,
+.definitions-nav a.active {
   font-weight: var(--font-medium);
 }
 
@@ -444,7 +447,8 @@ body.knowledge-open :is(.layout, .consume) {
 .project-grid,
 .case-study-grid,
 .case-study-row,
-.knowledge-overview {
+.knowledge-overview,
+.definitions {
   display: grid;
   gap: var(--grid-gap);
 }
@@ -613,11 +617,18 @@ body.knowledge-open :is(.layout, .consume) {
   transition: color var(--motion-fast) var(--ease);
 }
 
-.c-quote mark {
+/* Quote highlight, shared with inline links to a definition ([[id]] in text) */
+.c-quote mark,
+.term-link {
   color: inherit;
+  text-decoration: none;
   background: linear-gradient(transparent 62%, var(--highlight) 62%);
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
+}
+
+.term-link:is(:hover, :focus-visible) {
+  color: var(--hover);
 }
 
 /* Book: generated colour cover, or a real cover image at the same size */
@@ -668,6 +679,103 @@ body.knowledge-open :is(.layout, .consume) {
   background: var(--accent);
 }
 
+/* Peek (peekFrame in cards.js): the same fade-in overlay as the case study tiles.
+  The overlay ignores clicks, so the card underneath stays clickable; only its button is live. */
+.c-peek-frame {
+  position: relative;
+  break-inside: avoid;
+}
+
+.c-peek {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-m);
+  color: var(--white);
+  background: var(--caption-overlay);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--motion-view) var(--ease-out),
+              visibility 0s linear var(--motion-view);
+}
+
+.c-peek-frame:is(:hover, :focus-within) .c-peek {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--motion-view) var(--ease-out);
+}
+
+.c-peek button {
+  pointer-events: auto;
+  letter-spacing: var(--tracking-ui);
+  white-space: nowrap;
+}
+
+/* Flash card (flashCard in cards.js): two faces; the front turns away to show the back */
+.c-flash {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  perspective: 2000px;
+}
+
+.c-flash-inner {
+  aspect-ratio: 5 / 4;
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform var(--motion-book) var(--ease-book);
+}
+
+.c-flash.is-flipped .c-flash-inner {
+  transform: rotateY(180deg);
+}
+
+/* A card leaving the carousel turns back only after its fade-out, so the turn is never seen */
+.car-slide:not(.active) .c-flash-inner {
+  transition-delay: var(--motion-view);
+}
+
+.c-flash-face {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-m);
+  padding: var(--gutter);
+  background: var(--bg);
+  border: var(--line-width) solid var(--border);
+  backface-visibility: hidden;
+  min-height: 24rem;
+}
+
+.c-flash-back {
+  transform: rotateY(180deg);
+}
+
+.c-flash small {
+  font-size: var(--text-caption);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-ui);
+}
+
+.c-flash-word {
+  margin: auto 0;                /* centres the word between the label and the bottom edge */
+  font-size: var(--text-display);
+  font-weight: var(--font-regular);
+  letter-spacing: var(--tracking-tight);
+}
+
+.c-flash-def {
+  font-size: var(--text-lead);
+  font-weight: var(--font-regular);
+  line-height: 1.4;
+}
+
 /* =====================================================
     6. BOARDS
     Masonry columns of cards. Column gap and card margin both use --grid-gap.
@@ -679,7 +787,7 @@ body.knowledge-open :is(.layout, .consume) {
 
 .board {
   columns: 4 14rem;
-  max-width: var(--board-max);
+  max-width: var(--screen-max);
   margin: 0 auto;
 }
 
@@ -766,7 +874,7 @@ body.knowledge-open :is(.layout, .consume) {
     js/photobook.js reads --motion-book for its flip timing.
     ===================================================== */
 .fb {
-  width: min(100%, var(--book-max));
+  width: 100%; 
   margin: var(--space-l) 0;
   outline: none;
   user-select: none;
@@ -913,7 +1021,12 @@ body.knowledge-open :is(.layout, .consume) {
   align-items: center;
   justify-content: center;
   gap: var(--space-m);
-  margin-top: var(--space-l);
+  margin-top: var(--space-m);
+}
+
+/* Definitions: the terms on the left do the navigating, so no BACK / NEXT bar */
+.definitions .fb-bar {
+  display: none;
 }
 
 .fb-count {
@@ -957,10 +1070,10 @@ body.knowledge-open :is(.layout, .consume) {
     Questions are quote cards, articles are article cards, experiments are book cards (section 5).
     Only the overview columns and the reader are Knowledge-specific.
     ===================================================== */
-.knowledge-overview {
+.knowledge-overview, .definitions {
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
   align-items: start;
-  max-width: var(--knowledge-max);
+  max-width: var(--screen-max);
   margin: 0 auto;
 }
 
@@ -982,10 +1095,35 @@ body.knowledge-open :is(.layout, .consume) {
   margin-bottom: var(--space-l);
 }
 
-.knowledge-reader-content {
-  width: min(60%, 52rem);
+/* .knowledge-reader-content {
+  width: min(72%, 50rem);
   margin: 0 auto;
   padding: 0 0 var(--section-gap);
+} */
+
+.knowledge-reader-content {
+  width: 100%;
+  width: calc((min(100%, var(--screen-max)) - 2 * var(--grid-gap)) / 2);
+  margin: 0 auto;
+  padding: 0 0 var(--section-gap);
+}
+
+/* Definitions: three columns, the same width as the Knowledge overview */
+.knowledge-reader-content.is-wide {
+  width: 100%;
+  max-width: var(--screen-max);
+}
+/* 
+.definitions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--grid-gap);
+  align-items: start;
+} */
+
+.definitions-related h3 {
+  margin: 0 0 var(--space-m);
+  /* text-transform: uppercase; */
 }
 
 .knowledge-article-header h1 {
@@ -1219,7 +1357,7 @@ body.knowledge-open :is(.layout, .consume) {
   }
 
   .knowledge-reader-content {
-    width: min(78%, 52rem);
+    width: min(64%, 48rem);
   }
 }
 
@@ -1264,7 +1402,7 @@ body.knowledge-open :is(.layout, .consume) {
     grid-template-columns: repeat(var(--cols-sm, var(--cols, 1)), minmax(0, 1fr));
   }
 
-  .knowledge-overview {
+  .knowledge-overview, .definitions {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -1274,6 +1412,10 @@ body.knowledge-open :is(.layout, .consume) {
 
   .modal.modal--photo {
     left: 0;
+  }
+
+  .definitions {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

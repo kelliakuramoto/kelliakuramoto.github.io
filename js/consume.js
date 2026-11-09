@@ -1,5 +1,5 @@
 import { $ } from './dom.js';
-import { bookCard, imageCard, podcastCard, quoteCard } from './cards.js';
+import { bookCard, imageCard, podcastCard, quoteCard, peekFrame } from './cards.js';
 
 // =====================================================
 // Consume board
@@ -10,7 +10,7 @@ import { bookCard, imageCard, podcastCard, quoteCard } from './cards.js';
 //   poem:    { type, title, by, image }
 //   quote:   { type, text, highlight? (exact words to mark), by }
 // =====================================================
-const COLLECTION = [
+export const COLLECTION = [
   {
     type: 'podcast',
     show: 'What Now? With Trevor Noah',
@@ -18,7 +18,8 @@ const COLLECTION = [
     minutes: 111,
     progress: 21,
     image: 'images/Consume/what-now.png',
-    url: 'https://youtu.be/UVhAceBQmpY?si=Xk2LRWulUE9_W7gx'
+    url: 'https://youtu.be/UVhAceBQmpY?si=Xk2LRWulUE9_W7gx',
+    term: 'currency-exchange'
   },
   {
     type: 'book',
@@ -62,7 +63,8 @@ const COLLECTION = [
     type: 'quote',
     text: 'When life feels unbearable, I remind myself that I am not a person, I am a piece of software running on the brain of a random ape for a few decades. It’s not the worst brain to run on.',
     highlight: 'I am not a person, I am a piece of software',
-    by: 'Joscha Bach'
+    by: 'Joscha Bach',
+    term: 'gut-check'
   },
   {
     type: 'podcast',
@@ -191,10 +193,11 @@ function shuffle(items) {
   return copy;
 }
 
-// A new random order on every page load
+// One card for any item. The board and the definitions page both use it.
+export const consumeCard = item => CARDS[item.type](item, COLLECTION.indexOf(item));
+
+// A new random order on every page load. Items with a `term` get the "Peek into my mind" overlay.
+const boardCard = item => peekFrame(consumeCard(item), item.term);
+
 const board = $('#board');
-if (board) {
-  board.innerHTML = shuffle(COLLECTION.map((item, i) => [item, i]))
-    .map(([item, i]) => CARDS[item.type](item, i))
-    .join('');
-}
+if (board) board.innerHTML = shuffle(COLLECTION).map(boardCard).join('');

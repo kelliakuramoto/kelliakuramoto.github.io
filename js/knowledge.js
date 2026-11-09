@@ -1,7 +1,10 @@
 import { $, $$, esc, on, showOnly } from './dom.js';
-import { articleCard, bookCard, quoteCard } from './cards.js';
+import { articleCard, bookCard, quoteCard, flashCard } from './cards.js';
 import { animateScrollTo } from './navigation.js';
 import { supabase } from './supabase.js';
+import { DEFINITIONS, linkTerms, mentions } from './definitions.js';
+import { COLLECTION, consumeCard } from './consume.js';
+import { carouselHTML, initCarousels } from './media.js';
 
 // =====================================================
 // KNOWLEDGE VIEW
@@ -46,7 +49,7 @@ const ARTICLES = [
   {
   id: 'life-is-a-sprint-2',
   title: 'Life is a sprint (part 2)',
-  subheader: 'Running a retrospective on my life',
+  subheader: 'Running a retrospective on my decisions',
   date: '2026-10-28',
   image: 'images/Writing/girl-on-train.JPG',
   imageAlt: 'Photo of man talking with another man in front of a sign that says Free Advice',
@@ -54,7 +57,7 @@ const ARTICLES = [
     { type: 'paragraph', text: 'If there’s one thing I’m passionate about in life its walking. And naturally I get a lot of questions about what I do on my walks.' },
     { type: 'paragraph', text: 'For reference, I walk anywhere between 6-10 miles on the weekdays and 12-15 miles on the weekends; which as I’m saying this out loud sounds like a lot but trust me it’s not as hard as you think if you live in a city with poor public transport and easily get motion sick.' },
     { type: 'paragraph', text: 'Anyways, I usually respond with either listening to a podcast, calling a friend to catch up, or figuring out the logistics of my day which actually takes up a surprising amount of time. For example, let’s say I know that I have to be at this place at this time and it takes me 17 minutes to walk a mile; How far are the two places from each other? What is the route with the least amount of hills? Do I need to stop for food on the way because I know I’m going to be hungry… you get the idea.' },
-    { type: 'paragraph', text: 'But my favorite thing to think about when I’m walking is when I’m coming back from hanging out with my friends and I basically run a retrospective of our hang out.' },
+    { type: 'paragraph', text: 'But my favorite thing to think about when I’m walking is when I’m coming back from hanging out with my friends and I basically run a [[retrospective]] of our hang out.' },
     { type: 'paragraph', text: 'If you don’t know what a retrospective is, that’s probably a good thing but essentially it’s a meeting where engineers come together and look back on the complete work during the sprint, evaluate what went well, what failed, and how to improve for the future. It’s like mindfulness, but for tech companies.' },
     { type: 'paragraph', text: 'But in my case, instead trying to figure out how to be more efficient, I ask myself questions like: How do I feel after hanging out with them? Do I think I showed up as a good friend that day? Did my actions align with my beliefs and values? And if any of the answers are no, I run a root cause analysis and ask myself the 5 why’s? Which is a UX research method where when someone gives you an answer, you respond with why, and then when they answer, you respond with why again and this keeps going until you’ve identity the root cause (I know crazy where the name comes from).' },
     { type: 'paragraph', text: 'If this all sounds a bit weird in theory, let me give you a good example. So one day my friends and I were doing the Crosstown Trail and every mile, we made a letter of the word with our bodies, so that at the end we could collage them together. During this walk, I was telling one of my friends that the day before I was dancing in public and my other friend told me to stop, which really annoyed me for a couple reasons 1. Just because he might have felt embarrassed doesn’t mean that I should feel embarrassed too and 2. I don’t like being told what to do and more importantly I don’t believe that you should tell someone what to do especially if it’ not harming anyone, which my dancing wasn’t.' },
@@ -152,6 +155,17 @@ const experimentCard = experiment => bookCard({
   attrs: openAttrs('experiment', experiment),
 });
 
+// The single row that opens the definitions: the same articleCard as the articles below it
+const definitionsRow = () => articleCard({
+  title: 'Shortcuts to my shared language',
+  sub: `${DEFINITIONS.length} concepts to help you understand my mind`,
+  image: 'images/Writing/shortcut.jpg',   // your thumbnail; delete this line for a grey placeholder
+  attrs: openAttrs('definition', { id: DEFINITIONS[0].id, title: 'Shortcuts to my shared language' }),
+});
+
+const definitionsRoot = $('#knowledgeDefinitions');
+if (definitionsRoot) definitionsRoot.innerHTML = definitionsRow();
+
 function renderInto(selector, items, toHTML) {
   const root = $(selector);
   if (root) root.innerHTML = items.map(item => toHTML(item)).join('');
@@ -192,7 +206,7 @@ function renderCollections() {
 renderCollections();   // everyone-items only, until a password is entered
 
 function blockHTML(block) {
-  const text = esc(block.text || '');
+  const text = linkTerms(block.text || '');
   switch (block.type) {
     case 'heading': return `<h2>${text}</h2>`;
     case 'subheading': return `<h3>${text}</h3>`;
@@ -200,8 +214,8 @@ function blockHTML(block) {
     case 'underline': return `<p><span class="knowledge-underline">${text}</span></p>`;
     case 'image': return `<figure class="knowledge-inline-image"><img src="${esc(block.src || '')}" alt="${esc(block.alt || '')}">${block.caption ? `<figcaption>${esc(block.caption)}</figcaption>` : ''}</figure>`;
     case 'divider': return '<hr class="knowledge-divider">';
-    case 'list': return `<ul>${(block.items || []).map(item => `<li>${esc(item)}</li>`).join('')}</ul>`;
-    case 'numbered-list': return `<ol>${(block.items || []).map(item => `<li>${esc(item)}</li>`).join('')}</ol>`;
+    case 'list': return `<ul>${(block.items || []).map(item => `<li>${linkTerms(item)}</li>`).join('')}</ul>`;
+    case 'numbered-list': return `<ol>${(block.items || []).map(item => `<li>${linkTerms(item)}</li>`).join('')}</ol>`;
     default: return `<p>${text}</p>`;
   }
 }
@@ -221,49 +235,212 @@ const READER_LABELS = {
   article: 'WHAT I THINK I KNOW',
   experiment: 'WHAT I WANT TO KNOW',
   question: 'WHAT I DON’T KNOW',
+  definition: 'WHAT I HAVE DEFINED',
 };
+
+// ---- Motion: every page change uses the same fades as the CSS ----
+// Durations come from the same tokens as the CSS (both are 0 for reduced motion).
+const cssSeconds = name => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) * 1000 || 0;
+const VIEW_MS = cssSeconds('--motion-view');       // overview <-> reader crossfade
+const LAYER_MS = cssSeconds('--motion-medium');    // the whole Knowledge layer fading in / out
+const EASE_OUT = getComputedStyle(document.documentElement).getPropertyValue('--ease-out').trim() || 'ease-out';
+
+// Runs `change` with the CSS transitions switched off, so it takes effect at once (used while the layer is hidden)
+function instant(change) {
+  const els = [overview, reader];
+  els.forEach(el => { el.style.transition = 'none'; });
+  change();
+  void reader.offsetWidth;                          // apply it before the transitions come back
+  els.forEach(el => { el.style.transition = ''; });
+}
+
+// Page -> page while the reader is already open: fade out, swap, fade in, over the same time and ease-out
+// as the overview <-> reader crossfade. From the overview (or a hidden layer) the CSS crossfade does the work.
+function present(render) {
+  if (!reader.classList.contains('is-open') || !isOpen() || !VIEW_MS) { render(); return; }
+  const half = VIEW_MS / 2;
+  const fade = (from, to, fill) => [readerType, readerContent].map(el =>
+    el.animate([{ opacity: from }, { opacity: to }], { duration: half, easing: EASE_OUT, fill }));
+  const out = fade(1, 0, 'forwards');
+  out[0].finished.then(() => {
+    render();
+    fade(0, 1, 'none');
+    out.forEach(animation => animation.cancel());
+  });
+}
+
+// Swaps the overview for the reader and focuses [ CLOSE ].
+// Scroll: animated to the top when coming from the overview, otherwise set at once (the old page is already hidden)
+// or restored to `top` when returning to a page.
+function showReader(label, wide = false, top = 0) {
+  const fromOverview = isOpen() && !reader.classList.contains('is-open');
+  readerType.textContent = label;
+  readerContent.classList.toggle('is-wide', wide);
+  const show = () => showOnly([overview, reader], reader);
+  if (isOpen()) show(); else instant(show);          // the layer is hidden (opened from Consume): it only fades in
+  if (fromOverview && !top) animateScrollTo(view, 0);
+  else view.scrollTop = top;
+  closeButton.focus({ preventScroll: true });
+}
 
 let returnFocus = null;
 let currentQuestionId = null;
 
-function openReader(kind, id, trigger) {
+// ---- Going back ---------------------------------------------------
+// Opening something from a page that is already open (an article from the definitions, a definition from an
+// article, a definition from Consume...) shows it as a second layer. [ CLOSE ] then returns to the page you
+// came from, on the same article / definition and scroll position, instead of the Knowledge overview.
+//   current  what the reader shows now: { kind, id } or null for the overview
+//   trail    the pages to go back to: { kind, id, scroll }, or 'outside' when Knowledge itself was opened from
+//            somewhere else (Consume), so closing the last page closes the whole layer
+let current = null;
+let trail = [];
+
+// Call when a page opens. `back` is the trail entry when [ CLOSE ] is returning to it (nothing to remember then).
+function enter(state, trigger, back) {
+  if (!back) {
+    if (!current) returnFocus = trigger;   // opened from the overview: focus returns to that card
+    else if (!(current.kind === 'definition' && state.kind === 'definition')) {   // definition -> definition just swaps
+      trail.push({ ...current, scroll: view.scrollTop });
+    }
+  }
+  current = state;
+}
+
+function goBack() {
+  const back = trail.pop();
+  if (back === 'outside') { setKnowledge(false); return; }
+  if (!back) { closeReader(); return; }
+  if (back.kind === 'definition') openDefinitions(back.id, null, back);
+  else openReader(back.kind, back.id, null, back);
+}
+
+function openReader(kind, id, trigger, back = null) {
   const item = { article: ARTICLES, experiment: EXPERIMENTS, question: QUESTIONS }[kind]?.find(entry => entry.id === id);
   if (!item) return;
-  returnFocus = trigger;
-  readerType.textContent = READER_LABELS[kind];
+  enter({ kind, id }, trigger, back);
+  present(() => {
 
-  // Articles and questions have a date; experiments get no byline
-  const byline = item.date
-  ? `<div class="knowledge-byline"><time datetime="${esc(item.date)}">${formatDate(item.date, 'long')}</time></div>`
-  : '';
+    // Articles and questions have a date; experiments get no byline
+    const byline = item.date
+    ? `<div class="knowledge-byline"><time datetime="${esc(item.date)}">${formatDate(item.date, 'long')}</time></div>`
+    : '';
 
-  const hero = item.image
-  ? `<figure class="knowledge-hero-image"><img src="${esc(item.image)}" alt="${esc(item.imageAlt || '')}"></figure>`
-  : '';
+    const hero = item.image
+    ? `<figure class="knowledge-hero-image"><img src="${esc(item.image)}" alt="${esc(item.imageAlt || '')}"></figure>`
+    : '';
 
-  readerContent.innerHTML = `
-    <header class="knowledge-article-header">
-      <h1>${esc(item.title || item.text)}</h1>
-      <p class="knowledge-deck">${esc(item.subheader || item.byline || '')}</p>
-      ${byline}
-      ${kind === 'question' && editorPassword ? `<button type="button" class="question-delete" data-delete-question="${esc(item.id)}">[ DELETE QUESTION ]</button>` : ''}
-      ${hero}
-    </header>
-    <div class="knowledge-prose">${kind === 'question' ? responsesSection(item) : (item.blocks || []).map(blockHTML).join('')}</div>`;
+    readerContent.innerHTML = `
+      <header class="knowledge-article-header">
+        <h1>${esc(item.title || item.text)}</h1>
+        <p class="knowledge-deck">${esc(item.subheader || item.byline || '')}</p>
+        ${byline}
+        ${kind === 'question' && editorPassword ? `<button type="button" class="question-delete" data-delete-question="${esc(item.id)}">[ DELETE QUESTION ]</button>` : ''}
+        ${hero}
+      </header>
+      <div class="knowledge-prose">${kind === 'question' ? responsesSection(item) : (item.blocks || []).map(blockHTML).join('')}</div>`;
 
-  showOnly([overview, reader], reader);
-  animateScrollTo(view, 0);
-  closeButton.focus({ preventScroll: true });
-  currentQuestionId = kind === 'question' ? item.id : null;
-  if (kind === 'question') loadResponses(item.id);
+    showReader(READER_LABELS[kind], false, back?.scroll);
+    currentQuestionId = kind === 'question' ? item.id : null;
+    if (kind === 'question') loadResponses(item.id);
+  });
 }
 
 function closeReader() {
   if (!reader.classList.contains('is-open')) return;
+  current = null;
+  trail = [];
   showOnly([overview, reader], overview);
   animateScrollTo(view, 0);
   returnFocus?.focus?.({ preventScroll: true });
 }
+
+// ---- Definitions ------------------------------------------------
+// One carousel of flash cards (js/media.js). The related column beside it follows the card on screen.
+
+// Articles that link to a definition anywhere in their text
+const articlesUsing = id => ARTICLES.filter(article =>
+  article.blocks.some(block => [block.text, ...(block.items || [])].some(text => mentions(text, id))));
+
+const relatedSection = (title, cards) => cards.length ? `<section><h3>${title}</h3>${cards.join('')}</section>` : '';
+
+// A section with nothing in it is left out
+const relatedHTML = term =>
+  relatedSection('Etymology', COLLECTION.filter(item => item.term === term.id).map(consumeCard)) +
+  relatedSection('Used in a sentence', articlesUsing(term.id).filter(canSee).map(articleRow));
+
+// Same structure as the Knowledge overview: three .knowledge-column sections (1fr 2fr 1fr).
+//   left   every term as a Consume quote card; clicking one moves the carousel
+//   middle the flash card carousel
+//   right  where the term shows up (filled in by the carousel:change handler below)
+const definitionsPage = start => `
+  <div class="definitions">
+    <nav class="knowledge-column definitions-nav" aria-label="Terms">
+      ${DEFINITIONS.map((term, i) => `<a href="#${esc(term.id)}" data-term-index="${i}">${esc(term.word)}</a>`).join('')}
+    </nav>
+    <section class="knowledge-column" aria-label="Definition">
+      ${carouselHTML({
+        label: 'Definitions',
+        start,
+        slides: DEFINITIONS.map(term => flashCard({
+          front: linkTerms(term.text),
+          back: esc(term.word),
+          foot: term.word,
+        })),
+      })}
+    </section>
+    <aside class="knowledge-column definitions-related" aria-label="Connections">
+      <div data-related></div>
+    </aside>
+  </div>`;
+
+function openDefinitions(id, trigger, back = null) {
+  const start = Math.max(0, DEFINITIONS.findIndex(term => term.id === id));
+  enter({ kind: 'definition', id }, trigger, back);
+  present(() => {
+    currentQuestionId = null;
+    readerContent.innerHTML = definitionsPage(start);
+    initCarousels(readerContent);                              // fires carousel:change, which fills the related column
+    showReader(READER_LABELS.definition, true, back?.scroll);   // wide: the three columns use the overview's width
+    $('.car', readerContent).focus({ preventScroll: true });   // so ← → turn the cards
+  });
+}
+
+// Flash cards: a click (or Enter / Space) turns the card over. Links on the back don't.
+function setFlipped(card, flipped) {
+  card.classList.toggle('is-flipped', flipped);
+  card.setAttribute('aria-pressed', String(flipped));
+  card.querySelector('.c-flash-back').inert = !flipped;
+}
+
+on(readerContent, 'click', event => {
+  const card = event.target.closest('.c-flash');
+  if (card && !event.target.closest('[data-term]')) setFlipped(card, !card.classList.contains('is-flipped'));
+});
+
+// The related column follows the card on screen; cards that were turned over turn back
+on(readerContent, 'carousel:change', event => {
+  const related = $('[data-related]', readerContent);
+  if (!related) return;                                    // some other carousel, not the definitions deck
+  if (current?.kind === 'definition') current.id = DEFINITIONS[event.detail.index].id;   // so going back lands on this card
+  related.innerHTML = relatedHTML(DEFINITIONS[event.detail.index]);
+  $$('.car-slide:not(.active) .c-flash.is-flipped', readerContent).forEach(card => setFlipped(card, false));
+  $$('.definitions-nav a', readerContent).forEach(link => {          // the current term is highlighted, like the active sidebar link
+    const isCurrent = Number(link.dataset.termIndex) === event.detail.index;
+    link.classList.toggle('active', isCurrent);
+    if (isCurrent) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current');
+  });
+});
+
+// A term link in the left column moves the carousel to that definition
+on(readerContent, 'click', event => {
+  const termLink = event.target.closest('[data-term-index]');
+  const car = $('.car', readerContent);
+  if (!termLink || !car) return;
+  event.preventDefault();
+  car.show(Number(termLink.dataset.termIndex));
+  car.focus({ preventScroll: true });                      // so ← → keep turning the cards instead of switching CREATE / CONSUME
+});
 
 // ---- Open / close Knowledge -------------------------------------
 
@@ -273,9 +450,23 @@ const isOpen = () => view.classList.contains('is-open');
 const syncModeButtons = () => modeButtons.forEach(button =>
   button.setAttribute('aria-pressed', String(!isOpen() && button.dataset.mode === document.body.dataset.mode)));
 
+// Closing the layer: it fades out showing the page you were on, and only then goes back to the overview
+// (so nothing morphs mid-fade, the same as opening it).
+function resetAfterClose() {
+  closeModal();
+  current = null;
+  trail = [];
+  returnFocus?.focus?.({ preventScroll: true });
+  setTimeout(() => {
+    if (isOpen()) return;                             // reopened in the meantime
+    instant(() => showOnly([overview, reader], overview));
+    view.scrollTop = 0;
+  }, LAYER_MS + 50);
+}
+
 function setKnowledge(open) {
   if (open === isOpen()) return;
-  if (!open) { closeReader(); closeModal(); }
+  if (!open) resetAfterClose();
 
   view.classList.toggle('is-open', open);
   view.setAttribute('aria-hidden', String(!open));
@@ -465,49 +656,89 @@ let unlocked = false;   // stays unlocked until the page is reloaded, like the A
 // Logo click: closing never needs the password; opening asks for it once.
 // A wrong password or a cancelled prompt does nothing.
 
-async function requestKnowledge() {
-  if (isOpen()) { setKnowledge(false); return; }
-  if (!unlocked) {
-    const entered = window.prompt('Please enter password:');
-    if (entered === null) return;
+// Asks for the password the first time. Resolves true once Knowledge is unlocked;
+// a wrong password or a cancelled prompt resolves false and does nothing.
+async function unlock() {
+  if (unlocked) return true;
+  const entered = window.prompt('Please enter password:');
+  if (entered === null) return false;
 
-    const group = KNOWLEDGE_PASSWORDS.get(entered);
-    if (group) {
-      unlocked = true;                                   // viewer: can read and respond
-      accessGroup = group;                               // ...and sees only the items for this group
-    } 
-    else {
-      const [{ data: isEditor }, { data: isModerator }] = await Promise.all([
-        supabase.rpc('check_editor', { pw: entered }),
-        supabase.rpc('check_moderator', { pw: entered }),
-      ]);
-      if (!isEditor && !isModerator) return;             // wrong password does nothing
-      unlocked = true;
-      accessGroup = 'all';                               // editor / moderator: sees everything
-      if (isEditor) setEditor(entered);                  // editor: also sees the add button
-      if (isModerator) setModerator(entered);            // moderator: also approves / deletes responses
-    }
+  const group = KNOWLEDGE_PASSWORDS.get(entered);
+  if (group) {
+    unlocked = true;                                   // viewer: can read and respond
+    accessGroup = group;                               // ...and sees only the items for this group
+  } else {
+    const [{ data: isEditor }, { data: isModerator }] = await Promise.all([
+      supabase.rpc('check_editor', { pw: entered }),
+      supabase.rpc('check_moderator', { pw: entered }),
+    ]);
+    if (!isEditor && !isModerator) return false;       // wrong password does nothing
+    unlocked = true;
+    accessGroup = 'all';                               // editor / moderator: sees everything
+    if (isEditor) setEditor(entered);                  // editor: also sees the add button
+    if (isModerator) setModerator(entered);            // moderator: also approves / deletes responses
   }
-  renderCollections();                                   // show only what this password allows
-  setKnowledge(true);
+  return true;
 }
+
+// Unlock (once) and show only what this password allows
+async function prepareKnowledge() {
+  if (!(await unlock())) return false;
+  renderCollections();
+  return true;
+}
+
+async function openKnowledge() {
+  if (!(await prepareKnowledge())) return false;
+  setKnowledge(true);
+  return true;
+}
+
+// Logo click: closing never needs the password; opening asks for it once.
+function requestKnowledge() {
+  if (isOpen()) setKnowledge(false);
+  else openKnowledge();
+}
+
+// Anything with data-term (inline links, the "Peek into my mind" button) opens that definition,
+// unlocking and opening Knowledge first if needed. It works from the Consume board too.
+on(document, 'click', async event => {
+  const link = event.target.closest('[data-term]');
+  if (!link) return;
+  event.preventDefault();
+  if (isOpen()) { openDefinitions(link.dataset.term, link); return; }
+
+  // Knowledge is closed (e.g. Peek on the Consume board): set the definition up while the layer is hidden,
+  // then fade the layer in, exactly like opening Knowledge from its toggle.
+  if (!(await prepareKnowledge())) return;
+  trail = ['outside'];                                 // closing it closes the whole layer
+  openDefinitions(link.dataset.term, link);
+  setKnowledge(true);
+  $('.car', readerContent)?.focus({ preventScroll: true });
+});
 
 // ---- Events -----------------------------------------------------
 
-const openFrom = trigger => trigger && openReader(trigger.dataset.knowledgeKind, trigger.dataset.knowledgeId, trigger);
+const openFrom = trigger => {
+  if (!trigger) return;
+  const { knowledgeKind: kind, knowledgeId: id } = trigger.dataset;
+  if (kind === 'definition') openDefinitions(id, trigger);
+  else openReader(kind, id, trigger);
+};
 
 on(view, 'click', event => openFrom(event.target.closest('[data-knowledge-kind]')));
 
-// Article and experiment cards are article[role=button], so they need Enter / Space themselves
+// Cards are article[role=button], so they need Enter / Space themselves.
+// (Only when the card itself has focus, so links on a flash card's back still work.)
 on(view, 'keydown', event => {
   const card = event.target.closest('.c-card[role="button"]');
-  if (card && (event.key === 'Enter' || event.key === ' ')) {
+  if (card === event.target && (event.key === 'Enter' || event.key === ' ')) {
     event.preventDefault();
-    openFrom(card);
+    card.click();
   }
 });
 
-on(closeButton, 'click', closeReader);
+on(closeButton, 'click', goBack);
 on(knowledgeToggle, 'click', requestKnowledge);
 
 // Picking CREATE or CONSUME (click or arrow keys) closes Knowledge and shows that view
