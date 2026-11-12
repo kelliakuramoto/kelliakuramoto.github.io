@@ -1090,7 +1090,7 @@ body.knowledge-open :is(.layout, .consume) {
 }
 
 .knowledge-column-title {
-  margin: 0 0 var(--space-m);
+  margin: 0 0 var(--space-l);
   text-transform: uppercase;
 }
 
