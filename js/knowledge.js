@@ -141,8 +141,6 @@ const articleRow = article => articleCard({
   sub: article.subheader,
   date: article.date,
   dateLabel: formatDate(article.date, 'short'),
-  image: article.image,
-  alt: article.imageAlt,
   attrs: openAttrs('article', article),
 });
 
@@ -159,12 +157,8 @@ const experimentCard = experiment => bookCard({
 const definitionsRow = () => articleCard({
   title: 'Shortcuts to my shared language',
   sub: `${DEFINITIONS.length} concepts to help you understand my mind`,
-  image: 'images/Writing/shortcut.jpg',   // your thumbnail; delete this line for a grey placeholder
   attrs: openAttrs('definition', { id: DEFINITIONS[0].id, title: 'Shortcuts to my shared language' }),
 });
-
-const definitionsRoot = $('#knowledgeDefinitions');
-if (definitionsRoot) definitionsRoot.innerHTML = definitionsRow();
 
 function renderInto(selector, items, toHTML) {
   const root = $(selector);
@@ -199,7 +193,9 @@ const canSee = item => accessGroup === 'all' || !item.access || item.access.incl
 const newestFirst = (a, b) => (b.date || '').localeCompare(a.date || '');
 
 function renderCollections() {
-  renderInto('#knowledgeArticles', ARTICLES.filter(canSee).sort(newestFirst), articleRow);
+  const articles = ARTICLES.filter(canSee).sort(newestFirst).map(articleRow).join('');
+  const root = $('#knowledgeArticles');
+  if (root) root.innerHTML = definitionsRow() + articles;   // definitions always sit on top
   renderInto('#knowledgeExperiments', EXPERIMENTS.filter(canSee), experimentCard);
 }
 
@@ -338,17 +334,12 @@ function openReader(kind, id, trigger, back = null) {
     ? `<div class="knowledge-byline"><time datetime="${esc(item.date)}">${formatDate(item.date, 'long')}</time></div>`
     : '';
 
-    const hero = item.image
-    ? `<figure class="knowledge-hero-image"><img src="${esc(item.image)}" alt="${esc(item.imageAlt || '')}"></figure>`
-    : '';
-
     const header = `
       <header class="knowledge-article-header">
         <h1>${esc(item.title || item.text)}</h1>
         <p class="knowledge-deck">${esc(item.subheader || item.byline || '')}</p>
         ${byline}
         ${kind === 'question' && editorPassword ? `<button type="button" class="question-delete" data-delete-question="${esc(item.id)}">[ DELETE QUESTION ]</button>` : ''}
-        ${hero}
       </header>`;
     const prose = `<div class="knowledge-prose">${kind === 'question' ? responsesSection(item) : (item.blocks || []).map(blockHTML).join('')}</div>`;
 

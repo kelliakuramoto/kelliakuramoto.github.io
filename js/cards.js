@@ -66,13 +66,11 @@ export function imageCard({ src, alt, ratio, title, sub, ...options }) {
   return wrap(`<div class="c-media"${style}>${img}</div>${title || sub ? meta(title, sub) : ''}`, options);
 }
 
-// { title, sub?, date? (ISO, for the datetime attribute), dateLabel? (text shown), image?, alt? }
-// Text on the left, thumbnail on the right. Size the thumbnail with --article-image, shape it with --ratio (see CSS).
-export function articleCard({ title, sub, date, dateLabel, image, alt, ...options }) {
+// { title, sub?, date? (ISO, for the datetime attribute), dateLabel? (text shown) }
+export function articleCard({ title, sub, date, dateLabel, ...options }) {
   const time = date ? `<time datetime="${esc(date)}">${esc(dateLabel || date)}</time>` : '';
   const copy = `<div class="c-article-copy"><h3 class="c-title">${esc(title)}</h3>${sub ? `<p class="c-sub">${esc(sub)}</p>` : ''}${time}</div>`;
-  const img = image ? `<img src="${esc(image)}" alt="${esc(alt || '')}" loading="lazy" decoding="async">` : '';
-  return wrap(`<div class="c-article">${copy}<div class="c-media c-article-image">${img}</div></div>`, options);
+  return wrap(`<div class="c-article">${copy}</div>`, options);
 }
 
 // { front, back, label? ("Concept"), backLabel? ("Definition"), foot? }

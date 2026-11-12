@@ -565,6 +565,11 @@ body.knowledge-open :is(.layout, .consume) {
   text-decoration: none;
 }
 
+.c-card[data-knowledge-kind="article"], 
+.c-card[data-knowledge-kind="definition"] {
+  margin-bottom: 1rem;
+}
+
 .c-media {
   margin: 0 0 var(--space-s);
 }
@@ -591,14 +596,8 @@ body.knowledge-open :is(.layout, .consume) {
   cursor: pointer;
 }
 
-/* Article card (articleCard in cards.js): text left, thumbnail right.
-    Change --article-image to resize the thumbnail, --ratio to reshape it (1 = square, 4 / 3 = wider). */
+/* Article card (articleCard in cards.js): title, subheader and date */
 .c-article {
-  --article-image: clamp(4rem, 8vw, 8rem);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--article-image);
-  gap: var(--space-m);
-  align-items: center;
   padding: 0 0 var(--space-m);
   border-bottom: var(--line-width) solid var(--border);
 }
@@ -609,9 +608,7 @@ body.knowledge-open :is(.layout, .consume) {
   min-width: 0;
 }
 
-.c-article-image {
-  --ratio: 1;
-}
+
 
 /* Quote */
 .c-quote {
@@ -1154,12 +1151,10 @@ body.knowledge-open :is(.layout, .consume) {
   margin-bottom: var(--space-l);
 }
 
-.knowledge-hero-image,
 .knowledge-inline-image {
   margin: var(--space-l) 0;
 }
 
-.knowledge-hero-image img,
 .knowledge-inline-image img {
   display: block;
   width: 100%;
@@ -1492,11 +1487,6 @@ body.knowledge-open :is(.layout, .consume) {
 
   .case-study-row {
     gap: var(--space-m);
-  }
-
-  /* Article card: the thumbnail drops below the text */
-  .c-article {
-    grid-template-columns: 1fr;
   }
 
   /* This row lists text before image; on phones each image goes above its text */
