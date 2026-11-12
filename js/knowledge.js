@@ -16,14 +16,29 @@ import { carouselHTML, initCarousels } from './media.js';
 // =====================================================
 
 const ARTICLES = [
+    // Writing for the reader
+    {
+      id: 'writing-for-the-reader',
+      title: 'Writing for the reader',
+      subheader: 'Who am I writing for?',
+      date: '2026-11-12',
+      blocks: [
+        { type: 'paragraph', text: 'When I was in New York a couple weeks ago, my friend took me to the Strangers Project. It’s a collection of letters written in response to the question: What’s it like being you? It started during the pandemic and has been popping up in various spots around the city since. After 20 minutes I had already laughed (physically out loud), cried, and related to many of the letters that I read.' },
+        { type: 'paragraph', text: 'Over time I noticed a theme. People responded to this question in many different ways: as a journal entry, times tamping that exact moment in life, a confession of their biggest fears, a celebration of their biggest accomplishment, but surprisingly the most common letter was advice or pre-requisitely, learnings from their own life. One person went as far to say: “I’m wondering what to write that will have the most impact for the readers” and that felt very “breaking the 4th wall”-esque. I thought it was quite an odd thing to write when asked about yourself and it made me a bit sad to realize that this urge to impart wisdom onto others, to create a legacy or sense of permanence was probably born out of a feeling of disconnectedness from their own lives. I remember walking out of the exhibit and my friend asked me if I wanted to write a letter. I responded with “No, the people who matter the most to me know how I feel about them.”' },
+        { type: 'paragraph', text: 'I think if she had asked me this question a couple months earlier my response might have been different but I had just recently had made a photo book of thank you notes to the people in my life and shared it with them. I can honestly say there’s nothing I’m more proud of making than that and I plan on making one for as long as I can. But we’ve somehow off-roaded quite a bit now.' },
+        { type: 'paragraph', text: 'The reason I brought this project up is that I’m starting to publish my writing on the internet (not that anyone is reading it but still) and I’m not sure who I’m writing for anymore. Writing for me has always been this private act, mainly to just calm the thoughts in my brain and for future versions of myself to look back on and glimpse into a moment of who I used to be. Sometimes I write conversationally, as if I’m writing a letter to a future version of myself that’s a different person than who I am right now and sometimes I write quite factually, as a way to record-keep a memory that I’m worried I might forget. But lately I’ve been finding myself editing my mind and writing for the reader, adding in generic shared experiences to seem more relatable, or structuring my essays in a way that connect the intro paragraph to a life changing conclusion at the end of the essay and I just keep thinking to myself: Who am I writing for? ' },
+        { type: 'paragraph', text: 'I don’t edit my writing, the same way that I don’t edit my photos, or edit my appearance: because I’m lazy, but also because, as my father so aptly described it “take me as I am”. I tell my friends all the time I don’t think I’m going to wear makeup on my wedding day, it just wouldn’t feel like me. And if I’m not willing to edit my appearance on what society deems “the happiest day of your life.” I sure as shit am not going to edit my writing for people that I may or may not know, who may or may not read it.' },
+        { type: 'paragraph', text: 'I will not deny that there is benefit in writing for the reader and I myself have read many articles that I have found propounding moving or sparked an engaging conversation between my friends and I. But I kind of think it’s something that might naturally happen, rather than the main reason to do it. I think there is a greater beauty in craft, in finding your voice, one that is truly yours and if people just happen to speak your language then it’s free bread.' },
+        { type: 'paragraph', text: 'I cannot write for everyone, I can only write for myself and hope that I have spoken in a way that is heard by those who want to listen. Maybe life is just a long process of finding people who speak your language. It’s not the worst way to live.' },
+      ],
+      access: ['friends', 'professional'],
+    },
   // I dont believe in giving advice
   {
     id: 'no-advice',
     title: 'I don’t believe in giving advice',
-    subheader: 'My response to the question: What should I do?',
+    subheader: 'My response when asked: What should I do?',
     date: '2026-09-24',
-    image: 'images/Writing/free-advice.JPG',
-    imageAlt: 'Photo of man talking with another man in front of a sign that says Free Advice',
     blocks: [
       { type: 'heading', text: 'What should I do?' },
       { type: 'paragraph', text: 'If you ask me what you should do in any situation my answer will always be the same, you should do what you want to do.' },
@@ -43,7 +58,7 @@ const ARTICLES = [
       { type: 'paragraph', text: 'I really believe that any decision that you can learn from, will be the right decision for you.' },
       { type: 'quote', text: 'Sometimes you win, sometimes you learn.' },
     ],
-    access: ['friends'],
+    access: ['friends', 'professional'],
   },
   // Life is a sprint (part 2)
   {
@@ -51,8 +66,6 @@ const ARTICLES = [
   title: 'Life is a sprint (part 2)',
   subheader: 'Running a retrospective on my decisions',
   date: '2026-10-28',
-  image: 'images/Writing/girl-on-train.JPG',
-  imageAlt: 'Photo of man talking with another man in front of a sign that says Free Advice',
   blocks: [
     { type: 'paragraph', text: 'If there’s one thing I’m passionate about in life its walking. And naturally I get a lot of questions about what I do on my walks.' },
     { type: 'paragraph', text: 'For reference, I walk anywhere between 6-10 miles on the weekdays and 12-15 miles on the weekends; which as I’m saying this out loud sounds like a lot but trust me it’s not as hard as you think if you live in a city with poor public transport and easily get motion sick.' },
@@ -62,7 +75,6 @@ const ARTICLES = [
     { type: 'paragraph', text: 'But in my case, instead trying to figure out how to be more efficient, I ask myself questions like: How do I feel after hanging out with them? Do I think I showed up as a good friend that day? Did my actions align with my beliefs and values? And if any of the answers are no, I run a root cause analysis and ask myself the 5 why’s? Which is a UX research method where when someone gives you an answer, you respond with why, and then when they answer, you respond with why again and this keeps going until you’ve identity the root cause (I know crazy where the name comes from).' },
     { type: 'paragraph', text: 'If this all sounds a bit weird in theory, let me give you a good example. So one day my friends and I were doing the Crosstown Trail and every mile, we made a letter of the word with our bodies, so that at the end we could collage them together. During this walk, I was telling one of my friends that the day before I was dancing in public and my other friend told me to stop, which really annoyed me for a couple reasons 1. Just because he might have felt embarrassed doesn’t mean that I should feel embarrassed too and 2. I don’t like being told what to do and more importantly I don’t believe that you should tell someone what to do especially if it’ not harming anyone, which my dancing wasn’t.' },
     { type: 'paragraph', text: 'I promise I’m getting to the important part, so about 20 minutes go by and its now time for us to make the “W” in Crosstown and we weren’t quite sure how we were going to make the letter or how many people we would need. So my friend (the original one I was telling the story about dancing in public to) started to ask this couple nearby if they could take the photo for us. In that moment I had a very immediate reaction where I was like “No, don’t do that, we can take the photo ourselves”.' },
-    // { type: 'image', src: 'images/Writing/crosstown-trail.jpg', alt: 'Collage of people making the words Crosstown trail with their bodies' },
     { type: 'paragraph', text: 'Afterwards, I felt quite bad about the whole thing and I spent a long time trying to figure out why I reacted that way. I knew that it was extremely contradictory for me to tell my friend not to do something after just telling them that I get upset when someone tells me what to do. So I ran a retrospective.' },
     { type: 'paragraph', text: 'I asked myself why I believed that it was wrong to tell other people what to do and after confirming that is still what I believed, I asked myself why I think I responded in that way: Was it because of embarrassment? Was it because I didn’t want to burden a stranger by asking them to take our photo? Was it because I had already figured out that we had enough people to to take the photo and didn’t need to ask anyone else?' },
     { type: 'paragraph', text: 'I think in the end I concluded that I probably just felt embarrassed, but what was more important was that in the process of deconstructing this whole interaction I was able to confirm one of my beliefs, identify when I have acted contradictory, store data of how I felt when I act against them, and create a trigger in my mind for the next time I feel embarrassed to take a second and think about why instead of immediately acting so that I can guard against this happening in the future.' },
@@ -77,8 +89,6 @@ const ARTICLES = [
   title: 'Life is a sprint',
   subheader: 'What UX design has taught me about life',
   date: '2025-08-15',
-  image: 'images/Writing/truck-graffiti.jpg',
-  imageAlt: 'Photo of man talking with another man in front of a sign that says Free Advice',
   blocks: [
     { type: 'paragraph', text: 'Whenever someone asks me what I do for work I’m a bit reluctant to give them my actual job title because as soon as I say “designer” they immediately think that I can draw or paint or do anything remotely artistic (which would be super cool) but then I have to quickly explain that I’m not an artist in the traditional sense and instead of drawing characters, I design experiences.' },
     { type: 'heading', text: 'Copy and paste' },
@@ -106,7 +116,6 @@ const ARTICLES = [
   ],
   access: ['friends', 'professional'],
   },
-  // Some infinities are bigger than other infinities
 ];
 
 const EXPERIMENTS = [
