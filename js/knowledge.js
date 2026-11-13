@@ -259,7 +259,7 @@ const READER_LABELS = {
 // Durations come from the same tokens as the CSS (both are 0 for reduced motion).
 const cssSeconds = name => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) * 1000 || 0;
 const VIEW_MS = cssSeconds('--motion-view');       // overview <-> reader crossfade
-const LAYER_MS = cssSeconds('--motion-medium');    // the whole Knowledge layer fading in / out
+const LAYER_MS = cssSeconds('--motion-view');    // the whole Knowledge layer fading in / out
 const EASE_OUT = getComputedStyle(document.documentElement).getPropertyValue('--ease-out').trim() || 'ease-out';
 
 // Runs `change` with the CSS transitions switched off, so it takes effect at once (used while the layer is hidden)
