@@ -191,6 +191,7 @@ button {
 
 button:is(:hover, :focus-visible) {
   color: var(--hover);
+  transition: none;   /* turns blue at once; the fade back is on the base rule */
 }
 
 button:disabled {
@@ -341,6 +342,7 @@ body.knowledge-open :is(.layout, .consume) {
 .definitions-nav a:hover,
 .definitions-nav a.active {
   color: var(--hover);
+  transition: none;
 }
 
 .sidebar nav a.active,
@@ -582,6 +584,7 @@ body.knowledge-open :is(.layout, .consume) {
 
 .c-card:is(:hover, :focus-visible) .c-title {
   color: var(--hover);
+  transition: none;
 }
 
 .c-sub {
@@ -626,6 +629,7 @@ body.knowledge-open :is(.layout, .consume) {
 
 .c-card[role="button"]:is(:hover, :focus-visible) .c-question {
   color: var(--hover);
+  transition: none;
 }
 
 /* Green highlight, shared by the quote <mark>, inline links in text, and the About page */
@@ -644,6 +648,7 @@ body.knowledge-open :is(.layout, .consume) {
 .term-link:is(:hover, :focus-visible),
 .consume-link:is(:hover, :focus-visible) {
   color: var(--hover);
+  transition: none;
 }
 
 /* Book: generated colour cover, or a real cover image at the same size */
@@ -1293,6 +1298,7 @@ body.knowledge-open :is(.layout, .consume) {
 /* Question cards open the reader, so the quote reacts like a card title */
 .c-card[role="button"]:is(:hover, :focus-visible) .c-quote blockquote {
   color: var(--hover);
+  transition: none;
 }
 
 /* Visitor responses: quote cards in a two-column masonry board (same cards as Consume) */
@@ -1520,4 +1526,32 @@ img.is-zoomable {
   #mid-career-musician > :nth-child(4) { order: 3; }
   #mid-career-musician > :nth-child(5) { order: 6; }
   #mid-career-musician > :nth-child(6) { order: 5; }
+}
+/* =====================================================
+    CURSOR DOT (js/cursor.js)
+    Over anything clickable the pointer is swapped for a dot, which fades in and out like every other fade.
+    js/cursor.js adds .dot-active to <html> while the pointer is over something clickable.
+    ===================================================== */
+.cursor-dot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: calc(var(--z-modal) + 1);                /* above the lightbox and Knowledge */
+  width: var(--space-m);
+  height: var(--space-m);
+  margin: calc(var(--space-m) / -2) 0 0 calc(var(--space-m) / -2);   /* centred on the pointer */
+  border-radius: 50%;
+  background: var(--hover);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--motion-view) var(--ease-out);
+}
+
+.cursor-dot.is-visible {
+  opacity: 1;
+}
+
+html.dot-active,
+html.dot-active * {
+  cursor: none !important;
 }
