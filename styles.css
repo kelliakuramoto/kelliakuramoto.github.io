@@ -562,8 +562,9 @@ body.knowledge-open :is(.layout, .consume) {
   text-decoration: none;
 }
 
-.c-card[data-knowledge-kind="article"], 
-.c-card[data-knowledge-kind="definition"] {
+.c-card[data-knowledge-kind="article"],
+.c-card[data-knowledge-kind="definition"],
+.c-card[data-knowledge-kind="question"] {
   margin-bottom: 1rem;
 }
 
@@ -605,8 +606,6 @@ body.knowledge-open :is(.layout, .consume) {
   min-width: 0;
 }
 
-
-
 /* Quote */
 .c-quote {
   padding: var(--space-l);
@@ -617,6 +616,16 @@ body.knowledge-open :is(.layout, .consume) {
   font-size: var(--text-body);
   font-weight: var(--font-light);
   transition: color var(--motion-view) var(--ease);
+}
+
+/* Question: plain text that turns blue on hover, like the card titles */
+.c-question {
+  margin: 0;
+  transition: color var(--motion-view) var(--ease);
+}
+
+.c-card[role="button"]:is(:hover, :focus-visible) .c-question {
+  color: var(--hover);
 }
 
 /* Green highlight, shared by the quote <mark>, inline links in text, and the About page */

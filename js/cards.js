@@ -37,6 +37,12 @@ export function quoteCard({ text, highlight: phrase, by, ...options }) {
   return wrap(media + (by ? meta(null, by) : ''), options);
 }
 
+// { text }
+// Just text, no frame. Used for the questions in Knowledge.
+export function textCard({ text, ...options }) {
+  return wrap(`<p class="c-question">${esc(text)}</p>`, options);
+}
+
 // { title, by, color?, image?, ink?, sub? }
 //   color  cover colour when there is no image
 //   ink    cover text colour (default white)

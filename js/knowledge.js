@@ -1,5 +1,5 @@
 import { $, $$, esc, on, showOnly } from './dom.js';
-import { articleCard, bookCard, quoteCard, flashCard } from './cards.js';
+import { articleCard, bookCard, quoteCard, flashCard, textCard } from './cards.js';
 import { animateScrollTo, isMobile } from './navigation.js';
 import { supabase } from './supabase.js';
 import { DEFINITIONS, linkTerms, mentions } from './definitions.js';
@@ -178,7 +178,7 @@ function renderInto(selector, items, toHTML) {
 // the same way articles and experiments do.
 let QUESTIONS = [];
 
-const questionCard = q => quoteCard({ text: q.text, attrs: openAttrs('question', q) });
+const questionCard = q => textCard({ text: q.text, attrs: openAttrs('question', q) });
 
 async function loadQuestions() {
   const { data, error } = await supabase.from('questions').select('*').order('created_at');
