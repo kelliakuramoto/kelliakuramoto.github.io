@@ -191,7 +191,7 @@ async function loadQuestions() {
   }));
   renderInto('#knowledgeQuestions', QUESTIONS, questionCard);
 }
-loadQuestions();
+const questionsReady = loadQuestions();
 
 // Which password group is signed in: null until unlocked, 'all' for the editor / moderator.
 // An article or experiment with `access: ['friends']` only shows for that group; no `access` = everyone.
@@ -303,6 +303,22 @@ function showReader(label, wide = false, top = 0) {
 let returnFocus = null;
 let currentQuestionId = null;
 
+// ---- URLs ---------------------------------------------------------
+// Whatever is open in Knowledge is mirrored in the address bar as #knowledge/<kind>/<id>,
+// so any page can be linked to directly and the browser Back button works.
+let hashBeforeKnowledge = '';   // the hash to restore when Knowledge closes (e.g. #bizbuysell)
+
+const hashFor = state =>
+  state ? `#mymind/${state.kind}/${encodeURIComponent(state.id)}` : '#mymind';
+
+function setUrl(next, { replace = false } = {}) {
+  if (location.hash === next) return;   // already there (e.g. we got here via Back / a pasted link)
+  if (next.startsWith('#mymind') && !location.hash.startsWith('#mymind')) {
+    hashBeforeKnowledge = location.hash;
+  }
+  history[replace ? 'replaceState' : 'pushState'](null, '', location.pathname + location.search + next);
+}
+
 // ---- Going back ---------------------------------------------------
 // Opening something from a page that is already open (an article from the definitions, a definition from an
 // article, a definition from Consume...) shows it as a second layer. [ CLOSE ] then returns to the page you
@@ -322,6 +338,7 @@ function enter(state, trigger, back) {
     }
   }
   current = state;
+  setUrl(hashFor(state))
 }
 
 function goBack() {
@@ -372,6 +389,7 @@ function closeReader() {
   if (!reader.classList.contains('is-open')) return;
   current = null;
   trail = [];
+  setUrl('#mymind');
   showOnly([overview, reader], overview);
   animateScrollTo(view, 0);
   returnFocus?.focus?.({ preventScroll: true });
@@ -445,6 +463,7 @@ on(readerContent, 'carousel:change', event => {
   const related = $('[data-related]', readerContent);
   if (!related) return;                                    // some other carousel, not the definitions deck
   if (current?.kind === 'definition') current.id = DEFINITIONS[event.detail.index].id;   // so going back lands on this card
+  setUrl(hashFor(current), { replace: true });
   related.innerHTML = relatedHTML(DEFINITIONS[event.detail.index]);
   $$('.car-slide:not(.active) .c-flash.is-flipped', readerContent).forEach(card => setFlipped(card, false));
   $$('.definitions-nav a', readerContent).forEach(link => {          // the current term is highlighted, like the active sidebar link
@@ -520,7 +539,11 @@ function setKnowledge(open) {
   document.body.classList.toggle('knowledge-open', open);
   knowledgeToggle.setAttribute('aria-pressed', String(open));
   knowledgeToggle.setAttribute('aria-label', open ? 'Close Knowledge view' : 'Open Knowledge view');
-  syncModeButtons();
+    syncModeButtons();
+
+  // Opening shows the current page (or the overview); closing restores the hash from before
+  if (open) setUrl(hashFor(current));
+  else if (location.hash.startsWith('#mymind')) setUrl(hashBeforeKnowledge);
 }
 
 // ---- Responses (visitors) ---------------------------------------
@@ -808,3 +831,46 @@ on(knowledgeToggle, 'click', requestKnowledge);
 
 // Picking CREATE or CONSUME (click or arrow keys) closes Knowledge and shows that view
 on(document, 'mode:changed', () => setKnowledge(false));
+
+// ---- Deep links ---------------------------------------------------
+// Runs on page load (a pasted link) and on Back / Forward.
+const KNOWLEDGE_HASH = /^#mymind(?:\/(article|experiment|question|definition)\/([^/]+))?$/;
+
+async function routeFromHash() {
+  const match = KNOWLEDGE_HASH.exec(location.hash);
+
+  // Not a Knowledge URL: make sure Knowledge is closed
+  if (!match) { if (isOpen()) setKnowledge(false); return; }
+
+  const [, kind, rawId] = match;
+  const id = rawId && decodeURIComponent(rawId);
+
+  if (!(await prepareKnowledge())) return;   // same password prompt as the logo; cancel / wrong = stay put
+  await questionsReady;                      // questions come from Supabase
+
+  current = null;                            // a linked page starts fresh: [ CLOSE ] goes to the overview
+  trail = [];
+
+  // Overview, or a page that doesn't exist / this password group can't see
+  const found = kind && {
+    article:    () => ARTICLES.find(a => a.id === id),
+    experiment: () => EXPERIMENTS.find(e => e.id === id),
+    question:   () => QUESTIONS.find(q => q.id === id),
+    definition: () => DEFINITIONS.find(d => d.id === id),
+  }[kind]();
+  const allowed = found && (kind === 'article' || kind === 'experiment' ? canSee(found) : true);
+
+  if (!allowed) {
+    if (reader.classList.contains('is-open')) closeReader();
+    setUrl('#mymind', { replace: true });
+    setKnowledge(true);
+    return;
+  }
+
+  if (kind === 'definition') openDefinitions(id, null);
+  else openReader(kind, id, null);
+  setKnowledge(true);
+}
+
+window.addEventListener('popstate', routeFromHash);
+routeFromHash();
