@@ -1,7 +1,6 @@
-import { $, on, esc } from './dom.js';
+import { on, esc } from './dom.js';
 import { imageCard } from './cards.js';
-import { initCarousels } from './media.js';
-import { isMobile } from './navigation.js';
+import { openLightbox } from './lightbox.js';
 
 // =====================================================
 // Photography sections (inside the Photography project)
@@ -89,54 +88,23 @@ if (photoRoot) {
       <div class="photo-board">${section.photos.map((photo, p) => imageCard({ ...photo, attrs: photoAttrs(s, p) })).join('')}</div>
     </div>`).join('');
 
-  // ---- Lightbox: the shared modal + carousel (#photoModal) ----
-  const modal = $('#photoModal');
-  const heading = $('#photoModalTitle');
-  const template = $('#photoCar').cloneNode(true);   // a clean, unwired copy to start each section from
-  let car = $('#photoCar');
-  let openSection = -1;                              // which section the carousel currently holds
-  let trigger = null;                                // the card that opened it, so focus can return there
-
-  const openPhoto = card => {
-    if (isMobile.matches) return;   // no lightbox on mobile: photos just stay in the grid
-    trigger = card;
-    const s = Number(card.dataset.section);
-    heading.innerHTML = headingHTML(PHOTO_SECTIONS[s]);   // header matches the section's heading
-
-    // New section: swap in a fresh carousel holding only that section's photos
-    if (s !== openSection) {
-      const fresh = template.cloneNode(true);
-      fresh.querySelector('.car-stage').innerHTML = PHOTO_SECTIONS[s].photos
-        .map(photo => `<img class="car-slide" src="${esc(photo.src)}" alt="${esc(photo.alt || 'Photograph')}">`)
-        .join('');
-      car.replaceWith(fresh);
-      car = fresh;
-      openSection = s;
-      initCarousels(modal);
-    }
-
-    car.show(Number(card.dataset.photo));   // jump to the clicked photo while the modal is still hidden
-    void modal.offsetWidth;                  // flush styles so that jump is instant, not a crossfade
-    modal.classList.add('is-open');
-    modal.setAttribute('aria-hidden', 'false');
-    car.focus({ preventScroll: true });      // so ← → work straight away
-  };
-
-  const closePhoto = () => {
-    if (!modal.classList.contains('is-open')) return;
-    modal.classList.remove('is-open');
-    modal.setAttribute('aria-hidden', 'true');
-    trigger?.focus({ preventScroll: true });
+    // Clicking (or Enter / Space on) a card opens the shared lightbox on that section's photos
+  const open = card => {
+    const section = PHOTO_SECTIONS[Number(card.dataset.section)];
+    openLightbox({
+      photos: section.photos,
+      start: Number(card.dataset.photo),
+      heading: headingHTML(section),   // title + date, same as the section heading
+      trigger: card,
+    });
   };
 
   on(photoRoot, 'click', event => {
     const card = event.target.closest('[data-photo]');
-    if (card) openPhoto(card);
+    if (card) open(card);
   });
   on(photoRoot, 'keydown', event => {
     const card = event.target.closest('[data-photo]');
-    if (card && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openPhoto(card); }
+    if (card && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); open(card); }
   });
-  on($('#photoModalClose'), 'click', closePhoto);
-  on(document, 'keydown', event => { if (event.key === 'Escape') closePhoto(); });
 }

@@ -92,9 +92,9 @@ Breakpoints override tokens (see section 10) instead of overriding rules.
   --z-toggle: 50;
   --z-overlay: 100;
 
-  /* Motion (js/navigation.js and js/photobook.js read --motion-view and --motion-book) */
-  --motion-fast: 0.2s;
-  --motion-medium: 0.5s;
+  /* Motion: --motion-view is the one timing for every fade and hover.
+     --motion-book and --motion-fade belong to the photobook only.
+     (js/navigation.js, js/knowledge.js and js/photobook.js read these) */
   --motion-fade: 0.6s;
   --motion-view: 0.8s;
   --motion-book: 900ms;
@@ -106,8 +106,6 @@ Breakpoints override tokens (see section 10) instead of overriding rules.
 /* Reduced motion: every duration is a token, so zeroing them is enough */
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --motion-fast: 0s;
-    --motion-medium: 0s;
     --motion-fade: 0s;
     --motion-view: 0s;
     --motion-book: 0ms;
@@ -287,7 +285,6 @@ body[data-mode="consume"] .consume,
 }
 
 .knowledge-view {
-  --fade: var(--motion-medium);
   z-index: var(--z-overlay);
   background: var(--bg);
   transform: translateY(var(--space-s));
@@ -579,7 +576,7 @@ body.knowledge-open :is(.layout, .consume) {
 }
 
 .c-title {
-  transition: color var(--motion-fast) var(--ease);
+  transition: color var(--motion-view) var(--ease);
 }
 
 .c-card:is(:hover, :focus-visible) .c-title {
@@ -619,7 +616,7 @@ body.knowledge-open :is(.layout, .consume) {
   margin: 0;
   font-size: var(--text-body);
   font-weight: var(--font-light);
-  transition: color var(--motion-fast) var(--ease);
+  transition: color var(--motion-view) var(--ease);
 }
 
 /* Green highlight, shared by the quote <mark>, inline links in text, and the About page */
@@ -938,7 +935,7 @@ body.knowledge-open :is(.layout, .consume) {
   pointer-events: none;
   z-index: 999;
   background: linear-gradient(90deg, transparent 49%, rgb(var(--ink) / 0.025) 50%, transparent 51%);
-  transition: opacity var(--motion-medium);
+  transition: opacity var(--motion-fade);
 }
 
 .fb-book.cover::after {
@@ -1167,7 +1164,6 @@ body.knowledge-open :is(.layout, .consume) {
 
 /* Modal: the shared fade pattern (section 3) over a dimmed page */
 .modal {
-  --fade: var(--motion-medium);
   position: fixed;
   inset: 0;
   z-index: var(--z-modal);
@@ -1183,7 +1179,7 @@ body.knowledge-open :is(.layout, .consume) {
   background: var(--bg);
   box-shadow: var(--shadow-book);
   transform: translateY(var(--space-s));
-  transition: transform var(--motion-medium) var(--ease-out);
+  transition: transform var(--motion-view) var(--ease-out);
 }
 
 .modal.is-open .modal-panel {
@@ -1264,14 +1260,14 @@ body.knowledge-open :is(.layout, .consume) {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity var(--motion-medium) var(--ease-out),
-              visibility 0s linear var(--motion-medium);
+  transition: opacity var(--motion-view) var(--ease-out),
+              visibility 0s linear var(--motion-view);
 }
 
 .consume-peek.is-visible {
   opacity: 1;
   visibility: visible;
-  transition: opacity var(--motion-medium) var(--ease-out);
+  transition: opacity var(--motion-view) var(--ease-out);
 }
 
 .consume-peek .c-card {
@@ -1375,14 +1371,32 @@ body.knowledge-open :is(.layout, .consume) {
   min-height: 0;
   align-self: stretch;
   aspect-ratio: var(--ratio, auto);   /* box shape comes from your data, not the file */
-  object-fit: cover;                  /* fills that box; a file that's a hair off the ratio is trimmed, not squashed */
+  object-fit: contain;                /* shown whole: wide images (screenshots) are letterboxed, not cropped */
 }
 
-/* While a modal is closed, slides can't be seen or clicked, and change instantly */
+/* While a modal is closed its slides can't be clicked (so the page behind can scroll), and they stay
+   visible until the modal has finished fading out, so the image fades with the rest of the lightbox.
+   (An active slide sets visibility: visible itself, so it needs this to be hidden along with the modal.) */
 .modal:not(.is-open) .car-slide {
-  transition: none;
   visibility: hidden;
   pointer-events: none;
+  transition: opacity var(--motion-view) var(--ease-out),
+              visibility 0s linear var(--motion-view);
+}
+
+/* A single image has nothing to step through */
+.modal--single .fb-bar {
+  display: none;
+}
+
+/* In the Knowledge view there is no sidebar to keep visible, so the lightbox spans the full width */
+body.knowledge-open .modal--photo {
+  left: 0;
+}
+
+/* Cursor for standalone images that open the lightbox (class added by js/lightbox.js) */
+img.is-zoomable {
+  cursor: zoom-in;
 }
 
 /* =====================================================

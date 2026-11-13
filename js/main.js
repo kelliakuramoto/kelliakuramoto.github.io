@@ -4,6 +4,7 @@ import './photography.js';
 import './password-gate.js';
 import './photobook.js';
 import './knowledge.js';
+import './lightbox.js';
 import { initVideos, initCarousels } from './media.js';
 
 initVideos();
