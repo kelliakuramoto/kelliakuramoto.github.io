@@ -770,9 +770,9 @@ function requestKnowledge() {
   else openKnowledge();
 }
 
-// Anything with data-term (inline links, the "Peek into my mind" button) opens that definition,
-// unlocking and opening Knowledge first if needed. It works from the Consume board too.
-on(document, 'click', async event => {
+// Anything with data-term (inline links, the "Peek into my mind" button) opens that definition.
+// No password is needed. Knowledge itself (the logo) still asks for one.
+on(document, 'click', event => {
   const link = event.target.closest('[data-term]');
   if (!link) return;
   event.preventDefault();
@@ -780,15 +780,15 @@ on(document, 'click', async event => {
 
   // Knowledge is closed (e.g. Peek on the Consume board): set the definition up while the layer is hidden,
   // then fade the layer in, exactly like opening Knowledge from its toggle.
-  if (!(await prepareKnowledge())) return;
   trail = ['outside'];                                 // closing it closes the whole layer
   openDefinitions(link.dataset.term, link);
   setKnowledge(true);
   $('.car', readerContent)?.focus({ preventScroll: true });
 });
 
-// The "Read the essay" peek button opens that article, unlocking and opening Knowledge first if needed.
-on(document, 'click', async event => {
+// The "Read the essay" peek button opens that article directly, with no password.
+// Knowledge itself (the logo) still asks for one. [ CLOSE ] closes the whole layer.
+on(document, 'click', event => {
   const link = event.target.closest('[data-essay]');
   if (!link) return;
   event.preventDefault();
@@ -796,10 +796,8 @@ on(document, 'click', async event => {
 
   if (isOpen()) { openReader('article', id, link); return; }
 
-  if (!(await prepareKnowledge())) return;
-  const article = ARTICLES.find(a => a.id === id);
-  if (!article || !canSee(article)) return;      // respect the password group's access list
-  trail = ['outside'];                           // [ CLOSE ] closes the whole layer
+  if (!ARTICLES.some(article => article.id === id)) return;   // unknown essay: do nothing
+  trail = ['outside'];                                        // [ CLOSE ] closes the whole layer
   openReader('article', id, link);
   setKnowledge(true);
   closeButton.focus({ preventScroll: true });
