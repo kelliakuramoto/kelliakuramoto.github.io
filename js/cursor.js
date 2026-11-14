@@ -12,6 +12,7 @@ const CLICKABLE = [
   '[data-essay]',
   '[data-knowledge-kind]',     // Knowledge cards
   '.is-zoomable',              // images that enlarge (js/lightbox.js)
+  '.fb-book',                  // the photobook: click the left or right half to turn the page
   'label',
   'summary',
 ].join(',');
