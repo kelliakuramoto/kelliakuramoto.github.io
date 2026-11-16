@@ -76,6 +76,24 @@ export const COLLECTION = [
     url: 'https://youtu.be/QWG6u9yP7uQ?si=5euluw3dWN3DBamp'
   },
   {
+    type: 'podcast',
+    show: 'Mattias Olsson',
+    episode: 'Radical Neighbouring',
+    minutes: 19,
+    progress: 96,
+    image: 'images/Consume/radical-neighbouring.jpg',
+    url: 'https://www.youtube.com/watch?v=dynQV-oKM0E&t=843s'
+  },
+  {
+    type: 'podcast',
+    show: 'Humans with Hank',
+    episode: 'Neal Agarwal Wants to Make You Less Productive',
+    minutes: 55,
+    progress: 67,
+    image: 'images/Consume/humans-with-hank.jpeg',
+    url: 'https://www.youtube.com/watch?v=2Qvx6jpQLME'
+  },
+  {
     type: 'book',
     title: 'This is Water',
     by: 'David Foster Wallace',
