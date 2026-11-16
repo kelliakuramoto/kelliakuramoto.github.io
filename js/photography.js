@@ -58,16 +58,6 @@ const PHOTO_SECTIONS = [
   },
 ];
 
-// // Each section: a heading with its date, then a masonry board of photo cards (js/cards.js)
-// const photoRoot = document.getElementById('photoSections');
-// if (photoRoot) {
-//   photoRoot.innerHTML = PHOTO_SECTIONS.map(section => `
-//     <div class="photo-group">
-//       <h3 class="photo-heading"><span>${esc(section.title)}</span>${section.meta ? `<span class="photo-meta">${esc(section.meta)}</span>` : ''}</h3>
-//       <div class="photo-board">${section.photos.map(photo => imageCard(photo)).join('')}</div>
-//     </div>`).join('');
-// }
-
 // Every photo in order, so the lightbox can step through all sections
 const ALL_PHOTOS = PHOTO_SECTIONS.flatMap(section => section.photos);
 

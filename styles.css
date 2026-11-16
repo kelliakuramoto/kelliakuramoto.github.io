@@ -645,7 +645,8 @@ body.knowledge-open :is(.layout, .consume) {
 
 .term-link,
 .consume-link,
-.essay-link {
+.essay-link,
+a[href*="instagram.com/saturated_sights"] {
   color: var(--hover);
   font-weight: var(--font-medium);
   transition: none;
@@ -654,7 +655,8 @@ body.knowledge-open :is(.layout, .consume) {
 
 .term-link:is(:hover, :focus-visible),
 .consume-link:is(:hover, :focus-visible),
-.essay-link:is(:hover, :focus-visible) {
+.essay-link:is(:hover, :focus-visible),
+a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   color: var(--hover);
   transition: none;
 }
@@ -820,16 +822,18 @@ body.knowledge-open :is(.layout, .consume) {
   margin: 0 auto;
 }
 
+#photoSections {
+  width: 100%; 
+  margin: var(--space-l) 0;
+  gap: var(--space-m);
+}
+
 .photo-board {
   columns: 3 12rem;
 }
 
 .photo-group {
-  margin: 0 0 var(--space-l);
-}
-
-.photo-group:last-child {
-  margin-bottom: 0;
+  margin: 0 0 var(--grid-gap);
 }
 
 /* Group heading: title left, date right, same baseline */
@@ -839,7 +843,6 @@ body.knowledge-open :is(.layout, .consume) {
   justify-content: space-between;
   gap: var(--space-m);
   margin: 0 0 var(--space-m);
-  padding-top: var(--space-l);
   font-weight: var(--font-regular);
   text-transform: uppercase;
   color: var(--line);
@@ -902,7 +905,7 @@ body.knowledge-open :is(.layout, .consume) {
     8. PHOTOBOOK + CAROUSEL
     js/photobook.js reads --motion-book for its flip timing.
     ===================================================== */
-.fb {
+.fb, #photoSections {
   width: 100%; 
   margin: var(--space-l) 0;
   outline: none;
