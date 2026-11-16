@@ -67,13 +67,12 @@ export const COLLECTION = [
     term: 'gut-check'
   },
   {
-    type: 'podcast',
-    show: '99% Invisible',
-    episode: 'The Score',
-    minutes: 26,
-    progress: 52,
-    image: 'images/Consume/99-pi.png',
-    url: 'https://youtu.be/QWG6u9yP7uQ?si=5euluw3dWN3DBamp'
+    type: 'book',
+    title: 'The Score',
+    by: 'C. Thi Nguyen',
+    color: '#1d3a2b',
+    image: 'images/Consume/the-score.jpeg',
+    url: 'https://www.goodreads.com/en/book/show/231363343-the-score'
   },
   {
     type: 'podcast',

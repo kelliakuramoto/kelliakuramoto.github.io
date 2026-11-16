@@ -634,9 +634,7 @@ body.knowledge-open :is(.layout, .consume) {
 
 /* Green highlight, shared by the quote <mark>, inline links in text, and the About page */
 .about-job,
-.c-quote mark,
-.term-link,
-.consume-link {
+.c-quote mark {
   color: inherit;
   text-decoration: none;
   transition: color var(--motion-view) var(--ease-out);
@@ -645,8 +643,18 @@ body.knowledge-open :is(.layout, .consume) {
   box-decoration-break: clone;
 }
 
+.term-link,
+.consume-link,
+.essay-link {
+  color: var(--hover);
+  font-weight: var(--font-medium);
+  transition: none;
+  text-decoration: none;
+}
+
 .term-link:is(:hover, :focus-visible),
-.consume-link:is(:hover, :focus-visible) {
+.consume-link:is(:hover, :focus-visible),
+.essay-link:is(:hover, :focus-visible) {
   color: var(--hover);
   transition: none;
 }
@@ -786,13 +794,13 @@ body.knowledge-open :is(.layout, .consume) {
 .c-flash-word {
   margin: auto 0;                /* centres the word between the label and the bottom edge */
   font-size: var(--text-display);
-  font-weight: var(--font-regular);
+  font-weight: var(--font-light);
   letter-spacing: var(--tracking-tight);
 }
 
 .c-flash-def {
   font-size: var(--text-lead);
-  font-weight: var(--font-regular);
+  font-weight: var(--font-light);
   line-height: 1.4;
   white-space: pre-line;   /* "\n" in a definition becomes a line break */
 }
@@ -1280,6 +1288,30 @@ body.knowledge-open :is(.layout, .consume) {
 
 .consume-peek .c-card {
   margin: 0;
+}
+
+/* Definition preview: just the definition, no word above or "Definition" label below */
+.consume-peek .c-flash small { display: none; }
+
+/* Essay preview: the same full outline as the definition card */
+.consume-peek .c-article {
+  padding: var(--space-m);
+  border: var(--line-width) solid var(--border);
+  background: var(--bg);
+}
+
+/* Definition preview: the flash card, but sized to its text */
+.consume-peek .c-flash-inner { 
+  aspect-ratio: auto; 
+}
+
+.consume-peek .c-flash-face { 
+  min-height: 0; 
+  padding: var(--space-m); 
+}
+
+.consume-peek .c-flash-def { 
+  font-size: var(--text-body); 
 }
 
 .knowledge-divider {

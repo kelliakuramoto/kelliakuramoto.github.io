@@ -28,7 +28,7 @@ const ARTICLES = [
         { type: 'paragraph', text: 'I think if she had asked me this question a couple months earlier my response might have been different, but I had just recently had made a photobook of thank you notes to the people in my life and shared it with them. I can honestly say there’s nothing I’m more proud of than that and I plan to make one every year for as long as I can. But we’ve somehow off-roaded quite a bit now.' },
         { type: 'paragraph', text: 'The reason I brought this project up is that I’m starting to publish my writing on the internet (not that anyone is reading it but still) and I’m not sure who I’m writing for anymore. Writing for me has always been this private act, mainly to just calm the thoughts in my brain and for future versions of myself to look back on and glimpse into a moment of who I used to be. Sometimes I write conversationally, as if I’m writing a letter to a future version of myself that’s a different person than who I am right now and sometimes I write quite factually, as a way to record-keep a memory that I’m worried I might forget. But lately I’ve been finding myself editing my mind and writing for the reader, adding in generic shared experiences to seem more relatable, or structuring my essays in a way that connect the intro paragraph to a life changing conclusion and I just keep thinking to myself: Who am I writing for? ' },
         { type: 'paragraph', text: 'I don’t edit my writing, the same way that I don’t edit my photos, or edit my appearance: because I’m lazy; but also because, as my father so aptly described it “take me as I am”. I tell my friends all the time, I don’t think I’m going to wear makeup on my wedding day, it just wouldn’t feel like me. And if I’m not willing to edit my appearance on what society deems “the happiest day of your life.” I sure as shit am not going to edit my writing for hypothetical readers that I may or may not know, who may or may not read it.' },
-        { type: 'paragraph', text: 'I will not deny that there is benefit in writing for the reader and I myself have read many articles that I have found propounding moving or sparked an engaging conversation between my friends and I. But I kind of think it’s something that naturally happens, rather than the main reason to do it. I think there is a greater beauty in craft, in finding your voice, one that is truly yours, and if people just happen to [[cost-of-translation|speak your language]] then it’s [[free-bread]].' },
+        { type: 'paragraph', text: 'I will not deny that there is benefit in writing for the reader and I myself have read many articles that I have found propounding moving or sparked an engaging conversation between my friends and I. But I kind of think it’s something that naturally happens, rather than the main reason to do it. I think there is a greater beauty in craft, in finding your voice, one that is truly yours, and if people just happen to speak your language then it’s [[free-bread]].' },
         { type: 'paragraph', text: 'I cannot write for everyone, I can only write for myself and hope that I have spoken in a way that is heard by those who want to listen. Maybe life is just a long process of finding people who speak your language. It’s not the worst way to live.' },
       ],
       access: ['friends', 'professional'],
@@ -73,7 +73,7 @@ const ARTICLES = [
     { type: 'paragraph', text: 'But my favorite thing to think about is when I’m walking back from hanging out with my friends and I run a retrospective of our hang out.' },
     { type: 'paragraph', text: 'If you don’t know what a retrospective is, that’s probably a good thing but essentially it’s a meeting where engineers come together and look back on the complete work during the sprint, evaluate what went well, what failed, and how to improve for the future. It’s like mindfulness, but for tech companies.' },
     { type: 'paragraph', text: 'But in my case, instead trying to figure out how to be more efficient, I ask myself questions like: How do I feel after hanging out with them? Do I think I showed up as a good friend that day? Did my actions align with my beliefs and values? And if any of the answers are no, I run a root cause analysis and ask myself the 5 why’s? Which is a UX research method where when someone gives you an answer, you respond with why, and then when they answer, you respond with why again and this keeps going until you’ve identity the root cause (I know crazy where the name comes from).' },
-    { type: 'paragraph', text: 'If this all sounds a bit weird in theory, let me give you a good example. So one day my friends and I were doing the Crosstown Trail and every mile, we made a letter of the word with our bodies, so that at the end we could collage them together. During this walk, I was telling one of my friends that the day before I was dancing in public and my other friend told me to stop, which really annoyed me for a couple reasons 1. Just because he might have felt embarrassed doesn’t mean that I should feel embarrassed too and 2. I don’t like being told what to do and more importantly I don’t believe that you should tell someone what to do especially if it’ not harming anyone, which my dancing wasn’t.' },
+    { type: 'paragraph', text: 'If this all sounds a bit weird in theory, let me give you a good example. So one day my friends and I were doing the Crosstown Trail and every mile, we made a letter of the word with our bodies, so that at the end we could collage them together. During this walk, I was telling one of my friends that the day before I was dancing in public and my other friend told me to stop, which really annoyed me for a couple reasons 1. Just because he might have felt embarrassed doesn’t mean that I should feel embarrassed too and 2. I don’t like being told what to do and more importantly ((no-advice|I don’t believe that you should tell someone what to do)) especially if it’ not harming anyone, which my dancing wasn’t.' },
     { type: 'paragraph', text: 'I promise I’m getting to the important part, so about 20 minutes go by and its now time for us to make the “W” in Crosstown and we weren’t quite sure how we were going to make the letter or how many people we would need. So my friend (the original one I was telling the story about dancing in public to) started to ask this couple nearby if they could take the photo for us. In that moment I had a very immediate reaction where I was like “No, don’t do that, we can take the photo ourselves”.' },
     { type: 'paragraph', text: 'Afterwards, I felt quite bad about the whole thing and I spent a long time trying to figure out why I reacted that way. I knew that it was extremely contradictory for me to tell my friend not to do something after just telling them that I get upset when someone tells me what to do. So I ran a retrospective.' },
     { type: 'paragraph', text: 'I asked myself why I believed that it was wrong to tell other people what to do and after confirming that is still what I believed, I asked myself why I think I responded in that way: Was it because of embarrassment? Was it because I didn’t want to burden a stranger by asking them to take our photo? Was it because I had already figured out that we had enough people to to take the photo and didn’t need to ask anyone else?' },
@@ -210,17 +210,28 @@ function renderCollections() {
 
 renderCollections();   // everyone-items only, until a password is entered
 
-// Escapes `text`, then turns [[id]] into definition links and {{id}} / {{id|label}} into Consume links.
-// An unknown id is left as typed so a typo is easy to spot.
-const richText = text => linkTerms(text).replace(/\{\{([\w-]+)(?:\|([^}]+))?\}\}/g, (match, id, label) => {
-  const item = COLLECTION.find(entry => entry.id === id);
-  if (!item) return match;
-  const words = label || esc(item.title || item.episode || id);
-  // Same link as the Consume card: opens the item's url in a new tab. Items without a url (quotes) just show the card.
-  return item.url
-    ? `<a href="${esc(item.url)}" class="consume-link" data-consume="${id}" target="_blank" rel="noopener noreferrer">${words}</a>`
-    : `<span class="consume-link" data-consume="${id}" tabindex="0">${words}</span>`;
-});
+// Escapes `text`, then turns [[id]] into definition links, {{id}} into Consume links
+// and ((id|label)) into links to another essay. An unknown id is left as typed.
+// Escapes `text`, then turns [[id]] into definition links, {{id}} into Consume links
+// and ((id|label)) into links to another essay. An unknown id is left as typed.
+const richText = text => linkTerms(text)
+  .replace(/\{\{([\w-]+)(?:\|([^}]+))?\}\}/g, (match, id, label) => {
+    const item = COLLECTION.find(entry => entry.id === id);
+    if (!item) return match;
+    const words = label || esc(item.title || item.episode || id);
+    // Same link as the Consume card: opens the item's url in a new tab. Items without a url (quotes) just show the card.
+    return item.url
+      ? `<a href="${esc(item.url)}" class="consume-link" data-consume="${id}" target="_blank" rel="noopener noreferrer">${words}</a>`
+      : `<span class="consume-link" data-consume="${id}" tabindex="0">${words}</span>`;
+  })
+  .replace(/\(\(([\w-]+)(?:\|([^)]+))?\)\)/g, (match, id, label) => {
+    const essay = ARTICLES.find(article => article.id === id);
+    if (!essay) return match;
+    const words = label || esc(essay.title);
+    return canSee(essay)
+      ? `<a href="#mymind/article/${id}" class="essay-link" data-knowledge-kind="article" data-knowledge-id="${id}">${words}</a>`
+      : words;
+  });
 
 function blockHTML(block) {
   const text = richText(block.text || '');
@@ -483,14 +494,33 @@ on(readerContent, 'click', event => {
   car.focus({ preventScroll: true });                      // so ← → keep turning the cards instead of switching CREATE / CONSUME
 });
 
-// ---- Consume card beside the essay ------------------------------
-// Hovering (or focusing) a .consume-link shows that Consume card in the essay's right column, level with the link.
+// ---- Peek beside the essay --------------------------------------
+// Hovering (or focusing) a link in the essay shows a small preview in the right column, level with the link:
+//   Consume link  the Consume card
+//   definition    its flash card, sized down
+//   essay         a small card with its title and subtitle
 // On mobile (no room beside the essay) CSS floats it above the toggle bar instead.
-function showConsumePeek(link) {
-  const item = COLLECTION.find(entry => entry.id === link.dataset.consume);
+const PEEK_LINKS = '[data-consume], .term-link, .essay-link';
+
+function peekCard(link) {
+  if (link.dataset.consume) {
+    const item = COLLECTION.find(entry => entry.id === link.dataset.consume);
+    return item && consumeCard(item);
+  }
+  if (link.dataset.term) {
+    const term = DEFINITIONS.find(entry => entry.id === link.dataset.term);
+    // attrs: '' drops the "flip me" button behaviour: this copy is only a preview
+    return term && flashCard({ front: linkTerms(term.text), back: esc(term.word), foot: term.word, attrs: '' });
+  }
+  const essay = ARTICLES.find(article => article.id === link.dataset.knowledgeId);
+  return essay && articleCard({ title: essay.title, sub: essay.subheader });
+}
+
+function showPeek(link) {
   const peek = $('.consume-peek', readerContent);
-  if (!item || !peek) return;
-  peek.innerHTML = consumeCard(item);
+  const card = peek && peekCard(link);
+  if (!card) return;                                       // not an essay page, or an unknown id
+  peek.innerHTML = card;
   if (!isMobile.matches) {
     // Keep the card on screen: level with the link, but never above the top or below the bottom of the view
     const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -501,12 +531,12 @@ function showConsumePeek(link) {
   peek.classList.add('is-visible');
 }
 
-const hideConsumePeek = () => $('.consume-peek', readerContent)?.classList.remove('is-visible');
+const hidePeek = () => $('.consume-peek', readerContent)?.classList.remove('is-visible');
 
-on(readerContent, 'mouseover', event => { const link = event.target.closest('[data-consume]'); if (link) showConsumePeek(link); });
-on(readerContent, 'mouseout', event => { if (event.target.closest('[data-consume]')) hideConsumePeek(); });
-on(readerContent, 'focusin', event => { const link = event.target.closest('[data-consume]'); if (link) showConsumePeek(link); });
-on(readerContent, 'focusout', hideConsumePeek);
+on(readerContent, 'mouseover', event => { const link = event.target.closest(PEEK_LINKS); if (link) showPeek(link); });
+on(readerContent, 'mouseout', event => { if (event.target.closest(PEEK_LINKS)) hidePeek(); });
+on(readerContent, 'focusin', event => { const link = event.target.closest(PEEK_LINKS); if (link) showPeek(link); });
+on(readerContent, 'focusout', hidePeek);
 
 // ---- Open / close Knowledge -------------------------------------
 
@@ -812,7 +842,12 @@ const openFrom = trigger => {
   else openReader(kind, id, trigger);
 };
 
-on(view, 'click', event => openFrom(event.target.closest('[data-knowledge-kind]')));
+on(view, 'click', event => {
+  const trigger = event.target.closest('[data-knowledge-kind]');
+  if (!trigger) return;
+  if (trigger.matches('a')) event.preventDefault();   // essay links: open in place, not via the hash
+  openFrom(trigger);
+});
 
 // Cards are article[role=button], so they need Enter / Space themselves.
 // (Only when the card itself has focus, so links on a flash card's back still work.)
