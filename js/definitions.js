@@ -14,8 +14,21 @@ import { esc } from './dom.js';
 //                                                                         and gets a "Peek into my mind" button
 // =====================================================
 export const DEFINITIONS = [
-  { id: 'gut-check', word: 'Gut check', text: 'Your body’s response to external information in the form of visceral reaction. Suggestion: Trust and verify your gut when you intimately understand why and how you operate (i.e. how you make decisions).'},
-  { id: 'currency-exchange', word: 'Cost of translation', text: 'The effort required to present information in a way that makes sense to the listener, but might not be intuitive to the speaker. Suggestion: Sometimes cost of translation is too high and that is okay. Maybe life is just about finding people who speak your language.' },
+  { 
+    id: 'gut-check', 
+    word: 'Gut check', 
+    text: 'Your body’s response to external information in the form of visceral reaction. \n\nTrust and verify your gut when you intimately understand why and how you operate (i.e. how you make decisions).'
+  },
+  { 
+    id: 'cost-of-translation', 
+    word: 'Cost of translation', 
+    text: 'The effort required to communicate information in a way that makes sense to the listener, but might not be native to the speaker. \n\nSometimes cost of translation is too high and that is okay. Maybe life is just about finding people who speak your language.' 
+  },
+  { 
+    id: 'free-bread', 
+    word: 'Free bread', 
+    text: 'Small luxuries in life that are great to have, but not guaranteed. Like free bread at a restaurant.' 
+  },
 ]
 
 export const getDefinition = id => DEFINITIONS.find(term => term.id === id);

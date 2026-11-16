@@ -794,6 +794,7 @@ body.knowledge-open :is(.layout, .consume) {
   font-size: var(--text-lead);
   font-weight: var(--font-regular);
   line-height: 1.4;
+  white-space: pre-line;   /* "\n" in a definition becomes a line break */
 }
 
 /* =====================================================
@@ -1133,17 +1134,9 @@ body.knowledge-open :is(.layout, .consume) {
   width: 100%;
   max-width: var(--screen-max);
 }
-/* 
-.definitions {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--grid-gap);
-  align-items: start;
-} */
 
-.definitions-related h3 {
+.definitions-related {
   margin: 0 0 var(--space-m);
-  /* text-transform: uppercase; */
 }
 
 .knowledge-article-header h1 {

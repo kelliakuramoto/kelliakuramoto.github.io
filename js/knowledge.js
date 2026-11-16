@@ -28,7 +28,7 @@ const ARTICLES = [
         { type: 'paragraph', text: 'I think if she had asked me this question a couple months earlier my response might have been different, but I had just recently had made a photobook of thank you notes to the people in my life and shared it with them. I can honestly say there’s nothing I’m more proud of than that and I plan to make one every year for as long as I can. But we’ve somehow off-roaded quite a bit now.' },
         { type: 'paragraph', text: 'The reason I brought this project up is that I’m starting to publish my writing on the internet (not that anyone is reading it but still) and I’m not sure who I’m writing for anymore. Writing for me has always been this private act, mainly to just calm the thoughts in my brain and for future versions of myself to look back on and glimpse into a moment of who I used to be. Sometimes I write conversationally, as if I’m writing a letter to a future version of myself that’s a different person than who I am right now and sometimes I write quite factually, as a way to record-keep a memory that I’m worried I might forget. But lately I’ve been finding myself editing my mind and writing for the reader, adding in generic shared experiences to seem more relatable, or structuring my essays in a way that connect the intro paragraph to a life changing conclusion and I just keep thinking to myself: Who am I writing for? ' },
         { type: 'paragraph', text: 'I don’t edit my writing, the same way that I don’t edit my photos, or edit my appearance: because I’m lazy; but also because, as my father so aptly described it “take me as I am”. I tell my friends all the time, I don’t think I’m going to wear makeup on my wedding day, it just wouldn’t feel like me. And if I’m not willing to edit my appearance on what society deems “the happiest day of your life.” I sure as shit am not going to edit my writing for hypothetical readers that I may or may not know, who may or may not read it.' },
-        { type: 'paragraph', text: 'I will not deny that there is benefit in writing for the reader and I myself have read many articles that I have found propounding moving or sparked an engaging conversation between my friends and I. But I kind of think it’s something that naturally happens, rather than the main reason to do it. I think there is a greater beauty in craft, in finding your voice, one that is truly yours, and if people just happen to speak your language then it’s free bread.' },
+        { type: 'paragraph', text: 'I will not deny that there is benefit in writing for the reader and I myself have read many articles that I have found propounding moving or sparked an engaging conversation between my friends and I. But I kind of think it’s something that naturally happens, rather than the main reason to do it. I think there is a greater beauty in craft, in finding your voice, one that is truly yours, and if people just happen to [[cost-of-translation|speak your language]] then it’s [[free-bread]].' },
         { type: 'paragraph', text: 'I cannot write for everyone, I can only write for myself and hope that I have spoken in a way that is heard by those who want to listen. Maybe life is just a long process of finding people who speak your language. It’s not the worst way to live.' },
       ],
       access: ['friends', 'professional'],
@@ -402,11 +402,11 @@ function closeReader() {
 const articlesUsing = id => ARTICLES.filter(article =>
   article.blocks.some(block => [block.text, ...(block.items || [])].some(text => mentions(text, id))));
 
-const relatedSection = (title, cards) => cards.length ? `<section><h3>${title}</h3>${cards.join('')}</section>` : '';
+const relatedSection = (title, cards) => cards.length ? `<section><h2 class="definitions-related">${title}</h2>${cards.join('')}</section>` : '';
 
 // A section with nothing in it is left out
 const relatedHTML = term =>
-  relatedSection('Etymology', COLLECTION.filter(item => item.term === term.id).map(consumeCard)) +
+  relatedSection('Origin', COLLECTION.filter(item => item.term === term.id).map(consumeCard)) +
   relatedSection('Used in a sentence', articlesUsing(term.id).filter(canSee).map(articleRow));
 
 // Same structure as the Knowledge overview: three .knowledge-column sections (1fr 2fr 1fr).

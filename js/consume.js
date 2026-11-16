@@ -19,7 +19,7 @@ export const COLLECTION = [
     progress: 21,
     image: 'images/Consume/what-now.png',
     url: 'https://youtu.be/UVhAceBQmpY?si=Xk2LRWulUE9_W7gx',
-    term: 'currency-exchange'
+    term: 'cost-of-translation'
   },
   {
     type: 'book',
