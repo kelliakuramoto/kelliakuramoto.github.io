@@ -800,24 +800,32 @@ function requestKnowledge() {
   else openKnowledge();
 }
 
+// Peek on the Consume board: Knowledge is closed, so ask for the password first (same prompt as the logo).
+// Once unlocked, set the page up while the layer is hidden, then fade the layer in.
+// Cancel or a wrong password does nothing. [ CLOSE ] closes the whole layer.
+async function openFromOutside(open, focus) {
+  if (!(await prepareKnowledge())) return;
+  trail = ['outside'];
+  open();
+  setKnowledge(true);
+  focus();
+}
+
 // Anything with data-term (inline links, the "Peek into my mind" button) opens that definition.
-// No password is needed. Knowledge itself (the logo) still asks for one.
+// Inside Knowledge you're already unlocked; from the Consume board the password is asked first.
 on(document, 'click', event => {
   const link = event.target.closest('[data-term]');
   if (!link) return;
-  event.preventDefault();
+  event.preventDefault();                                // must run before the password prompt (it's async)
   if (isOpen()) { openDefinitions(link.dataset.term, link); return; }
 
-  // Knowledge is closed (e.g. Peek on the Consume board): set the definition up while the layer is hidden,
-  // then fade the layer in, exactly like opening Knowledge from its toggle.
-  trail = ['outside'];                                 // closing it closes the whole layer
-  openDefinitions(link.dataset.term, link);
-  setKnowledge(true);
-  $('.car', readerContent)?.focus({ preventScroll: true });
+  openFromOutside(
+    () => openDefinitions(link.dataset.term, link),
+    () => $('.car', readerContent)?.focus({ preventScroll: true })
+  );
 });
 
-// The "Read the essay" peek button opens that article directly, with no password.
-// Knowledge itself (the logo) still asks for one. [ CLOSE ] closes the whole layer.
+// The essay Peek button opens that article, with the same password rule.
 on(document, 'click', event => {
   const link = event.target.closest('[data-essay]');
   if (!link) return;
@@ -825,12 +833,12 @@ on(document, 'click', event => {
   const id = link.dataset.essay;
 
   if (isOpen()) { openReader('article', id, link); return; }
-
   if (!ARTICLES.some(article => article.id === id)) return;   // unknown essay: do nothing
-  trail = ['outside'];                                        // [ CLOSE ] closes the whole layer
-  openReader('article', id, link);
-  setKnowledge(true);
-  closeButton.focus({ preventScroll: true });
+
+  openFromOutside(
+    () => openReader('article', id, link),
+    () => closeButton.focus({ preventScroll: true })
+  );
 });
 
 // ---- Events -----------------------------------------------------
