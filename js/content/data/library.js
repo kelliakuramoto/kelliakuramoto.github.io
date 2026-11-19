@@ -190,4 +190,10 @@ export const LIBRARY = [
     highlight: 'idea that we can do things differently',
     by: 'Wen-Yu Weng, Ellen MacArthur Foundation’s Critical Minerals Lead'
   },
+    {
+    type: 'quote',
+    text: 'If you can imagine any other possible thing to do, perhaps you should pursue that.',
+    highlight: 'perhaps you should pursue that',
+    by: 'Mona Simpson'
+  },
 ];
