@@ -564,9 +564,9 @@ body.knowledge-open :is(.layout, .consume) {
   text-decoration: none;
 }
 
-.c-card[data-knowledge-kind="article"],
-.c-card[data-knowledge-kind="definition"],
-.c-card[data-knowledge-kind="question"] {
+.c-card[data-ref^="article:"],
+.c-card[data-ref^="definition:"],
+.c-card[data-ref^="question:"] {
   margin-bottom: 1rem;
 }
 

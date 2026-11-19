@@ -1,172 +1,31 @@
 import { $, $$, esc, on, showOnly } from './dom.js';
-import { articleCard, bookCard, quoteCard, flashCard, textCard } from './cards.js';
+import { quoteCard, flashCard } from './cards.js';
 import { animateScrollTo, isMobile } from './navigation.js';
 import { supabase } from './supabase.js';
-import { DEFINITIONS, linkTerms, mentions } from './definitions.js';
-import { COLLECTION, consumeCard } from './consume.js';
+import { all, get, register } from './content/index.js';
+import { richText } from './content/richtext.js';
+import { cardFor, peekFor, connectionsHTML, formatDate, refAttrs } from './content/kinds.js';
+import { articleCard } from './cards.js';
 import { carouselHTML, initCarousels } from './media.js';
 
 // =====================================================
-// KNOWLEDGE VIEW
+// KNOWLEDGE VIEW  (the reader, the overview and the Supabase questions)
+// The content itself lives in js/content/data/ (essays, experiments, definitions, library).
+// This file only DISPLAYS it. It never needs to change when you add content.
 // Questions live in Supabase (visitors can respond, the editor can add questions).
-// Add articles and experiments in the collections below.
-// Experiments are Consume book cards (js/cards.js).
-// Article body blocks support: paragraph, heading, subheading, quote,
-// underline, image, and divider. Images use paths relative to index.html.
+// Everything that opens a page carries data-ref="kind:id"; one click handler opens it.
 // =====================================================
 
-const ARTICLES = [
-    // Writing for the reader
-    {
-      id: 'writing-for-the-reader',
-      title: 'Writing for the reader',
-      subheader: 'Who am I writing for?',
-      date: '2026-11-12',
-      blocks: [
-        { type: 'paragraph', text: 'When I was in New York a couple weeks ago, my friend took me to the Strangers Project. It’s a collection of letters written in response to the question: What’s it like being you? It started during the pandemic and has been popping up in various spots around the city since. After 20 minutes I had already laughed (physically out loud), cried, and related to many of the letters that I read.' },
-        { type: 'paragraph', text: 'Over time I noticed a theme. People responded to this question in many different ways: as a journal entry, time stamping that exact moment in life, a confession of their biggest fears, a celebration of their biggest accomplishment, but surprisingly the most common letter was advice or pre-requisitely, learnings from their own life. One person went as far to say: “I’m wondering what to write that will have the most impact for the readers” and that felt very “breaking the 4th wall”-esque. I thought it was quite an odd response when asked about yourself and it made me a bit sad to realize that this urge to impart wisdom, to create a legacy or sense of permanence was probably born out of a feeling of disconnectedness from their own lives. I remember walking out of the exhibit and my friend asked me if I wanted to write a letter. I responded with “No, the people who matter to me know how I feel about them.”' },
-        { type: 'paragraph', text: 'I think if she had asked me this question a couple months earlier my response might have been different, but I had just recently had made a photobook of thank you notes to the people in my life and shared it with them. I can honestly say there’s nothing I’m more proud of than that and I plan to make one every year for as long as I can. But we’ve somehow off-roaded quite a bit now.' },
-        { type: 'paragraph', text: 'The reason I brought this project up is that I’m starting to publish my writing on the internet (not that anyone is reading it but still) and I’m not sure who I’m writing for anymore. Writing for me has always been this private act, mainly to just calm the thoughts in my brain and for future versions of myself to look back on and glimpse into a moment of who I used to be. Sometimes I write conversationally, as if I’m writing a letter to a future version of myself that’s a different person than who I am right now and sometimes I write quite factually, as a way to record-keep a memory that I’m worried I might forget. But lately I’ve been finding myself editing my mind and writing for the reader, adding in generic shared experiences to seem more relatable, or structuring my essays in a way that connect the intro paragraph to a life changing conclusion and I just keep thinking to myself: Who am I writing for? ' },
-        { type: 'paragraph', text: 'I don’t edit my writing, the same way that I don’t edit my photos, or edit my appearance: because I’m lazy; but also because, as my father so aptly described it “take me as I am”. I tell my friends all the time, I don’t think I’m going to wear makeup on my wedding day, it just wouldn’t feel like me. And if I’m not willing to edit my appearance on what society deems “the happiest day of your life.” I sure as shit am not going to edit my writing for hypothetical readers that I may or may not know, who may or may not read it.' },
-        { type: 'paragraph', text: 'I will not deny that there is benefit in writing for the reader and I myself have read many articles that I have found propounding moving or sparked an engaging conversation between my friends and I. But I kind of think it’s something that naturally happens, rather than the main reason to do it. I think there is a greater beauty in craft, in finding your voice, one that is truly yours, and if people just happen to speak your language then it’s [[free-bread]].' },
-        { type: 'paragraph', text: 'I cannot write for everyone, I can only write for myself and hope that I have spoken in a way that is heard by those who want to listen. Maybe life is just a long process of finding people who speak your language. It’s not the worst way to live.' },
-      ],
-      access: ['friends', 'professional'],
-    },
-  // I dont believe in giving advice
-  {
-    id: 'no-advice',
-    title: 'I don’t believe in giving advice',
-    subheader: 'My response when asked: What should I do?',
-    date: '2026-09-24',
-    blocks: [
-      { type: 'heading', text: 'What should I do?' },
-      { type: 'paragraph', text: 'If you ask me what you should do in any situation my answer will always be the same, you should do what you want to do.' },
-      { type: 'paragraph', text: 'Before, when my friends came to me for advice, I used to think deeply about what I thought was the best course of action given all of the conditions of the situation . But after a while, I noticed that I was always left with this sour and unsatisfying taste in my mouth. I later recognized this to be the result of my friend’s utter lack of acknowledgement of my advice, and indeed doing the complete opposite of what I said to do.' },
-      { type: 'paragraph', text: 'I want to pause here and recognize two things. First, I no longer believe in "telling people what to do" and that was a mismatched expectations on my part. I now intentionally frame everything as a suggestion and they can take or leave as much as they want. I do not presume to have the respect or authority over anybody to tell what to do. Second, I have 100% in the past and probably will in the future, asked for "advice" from my friends and completely ignored what they said. I know my sister can definitely attest to this. This is all to say that I am not immune to the same actions that I get annoyed with in others. But I am trying to communicate what I need in any situation, even if most of the time it’s just for someone to listen.' },
-      { type: 'paragraph', text: 'Going back to the original thread, I stopped giving advice because what I realized was that my friends weren’t asking for advice, but for assurance. They wanted permission to do what they want to do, and more often than not, they wanted permission to continue persisting the behavior that got them into the predicament in the first place. And so, I give them it.' },
-      { type: 'paragraph', text: 'I do so because sometimes you win and sometimes you learn. Sometimes you have to play the tape to the very end to know that this wasn’t the path for you. As Rainier Maria Rilke said in "{{letters-to-a-young-poet|Letters to a Young Poet}}"'},
-      { type: 'quote', text: 'Do not now seek the answers, which cannot be given you because you would not be able to live them. And the point is, to live everything. Live the questions now.' },
-      { type: 'paragraph', text: 'Hindsight will always be 20/20 and you can’t blame your past self for “not knowing better”. You quite literally could not have known. Just because you have a hypothesis, doesn’t mean that you shouldn’t run the experiment. In fact, it is probably an huge indicator that you should.'},
-      { type: 'paragraph', text: 'All that we can do in life is make the best decisions we can, with the most amount of information that we have at the time. And the only way to get more information in life is by living it.' },
-      { type: 'heading', text: 'What would you do?' },
-      { type: 'paragraph', text: 'Now, if someone were to ask me what I would do in that situation, I still don’t believe in giving advice.' },
-      { type: 'paragraph', text: 'Growing up, I always asked my dad for advice. And honestly, I would have done whatever he told me. He could have told me to drive my car off a cliff and I would have done it. But whenever I asked him what I should do, he never gave me a straight answer.' },
-      { type: 'paragraph', text: 'Instead, my dad would always walk me through his framework of thinking, what factors he considered, why something was more important than another, and how that led to his ultimate decision in that situation. He taught me how to think, not what to think, and that is one of the most important lessons I’ve learned from him to this day.' },
-      { type: 'paragraph', text: 'My father understood much earlier than I did that you cannot tell anyone what to do. There is a subtle but importance difference between mimicking a behavior and embodying it: you can always tell when someone’s heart isn’t in it.'},
-      { type: 'paragraph', text: 'I’ve found my life to be a lot less mystifying the less advice that I gave and the more support I offered. I think at the end of the day, all most of us want in life is know that we’re not crazy, we’re not alone, and that we’re allowed to mess up sometimes.' },
-      { type: 'paragraph', text: 'I really believe that any decision that you can learn from, will be the right decision for you.' },
-      { type: 'quote', text: 'Sometimes you win, sometimes you learn.' },
-    ],
-    access: ['friends', 'professional'],
-  },
-  // Life is a sprint (part 2)
-  {
-  id: 'life-is-a-sprint-2',
-  title: 'Life is a sprint (part 2)',
-  subheader: 'Running a retrospective on my decisions',
-  date: '2026-10-28',
-  blocks: [
-    { type: 'paragraph', text: 'If there’s one thing I’m passionate about in life its walking. And naturally I get a lot of questions about what I do on my walks.' },
-    { type: 'paragraph', text: 'For reference, I walk anywhere between 6-10 miles on the weekdays and 12-15 miles on the weekends; which as I’m saying this out loud sounds like a lot but trust me it’s not as hard as you think if you live in a city with poor public transport and get motion sick easily.' },
-    { type: 'paragraph', text: 'Anyways, I usually respond with either listening to a podcast, calling a friend to catch up, or figuring out the logistics of my day which actually takes up a surprising amount of time. For example, let’s say I know that I have to be at this place at this time and it takes me 17 minutes to walk a mile; How far are the two places from each other? What is the route with the least amount of hills? Do I need to stop for food on the way because I know I’m going to be hungry… you get the idea.' },
-    { type: 'paragraph', text: 'But my favorite thing to think about is when I’m walking back from hanging out with my friends and I run a retrospective of our hang out.' },
-    { type: 'paragraph', text: 'If you don’t know what a retrospective is, that’s probably a good thing but essentially it’s a meeting where engineers come together and look back on the complete work during the sprint, evaluate what went well, what failed, and how to improve for the future. It’s like mindfulness, but for tech companies.' },
-    { type: 'paragraph', text: 'But in my case, instead trying to figure out how to be more efficient, I ask myself questions like: How do I feel after hanging out with them? Do I think I showed up as a good friend that day? Did my actions align with my beliefs and values? And if any of the answers are no, I run a root cause analysis and ask myself the 5 why’s? Which is a UX research method where when someone gives you an answer, you respond with why, and then when they answer, you respond with why again and this keeps going until you’ve identity the root cause (I know crazy where the name comes from).' },
-    { type: 'paragraph', text: 'If this all sounds a bit weird in theory, let me give you a good example. So one day my friends and I were doing the Crosstown Trail and every mile, we made a letter of the word with our bodies, so that at the end we could collage them together. During this walk, I was telling one of my friends that the day before I was dancing in public and my other friend told me to stop, which really annoyed me for a couple reasons 1. Just because he might have felt embarrassed doesn’t mean that I should feel embarrassed too and 2. I don’t like being told what to do and more importantly ((no-advice|I don’t believe that you should tell someone what to do)) especially if it’ not harming anyone, which my dancing wasn’t.' },
-    { type: 'paragraph', text: 'I promise I’m getting to the important part, so about 20 minutes go by and its now time for us to make the “W” in Crosstown and we weren’t quite sure how we were going to make the letter or how many people we would need. So my friend (the original one I was telling the story about dancing in public to) started to ask this couple nearby if they could take the photo for us. In that moment I had a very immediate reaction where I was like “No, don’t do that, we can take the photo ourselves”.' },
-    { type: 'paragraph', text: 'Afterwards, I felt quite bad about the whole thing and I spent a long time trying to figure out why I reacted that way. I knew that it was extremely contradictory for me to tell my friend not to do something after just telling them that I get upset when someone tells me what to do. So I ran a retrospective.' },
-    { type: 'paragraph', text: 'I asked myself why I believed that it was wrong to tell other people what to do and after confirming that is still what I believed, I asked myself why I think I responded in that way: Was it because of embarrassment? Was it because I didn’t want to burden a stranger by asking them to take our photo? Was it because I had already figured out that we had enough people to to take the photo and didn’t need to ask anyone else?' },
-    { type: 'paragraph', text: 'I think in the end I concluded that I probably just felt embarrassed, but what was more important was that in the process of deconstructing this whole interaction I was able to confirm one of my beliefs, identify when I have acted contradictory, store data of how I felt when I act against them, and create a trigger in my mind for the next time I feel embarrassed to take a second and think about why instead of immediately acting so that I can guard against this happening in the future.' },
-    { type: 'paragraph', text: 'After writing all of that, I know it sounds like a lot but what I can say is that I’ve found this practice to be extremely helpful in the moments when I feel like my life isn’t my own and I feel like I’m sitting in the passenger seat of a car that is my life, watching the streets go by, heading towards some pre-programmed destination that I’m not really sure is where I even want to end up at.' },
-    { type: 'paragraph', text: 'Because if we both agree that your life is the sum of all the decisions you’ve ever made, I’d like to at least know why I’m making the decisions that I’m making. So that at the end of it, even if I don’t accomplish everything I wanted to or everything I think I should have done, I can at least say that it was mine to make.' },
-  ],
-  access: ['friends', 'professional'],
-  },
-  // Life is a sprint
-  {
-  id: 'life-is-a-sprint',
-  title: 'Life is a sprint',
-  subheader: 'What UX design has taught me about life',
-  date: '2025-08-15',
-  blocks: [
-    { type: 'paragraph', text: 'Whenever someone asks me what I do for work I’m a bit reluctant to give them my actual job title because as soon as I say “designer” they immediately think that I can draw or paint or do anything remotely artistic (which would be super cool) but then I have to quickly explain that I’m not an artist in the traditional sense and instead of drawing characters, I design experiences.' },
-    { type: 'heading', text: 'Copy and paste' },
-    { type: 'paragraph', text: 'One of the main roles in my job description is designing the end to end experience of a digital product. Immediately, my first 2 questions are: What problem are we trying to solve? And where does the experience begin?' },
-    { type: 'paragraph', text: 'There’s quite a bit of problem solving involved in my day to day that most people would be surprised to hear. The happy path is always the easiest design, but the complexity and the fun comes in the edge cases. I spend a lot of time thinking about the different ways a bad actor could leverage a feature for harm; or maybe even a good actor who got lost in their journey and ensuring the experience is architected in a way that’s intuitive for them to find their way back. The most gratifying feeling of my job is knowing that you created something that helped someone achieve their goal, no matter how small.' },
-    { type: 'paragraph', text: 'And after 2 years what I didn’t realize is how much of what I do at work has been copied and pasted into my life without me even realizing,' },
-    { type: 'numbered-list', items: [
-      'Continually asking myself “What problem are we trying to solve” has helped me to view all obstacles in this manner. Approaching disagreements not from the perspective of whose to blame, but rather from a place of collaboration. I really believe that we can work together and reach an end state that enables both of us to achieve our goals, even if that solution might not be obvious at first.',
-      'Thinking through the entire flow of an experience and begging the question of where does this begin has enabled me to question the origin of my decisions. Knowing which core value has shaped my decision and being able to identify when there is a disconnectness has been extremely important as I try to tackle this larger question of who am I?',
-      'Helping my team’s QA engineer uncover all of the edge cases within a feature has led me to stress test all of the possible outcomes of a decision. I have felt more confident in the decisions I make because I know that all perspectives were taken into account.',
-      'Deciding what and how much information to display on a screen during  a user’s journey has sharpened my ability to think about when and how to have tough conversations with friends. Sometimes more information isn’t always a good thing and sensing when someone might not be receptive to feedback can save a lot of energy.',
-      'Presenting my work to be critiqued each week with product managers, other designers, or business stakeholders has taught me to release my ego and attachment to the work. Understanding how to digest feedback and improve is an iterative process that I continue to do both in my work and in life. I believe that there’s always room to grow, even if you’re growing sideways. ',
-    ] }, 
-    { type: 'paragraph', text: 'This whole process has made me think about transferability of skills and I wonder how many other parts of myself that I’ve inherited from the other identities that I hold?' },
-    { type: 'heading', text: 'INVEST in your life' },
-    { type: 'paragraph', text: 'Apart from skills that I’ve integrated, another thing I didn’t anticipate was how the structure of my work mirrored the way I structured my life. ' },
-    { type: 'paragraph', text: 'In many tech companies teams work in sprints, which are a fixed time period during which engineers are assigned user stories that build to features, which make up epics, and eventually roll up to an entire product. User stories are defined as the smallest unit of work in Agile software development and they often follow a framework called INVEST. Independent, Negotiation, Valuable, Estimable, Small and Testable. The details don’t really matter, but the reason that this method was so widely adopted was because engineers saw the benefits of Agile: flexibility, adaptability, and continuous rapid feedback.' },
-    { type: 'paragraph', text: 'I think one of the biggest realizations I had was this one moment, maybe 2 months post graduation, and I was sitting in my apartment in San Francisco with my cushy tech job and on the surface I had achieved everything I had ever wanted. But as I sat there, I was overcome with this frightening thought that this didn’t feel anything like how I thought it would. I realized I had spent so much time laser focused on sticking to my 8 year roadmap with no detours, from freshman year of high school to college graduation, that I never stopped to consider what happens after.' },
-    { type: 'paragraph', text: 'I knew that if I wanted to make changes in my life, I needed to start small and keep iterating.' },
-    { type: 'quote', text: 'If something feels too hard to do, it just means the first step isn’t small enough.' },
-    { type: 'paragraph', text: 'I learned that if you don’t break your life into bite size chunks then, you’re making roadmaps for 5 years out and there’s room to modify your goals, adjust based on feedback, or even stop and take a step back to ask yourself: Is that what I want?' },
-    { type: 'paragraph', text: 'There’s another quote that has stuck with me, I can’t remember where I heard it first but it says.' },
-    { type: 'quote', text: 'I don’t know where I’m going, but I know how to get there.' },
-    { type: 'paragraph', text: 'I’ve tried to reframe my mindset around goals from specific items to checking off a list to following a framework or process that enables me to experience many things and letting the feedback guide my next step. I’m not sure what my life is going to look like in 5 or 10 years, but I know that I will have learned a lot, I hope you do too.' },
-  ],
-  access: ['friends', 'professional'],
-  },
-];
-
-const EXPERIMENTS = [
-  {
-    id: 'sunscreeen',
-    title: 'Just put on some damn sunscreen',
-    byline: 'Trying to understand how to move from awareness to action',
-    image: 'images/Writing/stick-sunscreen.jpg',
-    imageAlt: 'Image of CeraVe stick sunscreen',
-    subheader: 'Trying to understand how to move from awareness to action',
-    blocks: [
-      { type: 'paragraph', text: 'This experiment is a work in progress. Please check back later.' },
-      // { type: 'heading', text: 'What I am testing' },
-      // { type: 'paragraph', text: 'Does a regular question practice make curiosity more active in everyday life? I will track which questions recur, which lead to action, and which change as I learn.' },
-      // { type: 'quote', text: 'The goal is not to collect answers. It is to get better at asking.' },
-    ],
-    access: ['friends', 'professional'],
-  },
-];
+// Kinds that have a page of their own in the reader (media just opens its url)
+const OPENABLE = new Set(['article', 'experiment', 'question', 'definition']);
 
 // ---- Rendering --------------------------------------------------
-
-const formatDate = (iso, month) =>
-  new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', { month, day: 'numeric', year: 'numeric' });
-
-// Attributes that make a card open the reader (the click and key handlers below look for these)
-const openAttrs = (kind, item) =>
-  `data-knowledge-kind="${kind}" data-knowledge-id="${esc(item.id)}" tabindex="0" role="button" aria-label="Open ${kind}: ${esc(item.title || item.text)}"`;
-
-const articleRow = article => articleCard({
-  title: article.title,
-  sub: article.subheader,
-  date: article.date,
-  dateLabel: formatDate(article.date, 'short'),
-  attrs: openAttrs('article', article),
-});
-
-const experimentCard = experiment => bookCard({
-  title: experiment.title,
-  by: experiment.byline,
-  color: experiment.color || '#e8e8e8',
-  image: experiment.image,
-  ink: 'var(--text)',
-  attrs: openAttrs('experiment', experiment),
-});
 
 // The single row that opens the definitions: the same articleCard as the articles below it
 const definitionsRow = () => articleCard({
   title: 'Shortcuts to my shared language',
-  sub: `${DEFINITIONS.length} concepts to help you understand my mind`,
-  attrs: openAttrs('definition', { id: DEFINITIONS[0].id, title: 'Shortcuts to my shared language' }),
+  sub: `${DEFINITIONS().length} concepts to help you understand my mind`,
+  attrs: refAttrs({ kind: 'definition', id: DEFINITIONS()[0].id, title: 'Shortcuts to my shared language' }),
 });
 
 function renderInto(selector, items, toHTML) {
@@ -177,20 +36,22 @@ function renderInto(selector, items, toHTML) {
 // Questions come from Supabase. Each one is a Consume quote card that opens the reader,
 // the same way articles and experiments do.
 let QUESTIONS = [];
+// Every definition, read from the graph each time (so a definition added to data/definitions.js just appears).
+// A function rather than a constant, because the graph is the single source of truth.
+const DEFINITIONS = () => all('definition');
 
-const questionCard = q => textCard({ text: q.text, attrs: openAttrs('question', q) });
 
 async function loadQuestions() {
   const { data, error } = await supabase.from('questions').select('*').order('created_at');
   if (error) { console.error('Questions failed to load:', error.code, error.message); return; }
   // date and subheader feed the same reader header that articles use
-  QUESTIONS = data.map(q => ({
-    ...q,
-    // date: q.created_at.slice(0, 10),
-    // subheader: 'Add your thoughts, or read what others have said.',
-  }));
-  renderInto('#knowledgeQuestions', QUESTIONS, questionCard);
+  QUESTIONS = data;
+  // Questions join the content graph, so essays and definitions can [[link]] to them by id
+  // (an optional `links` text[] column on the table lets a question point at others too).
+  register('question', QUESTIONS, { texts: q => [q.text], idOf: q => q.text });
+  renderInto('#knowledgeQuestions', QUESTIONS, cardFor);
 }
+// Starts loading right away; routeFromHash awaits this promise so a pasted question link waits for its data.
 const questionsReady = loadQuestions();
 
 // Which password group is signed in: null until unlocked, 'all' for the editor / moderator.
@@ -202,39 +63,16 @@ const canSee = item => accessGroup === 'all' || !item.access || item.access.incl
 const newestFirst = (a, b) => (b.date || '').localeCompare(a.date || '');
 
 function renderCollections() {
-  const articles = ARTICLES.filter(canSee).sort(newestFirst).map(articleRow).join('');
+  const articles = all('article').filter(canSee).sort(newestFirst).map(item => cardFor(item)).join('');
   const root = $('#knowledgeArticles');
   if (root) root.innerHTML = definitionsRow() + articles;   // definitions always sit on top
-  renderInto('#knowledgeExperiments', EXPERIMENTS.filter(canSee), experimentCard);
+  renderInto('#knowledgeExperiments', all('experiment').filter(canSee), cardFor);
 }
 
 renderCollections();   // everyone-items only, until a password is entered
 
-// Escapes `text`, then turns [[id]] into definition links, {{id}} into Consume links
-// and ((id|label)) into links to another essay. An unknown id is left as typed.
-// Escapes `text`, then turns [[id]] into definition links, {{id}} into Consume links
-// and ((id|label)) into links to another essay. An unknown id is left as typed.
-const richText = text => linkTerms(text)
-  .replace(/\{\{([\w-]+)(?:\|([^}]+))?\}\}/g, (match, id, label) => {
-    const item = COLLECTION.find(entry => entry.id === id);
-    if (!item) return match;
-    const words = label || esc(item.title || item.episode || id);
-    // Same link as the Consume card: opens the item's url in a new tab. Items without a url (quotes) just show the card.
-    return item.url
-      ? `<a href="${esc(item.url)}" class="consume-link" data-consume="${id}" target="_blank" rel="noopener noreferrer">${words}</a>`
-      : `<span class="consume-link" data-consume="${id}" tabindex="0">${words}</span>`;
-  })
-  .replace(/\(\(([\w-]+)(?:\|([^)]+))?\)\)/g, (match, id, label) => {
-    const essay = ARTICLES.find(article => article.id === id);
-    if (!essay) return match;
-    const words = label || esc(essay.title);
-    return canSee(essay)
-      ? `<a href="#mymind/article/${id}" class="essay-link" data-knowledge-kind="article" data-knowledge-id="${id}">${words}</a>`
-      : words;
-  });
-
 function blockHTML(block) {
-  const text = richText(block.text || '');
+  const text = richText(block.text || '', { canSee });
   switch (block.type) {
     case 'heading': return `<h2>${text}</h2>`;
     case 'subheading': return `<h3>${text}</h3>`;
@@ -242,8 +80,8 @@ function blockHTML(block) {
     case 'underline': return `<p><span class="knowledge-underline">${text}</span></p>`;
     case 'image': return `<figure class="knowledge-inline-image"><img src="${esc(block.src || '')}" alt="${esc(block.alt || '')}">${block.caption ? `<figcaption>${esc(block.caption)}</figcaption>` : ''}</figure>`;
     case 'divider': return '<hr class="knowledge-divider">';
-    case 'list': return `<ul>${(block.items || []).map(item => `<li>${richText(item)}</li>`).join('')}</ul>`;
-    case 'numbered-list': return `<ol>${(block.items || []).map(item => `<li>${richText(item)}</li>`).join('')}</ol>`;
+    case 'list': return `<ul>${(block.items || []).map(item => `<li>${richText(item, { canSee })}</li>`).join('')}</ul>`;
+    case 'numbered-list': return `<ol>${(block.items || []).map(item => `<li>${richText(item, { canSee })}</li>`).join('')}</ol>`;
     default: return `<p>${text}</p>`;
   }
 }
@@ -356,12 +194,25 @@ function goBack() {
   const back = trail.pop();
   if (back === 'outside') { setKnowledge(false); return; }
   if (!back) { closeReader(); return; }
-  if (back.kind === 'definition') openDefinitions(back.id, null, back);
-  else openReader(back.kind, back.id, null, back);
+  openPage(back.kind, back.id, null, back);
+}
+
+// THE way to open any page in the reader, whatever its kind:
+//   openPage('article', 'no-advice', triggerElement)
+// It picks the right screen (the definitions deck for definitions, the reader for the rest),
+// and refuses (returns false) when the item does not exist, has no page of its own (media),
+// or is not visible to the current password group. `back` is only used by [ CLOSE ] to return to a page.
+// Opens any page by kind + id. Returns false when there is nothing to open or the viewer may not see it.
+function openPage(kind, id, trigger, back = null) {
+  const item = get(kind, id);
+  if (!item || !OPENABLE.has(kind) || !canSee(item)) return false;
+  if (kind === 'definition') openDefinitions(id, trigger, back);
+  else openReader(kind, id, trigger, back);
+  return true;
 }
 
 function openReader(kind, id, trigger, back = null) {
-  const item = { article: ARTICLES, experiment: EXPERIMENTS, question: QUESTIONS }[kind]?.find(entry => entry.id === id);
+  const item = get(kind, id);
   if (!item) return;
   enter({ kind, id }, trigger, back);
   present(() => {
@@ -409,16 +260,9 @@ function closeReader() {
 // ---- Definitions ------------------------------------------------
 // One carousel of flash cards (js/media.js). The related column beside it follows the card on screen.
 
-// Articles that link to a definition anywhere in their text
-const articlesUsing = id => ARTICLES.filter(article =>
-  article.blocks.some(block => [block.text, ...(block.items || [])].some(text => mentions(text, id))));
-
-const relatedSection = (title, cards) => cards.length ? `<section><h2 class="definitions-related">${title}</h2>${cards.join('')}</section>` : '';
-
-// A section with nothing in it is left out
-const relatedHTML = term =>
-  relatedSection('Origin', COLLECTION.filter(item => item.term === term.id).map(consumeCard)) +
-  relatedSection('Used in a sentence', articlesUsing(term.id).filter(canSee).map(articleRow));
+// The right column: whatever connects to this term (media it came from, essays that use it, ...).
+// Nothing to maintain: connections come from the graph (js/content/graph.js).
+const relatedHTML = term => connectionsHTML(term, { canSee });
 
 // Same structure as the Knowledge overview: three .knowledge-column sections (1fr 2fr 1fr).
 //   left   every term as a Consume quote card; clicking one moves the carousel
@@ -427,14 +271,14 @@ const relatedHTML = term =>
 const definitionsPage = start => `
   <div class="definitions">
     <nav class="knowledge-column definitions-nav" aria-label="Terms">
-      ${DEFINITIONS.map((term, i) => `<a href="#${esc(term.id)}" data-term-index="${i}">${esc(term.word)}</a>`).join('')}
+      ${DEFINITIONS().map((term, i) => `<a href="#${esc(term.id)}" data-term-index="${i}">${esc(term.word)}</a>`).join('')}
     </nav>
     <section class="knowledge-column" aria-label="Definition">
       ${carouselHTML({
         label: 'Definitions',
         start,
-        slides: DEFINITIONS.map(term => flashCard({
-          front: linkTerms(term.text),
+        slides: DEFINITIONS().map(term => flashCard({
+          front: richText(term.text, { canSee }),
           back: esc(term.word),
           foot: term.word,
         })),
@@ -446,7 +290,7 @@ const definitionsPage = start => `
   </div>`;
 
 function openDefinitions(id, trigger, back = null) {
-  const start = Math.max(0, DEFINITIONS.findIndex(term => term.id === id));
+  const start = Math.max(0, DEFINITIONS().findIndex(term => term.id === id));
   enter({ kind: 'definition', id }, trigger, back);
   present(() => {
     currentQuestionId = null;
@@ -466,16 +310,16 @@ function setFlipped(card, flipped) {
 
 on(readerContent, 'click', event => {
   const card = event.target.closest('.c-flash');
-  if (card && !event.target.closest('[data-term]')) setFlipped(card, !card.classList.contains('is-flipped'));
+  if (card && !event.target.closest('[data-ref]')) setFlipped(card, !card.classList.contains('is-flipped'));
 });
 
 // The related column follows the card on screen; cards that were turned over turn back
 on(readerContent, 'carousel:change', event => {
   const related = $('[data-related]', readerContent);
   if (!related) return;                                    // some other carousel, not the definitions deck
-  if (current?.kind === 'definition') current.id = DEFINITIONS[event.detail.index].id;   // so going back lands on this card
+  if (current?.kind === 'definition') current.id = DEFINITIONS()[event.detail.index].id;   // so going back lands on this card
   setUrl(hashFor(current), { replace: true });
-  related.innerHTML = relatedHTML(DEFINITIONS[event.detail.index]);
+  related.innerHTML = relatedHTML(DEFINITIONS()[event.detail.index]);
   $$('.car-slide:not(.active) .c-flash.is-flipped', readerContent).forEach(card => setFlipped(card, false));
   $$('.definitions-nav a', readerContent).forEach(link => {          // the current term is highlighted, like the active sidebar link
     const isCurrent = Number(link.dataset.termIndex) === event.detail.index;
@@ -494,27 +338,18 @@ on(readerContent, 'click', event => {
   car.focus({ preventScroll: true });                      // so ← → keep turning the cards instead of switching CREATE / CONSUME
 });
 
-// ---- Peek beside the essay --------------------------------------
-// Hovering (or focusing) a link in the essay shows a small preview in the right column, level with the link:
-//   Consume link  the Consume card
-//   definition    its flash card, sized down
-//   essay         a small card with its title and subtitle
+// ---- Peek beside the essay (previews are drawn by peekFor in js/content/kinds.js) --------------------------------------
+// Hovering (or focusing) a link in the essay shows a small preview of what it points at, level with the link.
 // On mobile (no room beside the essay) CSS floats it above the toggle bar instead.
-const PEEK_LINKS = '[data-consume], .term-link, .essay-link';
+const PEEK_LINKS = '.ref-link';
 
-function peekCard(link) {
-  if (link.dataset.consume) {
-    const item = COLLECTION.find(entry => entry.id === link.dataset.consume);
-    return item && consumeCard(item);
-  }
-  if (link.dataset.term) {
-    const term = DEFINITIONS.find(entry => entry.id === link.dataset.term);
-    // attrs: '' drops the "flip me" button behaviour: this copy is only a preview
-    return term && flashCard({ front: linkTerms(term.text), back: esc(term.word), foot: term.word, attrs: '' });
-  }
-  const essay = ARTICLES.find(article => article.id === link.dataset.knowledgeId);
-  return essay && articleCard({ title: essay.title, sub: essay.subheader });
-}
+// The preview for any link: what the item looks like as a small card (js/content/kinds.js decides)
+// The preview HTML for a hovered link. Works for every kind: the graph finds the item from data-ref,
+// and kinds.js decides how it looks (peekFor). Returns '' / undefined when there is nothing to show.
+const peekCard = link => {
+  const item = get(link.dataset.ref);
+  return item && peekFor(item);
+};
 
 function showPeek(link) {
   const peek = $('.consume-peek', readerContent);
@@ -803,59 +638,33 @@ function requestKnowledge() {
 // Peek on the Consume board: Knowledge is closed, so ask for the password first (same prompt as the logo).
 // Once unlocked, set the page up while the layer is hidden, then fade the layer in.
 // Cancel or a wrong password does nothing. [ CLOSE ] closes the whole layer.
+//   open   a function that opens the page; return false from it (openPage does) to cancel quietly
+//   focus  a function that moves keyboard focus once the page is showing
 async function openFromOutside(open, focus) {
   if (!(await prepareKnowledge())) return;
   trail = ['outside'];
-  open();
+  if (open() === false) { trail = []; return; }   // nothing to open (unknown id, or not for this password)
   setKnowledge(true);
   focus();
 }
 
-// Anything with data-term (inline links, the "Peek into my mind" button) opens that definition.
-// Inside Knowledge you're already unlocked; from the Consume board the password is asked first.
+// ONE handler for everything that points at content: inline links, Knowledge cards, "Peek into my mind".
+// Media links are ordinary external links, so they are left alone. Everything else opens its page:
+// straight away inside Knowledge, or after the password prompt from the Consume board.
 on(document, 'click', event => {
-  const link = event.target.closest('[data-term]');
-  if (!link) return;
+  const link = event.target.closest('[data-ref]');
+  const item = link && get(link.dataset.ref);
+  if (!item || !OPENABLE.has(item.kind)) return;
   event.preventDefault();                                // must run before the password prompt (it's async)
-  if (isOpen()) { openDefinitions(link.dataset.term, link); return; }
+  if (isOpen()) { openPage(item.kind, item.id, link); return; }
 
   openFromOutside(
-    () => openDefinitions(link.dataset.term, link),
-    () => $('.car', readerContent)?.focus({ preventScroll: true })
-  );
-});
-
-// The essay Peek button opens that article, with the same password rule.
-on(document, 'click', event => {
-  const link = event.target.closest('[data-essay]');
-  if (!link) return;
-  event.preventDefault();
-  const id = link.dataset.essay;
-
-  if (isOpen()) { openReader('article', id, link); return; }
-  if (!ARTICLES.some(article => article.id === id)) return;   // unknown essay: do nothing
-
-  openFromOutside(
-    () => openReader('article', id, link),
-    () => closeButton.focus({ preventScroll: true })
+    () => openPage(item.kind, item.id, link),
+    () => (item.kind === 'definition' ? $('.car', readerContent) : closeButton)?.focus({ preventScroll: true })
   );
 });
 
 // ---- Events -----------------------------------------------------
-
-const openFrom = trigger => {
-  if (!trigger) return;
-  const { knowledgeKind: kind, knowledgeId: id } = trigger.dataset;
-  if (kind === 'definition') openDefinitions(id, trigger);
-  else openReader(kind, id, trigger);
-};
-
-on(view, 'click', event => {
-  const trigger = event.target.closest('[data-knowledge-kind]');
-  if (!trigger) return;
-  if (trigger.matches('a')) event.preventDefault();   // essay links: open in place, not via the hash
-  openFrom(trigger);
-});
 
 // Cards are article[role=button], so they need Enter / Space themselves.
 // (Only when the card itself has focus, so links on a flash card's back still work.)
@@ -893,13 +702,8 @@ async function routeFromHash() {
   trail = [];
 
   // Overview, or a page that doesn't exist / this password group can't see
-  const found = kind && {
-    article:    () => ARTICLES.find(a => a.id === id),
-    experiment: () => EXPERIMENTS.find(e => e.id === id),
-    question:   () => QUESTIONS.find(q => q.id === id),
-    definition: () => DEFINITIONS.find(d => d.id === id),
-  }[kind]();
-  const allowed = found && (kind === 'article' || kind === 'experiment' ? canSee(found) : true);
+  const found = kind && get(kind, id);
+  const allowed = found && OPENABLE.has(kind) && canSee(found);
 
   if (!allowed) {
     if (reader.classList.contains('is-open')) closeReader();
@@ -908,8 +712,7 @@ async function routeFromHash() {
     return;
   }
 
-  if (kind === 'definition') openDefinitions(id, null);
-  else openReader(kind, id, null);
+  openPage(kind, id, null);
   setKnowledge(true);
 }
 

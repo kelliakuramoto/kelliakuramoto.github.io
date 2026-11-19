@@ -80,7 +80,7 @@ export function articleCard({ title, sub, date, dateLabel, ...options }) {
 }
 
 // { front, back, label? ("Concept"), backLabel? ("Definition"), foot? }
-// front and back are HTML, so escape text first (or use linkTerms from js/definitions.js).
+// front and back are HTML, so escape text first (or use richText from js/content/richtext.js).
 // Turning the card over is handled in js/knowledge.js: .is-flipped shows the back.
 export function flashCard({ front, back, label = 'Concept', backLabel = 'Definition', foot = '', ...options }) {
   const faces = `<div class="c-flash-inner">
@@ -94,19 +94,19 @@ export function flashCard({ front, back, label = 'Concept', backLabel = 'Definit
   });
 }
 
-// Wraps ANY card so hovering or focusing it fades in a "Peek into my mind" button.
+// Wraps ANY card so hovering or focusing it fades in "Peek into my mind" button(s).
+// `links` come from peekLinks() in js/content/kinds.js: [{ ref: 'article:no-advice', label: 'PEEK INTO MY MIND' }].
 // The overlay is placed inside the card's first .c-media, so it covers only the image / quote / cover
-// and never the title and text underneath. No termId = the card comes back untouched.
-// The button opens that definition through [data-term] (that handler calls preventDefault,
+// and never the title and text underneath. No links = the card comes back untouched.
+// Each button opens its item through [data-ref] (that handler calls preventDefault,
 // so on a card that is a link the click doesn't also follow the link).
-export const peekFrame = (card, termId, essayId) => {
-  const target = termId ? `data-term="${esc(termId)}"` : essayId ? `data-essay="${esc(essayId)}"` : '';
-  if (!target) return card;
-  const label = termId ? '[ PEEK INTO MY MIND ]' : '[ PEEK INTO MY MIND ]';
+export const peekFrame = (card, links = []) => {
+  if (!links.length) return card;
   const template = document.createElement('template');
   template.innerHTML = card;
   const media = template.content.querySelector('.c-media');
   if (!media) return card;
-  media.insertAdjacentHTML('beforeend', `<div class="c-peek"><button type="button" ${target}>${label}</button></div>`);
+  const buttons = links.map(({ ref, label }) => `<button type="button" data-ref="${esc(ref)}">[ ${esc(label)} ]</button>`).join('');
+  media.insertAdjacentHTML('beforeend', `<div class="c-peek">${buttons}</div>`);
   return `<div class="c-peek-frame">${template.innerHTML}</div>`;
 };

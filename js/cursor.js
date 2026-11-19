@@ -8,9 +8,7 @@ const CLICKABLE = [
   'a[href]',
   'button:not(:disabled)',
   '[role="button"]',
-  '[data-term]',               // definition links and "Peek into my mind"
-  '[data-essay]',
-  '[data-knowledge-kind]',     // Knowledge cards
+  '[data-ref]',                // every link to content: inline links, Knowledge cards, "Peek into my mind"
   '.is-zoomable',              // images that enlarge (js/lightbox.js)
   '.fb-book',                  // the photobook: click the left or right half to turn the page
   'label',
