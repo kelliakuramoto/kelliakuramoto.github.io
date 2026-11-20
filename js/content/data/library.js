@@ -112,13 +112,12 @@ export const LIBRARY = [
     url: 'https://www.goodreads.com/book/show/33413128-beartown'
   },
   {
-    type: 'podcast',
-    show: 'What Now? With Trevor Noah',
-    episode: 'Arthur C Brooks: Are We Happy Yet?',
-    minutes: 127,
-    progress: 98,
-    image: 'images/Consume/what-now.png',
-    url: 'https://youtu.be/xHZmw3JhT48?si=9_TKbWKsrs1-dklP'
+    type: 'book',
+    title: 'American Hagwon',
+    by: 'Min Jin Lee',
+    color: '#1d3a2b',
+    image: 'images/Consume/american-hagwon.jpg',
+    url: 'https://www.goodreads.com/book/show/245886309-american-hagwon'
   },
   {
     type: 'quote',
