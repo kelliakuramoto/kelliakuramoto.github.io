@@ -25,9 +25,8 @@ export const THOUGHTS = [
     parent: 'quote:circular-economy',
   },
   {
-    text: 'i keep wanting the answer first.\nthe book keeps handing me a better question.',
-    date: '2026-11-21',
-    parent: 'book:letters-to-a-young-poet',
+    text: 'I’ve had this quote hanging up on my desk since the summer of 2022, back when my thoughts seemed to eclipse my mind and therefor my view of the world.\n\nLife isn’t as unbearable now but I still keep it up as a reminder everyday that whatever overwhelming or horrible thing I think is happening to me right now will not last forever. I can choose which program to run, I can choose how I percieve inputs of information, and at the end of the day if things still suck, life really isn’t that long anways.\n\n "Taking my big ideas to big places to feel small" - Huarui Lai',
+    parent: 'quote:life-feels-unbearable',
   },
   // SAMPLE: a thought with blocks (quotes and handwriting), linked to the book
   // {

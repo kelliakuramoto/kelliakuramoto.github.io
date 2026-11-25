@@ -1382,6 +1382,11 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   margin: 0 0 var(--space-l);
 }
 
+/* A thought card inside the reader (a response, or a thought block in an essay) keeps its own spacing, not the paragraph margin above */
+.knowledge-prose .c-thought p {
+  margin-bottom: 0;
+}
+
 .knowledge-prose h2 {
   margin: var(--space-l) 0 var(--space-m);
   font-size: var(--text-article-heading);
@@ -1490,11 +1495,15 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   transition: none;
 }
 
-/* Visitor responses: quote cards in a two-column masonry board (same cards as Consume) */
+/* Visitor responses: thought cards in a two-column masonry board (same cards as Consume) */
 .response-board {
   columns: 2 14rem;
   column-gap: var(--grid-gap);
-  margin: 0 0 2em;
+}
+
+/* The response form sits above the responses; the same gap as between cards */
+.response-form {
+  margin: 0 0 var(--grid-gap);
 }
 
 /* Moderator-only controls under each response card */
@@ -1502,8 +1511,8 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   break-inside: avoid;
 }
 
-.response-item.is-pending .c-quote {
-  opacity: 0.;
+.response-item.is-pending .c-thought {
+  opacity: 0.5;   /* waiting for approval */
 }
 
 /* The card above owns the small gap; the actions own the space before the next response */
@@ -1519,7 +1528,8 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   margin: 0 0 var(--grid-gap);
 }
 
-#knowledgeResponses .c-quote blockquote {
+#knowledgeResponses .c-quote blockquote,
+#knowledgeResponses .c-thought p {
   white-space: pre-line;   /* keeps line breaks visitors type */
   overflow-wrap: anywhere;
 }
