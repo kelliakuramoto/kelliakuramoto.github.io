@@ -28,7 +28,7 @@
 export const LIBRARY = [
   {
     type: 'podcast',
-    id: 'lera-boroditsky-how-language-secretly-changes',
+    id: 'boroditsky-language-changes-personality',
     show: 'What Now? With Trevor Noah',
     episode: 'Lera Boroditsky: How Language Secretly Changes Your Personality',
     minutes: 111,
@@ -57,7 +57,7 @@ export const LIBRARY = [
   },
   {
     type: 'podcast',
-    id: 'the-art-of-learning-living-life',
+    id: 'art-of-learning',
     show: 'Huberman Lab',
     episode: 'The Art of Learning & Living Life | Josh Waitzkin',
     minutes: 197,
@@ -82,7 +82,7 @@ export const LIBRARY = [
   },
   {
     type: 'quote',
-    id: 'when-life-feels-unbearable-i-remind',
+    id: 'life-feels-unbearable',
     text: 'When life feels unbearable, I remind myself that I am not a person, I am a piece of software running on the brain of a random ape for a few decades. It’s not the worst brain to run on.',
     highlight: 'I am not a person, I am a piece of software',
     by: 'Joscha Bach',
@@ -109,7 +109,7 @@ export const LIBRARY = [
   },
   {
     type: 'podcast',
-    id: 'neal-agarwal-wants-to-make-you',
+    id: 'agarwal-less-productive',
     show: 'Humans with Hank',
     episode: 'Neal Agarwal Wants to Make You Less Productive',
     minutes: 55,
@@ -146,21 +146,21 @@ export const LIBRARY = [
   },
   {
     type: 'quote',
-    id: 'people-think-simplifying-is-removing-things',
+    id: 'essence-of-something',
     text: 'People think simplifying is removing things, and it’s not. Simplifying is understanding something so deeply that you can get to the essence of something.',
     highlight: 'understanding something so deeply that you can get to the essence',
     by: 'Brian Chesky'
   },
   {
     type: 'quote',
-    id: 'maybe-fulfillment-is-not-about-what',
+    id: 'maybe-fulfillment',
     text: 'Maybe fulfillment is not about what you get out, but how much of yourself you put in.',
     highlight: 'how much of yourself you put in',
     by: 'Unknown'
   },
   {
     type: 'poem',
-    id: 'the-sun-never-says',
+    id: 'sun-never-says',
     title: 'The Sun Never Says',
     by: 'Hafiz',
     image: 'images/Consume/the-sun-never-says.webp',
@@ -194,27 +194,27 @@ export const LIBRARY = [
   },
   {
     type: 'quote',
-    id: 'an-acorn-never-berates-itself-for',
+    id: 'encoded-to-do',
     text: 'An acorn never berates itself for not being an oak tree, and yet it continues to grow. Because that is what it was encoded to do.',
     highlight: 'what it was encoded to do',
     by: 'James Clear'
   },
   {
     type: 'book',
+    id: 'letters-to-a-young-poet',
     title: 'Letters to a Young Poet',
     by: 'Rainer Maria Rilke',
     color: '#7a2a33',
     image: 'images/Consume/letters-to-a-young-poet.jpeg',
     url: 'https://www.goodreads.com/en/book/show/46199.Letters_to_a_Young_Poet',
-    id: 'letters-to-a-young-poet',
   },
   {
+    parent: 'media:letters-to-a-young-poet',
     type: 'quote',
     id: 'do-not-now-seek-the-answers',
     text: 'Do not now seek the answers, which cannot be given you because you would not be able to live them. And the point is, to live everything. Live the questions now.',
     highlight: 'Live the questions now.',
     by: 'Rainer Maria Rilke',
-    parent: 'media:letters-to-a-young-poet'
   },
   {
     type: 'poem',
@@ -226,14 +226,14 @@ export const LIBRARY = [
   },
   {
     type: 'quote',
-    id: 'i-often-found-that-people-are',
+    id: 'circular-economy',
     text: 'I often found that people are very receptive and open to this idea that we can innovate our way out of a problem through technology, and they’re much more conservative about the idea that we can do things differently.',
     highlight: 'idea that we can do things differently',
     by: 'Wen-Yu Weng, Ellen MacArthur Foundation’s Critical Minerals Lead'
   },
     {
     type: 'quote',
-    id: 'if-you-can-imagine-any-other',
+    id: 'perhaps-pursue-that',
     text: 'If you can imagine any other possible thing to do, perhaps you should pursue that.',
     highlight: 'perhaps you should pursue that',
     by: 'Mona Simpson'
