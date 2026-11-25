@@ -221,7 +221,7 @@ export const LIBRARY = [
     type: 'poem',
     id: 'letters-to-a-young-creator',
     title: 'Letters to a Young Creator',
-    by: 'Steve Jobs',
+    by: 'Steve Jobs Archive',
     image: 'images/Consume/letters-to-a-young-creator.png',
     url: 'https://letters.stevejobsarchive.com/',
   },

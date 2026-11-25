@@ -57,7 +57,10 @@ const CARDS = {
     title: item.title, by: item.byline, color: item.color || '#e8e8e8', image: item.image,
     ink: 'var(--text)', attrs: open ? refAttrs(item) : '',
   }),
-  thought: item => thoughtCard({ blocks: thoughtBlocks(item), date: item.date, dateLabel: item.date && formatDate(item.date, 'short') }),
+  thought: item => thoughtCard({
+    blocks: thoughtBlocks(item), date: item.date, dateLabel: item.date && formatDate(item.date, 'short'),
+    className: item.wide ? 'c-card--wide' : '',   // wide: true in thoughts.js spans both columns on a detail page
+  }),
   definition: (item, open) => articleCard({ title: item.word, sub: plain(item.text.split('\n')[0]), attrs: open ? refAttrs(item) : '' }),
   question: (item, open) => textCard({ text: item.text, attrs: open ? refAttrs(item) : '' }),
 };
