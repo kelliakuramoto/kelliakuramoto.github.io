@@ -1,8 +1,8 @@
 import { $, $$, esc, on, showOnly } from './dom.js';
-import { quoteCard, flashCard } from './cards.js';
+import { quoteCard, flashCard, thoughtCard } from './cards.js';
 import { animateScrollTo, isMobile } from './navigation.js';
 import { supabase } from './supabase.js';
-import { all, get, register } from './content/index.js';
+import { all, get, register, thoughtBlocks } from './content/index.js';
 import { richText } from './content/richtext.js';
 import { cardFor, peekFor, connectionsHTML, formatDate, refAttrs } from './content/kinds.js';
 import { articleCard } from './cards.js';
@@ -79,6 +79,7 @@ function blockHTML(block) {
     case 'quote': return `<blockquote class="knowledge-quote">${text}</blockquote>`;
     case 'underline': return `<p><span class="knowledge-underline">${text}</span></p>`;
     case 'image': return `<figure class="knowledge-inline-image"><img src="${esc(block.src || '')}" alt="${esc(block.alt || '')}">${block.caption ? `<figcaption>${esc(block.caption)}</figcaption>` : ''}</figure>`;
+    case 'thought': return thoughtCard({ blocks: thoughtBlocks(block), date: block.date, dateLabel: block.date && formatDate(block.date, 'short') });   // the same card as a thought on the Consume page
     case 'divider': return '<hr class="knowledge-divider">';
     case 'list': return `<ul>${(block.items || []).map(item => `<li>${richText(item, { canSee })}</li>`).join('')}</ul>`;
     case 'numbered-list': return `<ol>${(block.items || []).map(item => `<li>${richText(item, { canSee })}</li>`).join('')}</ol>`;

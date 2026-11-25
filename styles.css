@@ -39,7 +39,6 @@ Breakpoints override tokens (see section 10) instead of overriding rules.
   --white: #FFFFFF;
   --caption-text: #E6E6E6;
   --ink: 0 0 0;                 /* shadow colour as r g b: rgb(var(--ink) / 0.1) */
-  --paper: #FFFFFF;             /* a thought's sheet of paper */
   --paper-ink: #23211F;
   --highlight: color-mix(in srgb, var(--accent) 20%, transparent);
   --highlight-top: 16%;      /* where the band starts, measured down the text */
@@ -308,6 +307,11 @@ body[data-mode="consume"] .consume,
 .consume-detail {
   z-index: calc(var(--z-overlay) - 10);
   background: var(--bg);
+}
+
+/* Opened from a link inside an essay: the detail page goes on top of the Knowledge layer */
+.consume-detail.is-over-knowledge {
+  z-index: calc(var(--z-overlay) + 10);
 }
 
 /* The board stays put while the detail page fades in, and only switches off once the fade has finished */
@@ -644,7 +648,8 @@ body.knowledge-open :is(.layout, .consume) {
   padding: var(--space-l);
 }
 
-.c-quote blockquote {
+.c-quote blockquote,
+.c-thought blockquote {
   margin: 0;
   font-size: var(--text-body);
   font-weight: var(--font-light);
@@ -664,7 +669,8 @@ body.knowledge-open :is(.layout, .consume) {
 
 /* Green highlight, shared by the quote <mark>, inline links in text, and the About page */
 .about-job,
-.c-quote mark {
+.c-quote mark,
+.c-thought mark {
   color: inherit;
   text-decoration: none;
   transition: color var(--motion-view) var(--ease-out);
@@ -775,12 +781,10 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   white-space: nowrap;
 }
 
-/* Thought (thoughtCard in cards.js): a quote-card-shaped block on white paper, written in Mido Light */
+/* Thought (thoughtCard in cards.js): a quote-card-shaped block with the same grey background as a quote, written in Mido Light */
 .c-thought {
   padding: var(--space-l);
   color: var(--paper-ink);
-  background: var(--paper);
-  box-shadow: 0 1px 2px rgb(var(--ink) / 0.12), 0 10px 24px rgb(var(--ink) / 0.1);
 }
 
 .c-thought p {
@@ -789,6 +793,35 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   font-size: var(--text-lead);
   line-height: 1.35;
   white-space: pre-line;      /* "\n" in a thought becomes a line break */
+}
+
+/* A quote block inside a thought (type: 'quote'): the quote card's type, with space between it and the handwriting */
+.c-thought :is(blockquote, .c-thought-link) + p,
+.c-thought p + :is(blockquote, .c-thought-link),
+.c-thought :is(blockquote, .c-thought-link) + :is(blockquote, .c-thought-link) {
+  margin-top: var(--space-l);
+}
+
+/* A quote with a link: the whole quote is the link, and turns the hover colour like the other links */
+.c-thought-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.c-thought-link:is(:hover, :focus-visible) blockquote {
+  color: var(--hover);
+}
+
+/* The date, written at the bottom of the sheet */
+.c-thought-date {
+  display: block;
+  margin-top: var(--space-m);
+  text-align: right;
+  font-family: var(--font-hand);
+  font-size: var(--text-body);
+  line-height: 1;
+  opacity: 0.6;
 }
 
 /* Flash card (flashCard in cards.js): two faces; the front turns away to show the back */
@@ -1410,11 +1443,11 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   background: var(--bg);
 }
 
-/* The same outlined essay card on the Consume detail page as in the essay hover preview */
+/* The same outlined essay card on the Consume detail page as in the essay hover preview, on white */
 .consume-detail-board .c-article {
   padding: var(--space-m);
   border: var(--line-width) solid var(--border);
-  background: var(--bg);
+  background: #fff;
 }
 
 /* Definition preview: the flash card, but sized to its text */
@@ -1761,4 +1794,5 @@ html.dot-active * {
 .c-note--thought    { --paper: #ffbccb; }
 .c-note--question   { --paper: #ffd0a0; }
 .c-note--page       { --paper: #bfe9b6; }
+.c-note--media      { --paper: #d9c7f5; }
 

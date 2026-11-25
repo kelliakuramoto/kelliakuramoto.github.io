@@ -6,18 +6,21 @@
 //   poem:    { type, title, by, image }
 //   quote:   { type, text, highlight?, by }
 // Every item may have:
-//   id      stable slug. Give one to anything you link to by hand; otherwise it is generated
-//           from the title/episode/text (so don't rename titles of linked items without an id).
+//   id      every item has one: a short, stable name that links use ('media:<id>'). Give each new item one,
+//           and don't change it once something links to it.
 //   url     external link (not for quotes)
 //   links   ['definition:gut-check', 'article:no-advice', ...] connect it to anything.
 //           Essays that write [[this-id]] are connected automatically; you don't repeat them here.
 // WHAT CONNECTIONS DO ON THE CONSUME BOARD
 //   An item with anything attached (quotes, definitions, thoughts, questions, essays, experiments) gets:
 //     - HOVER: small sticky notes slide out from behind the cover on the top, right and left edges, one per attached item
-//              (six at most), coloured by kind: quote yellow, definition blue, thought pink, question orange, essay green.
+//              (six at most), coloured by kind: quote yellow, definition blue, thought pink, question orange, essay green, a book/podcast/poem purple.
 //     - CLICK: a Consume detail page (header CONSUME) with everything attached, in random order, on the 4-column board.
 //              Definitions, questions and essays on that page open their Knowledge page (after the password prompt).
 //              [ VIEW ] next to the title opens the item's own `url`.
+//   `parent: 'media:<id>'` on any item (a quote, book, podcast, poem) says "I belong to that item": it is NOT on the board,
+//   it shows as a card on the parent's detail page, and the parent shows on its page too. One parent per item.
+//   To bring it back onto the board later, change the word `parent` to `links` (a plain two-way link, still on the board).
 //   An item with nothing attached is a plain card that links to its `url`.
 //   Attach things by adding `links: [...]` here, by linking to this item from a thought (see thoughts.js),
 //   or by writing [[this-id]] in an essay or definition.
@@ -25,6 +28,7 @@
 export const LIBRARY = [
   {
     type: 'podcast',
+    id: 'lera-boroditsky-how-language-secretly-changes',
     show: 'What Now? With Trevor Noah',
     episode: 'Lera Boroditsky: How Language Secretly Changes Your Personality',
     minutes: 111,
@@ -35,6 +39,7 @@ export const LIBRARY = [
   },
   {
     type: 'book',
+    id: 'these-impossible-things',
     title: 'These Impossible Things',
     by: 'Salma El-Wardany',
     color: '#7a2a33',
@@ -43,6 +48,7 @@ export const LIBRARY = [
   },
   {
     type: 'book',
+    id: 'everything-is-tuberculosis',
     title: 'Everything is Tuberculosis',
     by: 'John Green',
     color: '#1d3a2b',
@@ -51,6 +57,7 @@ export const LIBRARY = [
   },
   {
     type: 'podcast',
+    id: 'the-art-of-learning-living-life',
     show: 'Huberman Lab',
     episode: 'The Art of Learning & Living Life | Josh Waitzkin',
     minutes: 197,
@@ -60,12 +67,14 @@ export const LIBRARY = [
   },
   {
     type: 'quote',
+    id: 'strong-opinions-loosely-held',
     text: 'Strong opinions, loosely held.',
     highlight: 'loosely held',
     by: 'Unknown'
   },
   {
     type: 'poem',
+    id: 'the-gardener',
     title: 'The Gardener',
     by: 'Mary Oliver',
     image: 'images/Consume/the-gardener.png',
@@ -73,6 +82,7 @@ export const LIBRARY = [
   },
   {
     type: 'quote',
+    id: 'when-life-feels-unbearable-i-remind',
     text: 'When life feels unbearable, I remind myself that I am not a person, I am a piece of software running on the brain of a random ape for a few decades. It’s not the worst brain to run on.',
     highlight: 'I am not a person, I am a piece of software',
     by: 'Joscha Bach',
@@ -80,6 +90,7 @@ export const LIBRARY = [
   },
   {
     type: 'book',
+    id: 'the-score',
     title: 'The Score',
     by: 'C. Thi Nguyen',
     color: '#1d3a2b',
@@ -88,6 +99,7 @@ export const LIBRARY = [
   },
   {
     type: 'podcast',
+    id: 'radical-neighbouring',
     show: 'Mattias Olsson',
     episode: 'Radical Neighbouring',
     minutes: 19,
@@ -97,6 +109,7 @@ export const LIBRARY = [
   },
   {
     type: 'podcast',
+    id: 'neal-agarwal-wants-to-make-you',
     show: 'Humans with Hank',
     episode: 'Neal Agarwal Wants to Make You Less Productive',
     minutes: 55,
@@ -106,6 +119,7 @@ export const LIBRARY = [
   },
   {
     type: 'book',
+    id: 'this-is-water',
     title: 'This is Water',
     by: 'David Foster Wallace',
     color: '#1d3a2b',
@@ -114,6 +128,7 @@ export const LIBRARY = [
   },
   {
     type: 'book',
+    id: 'beartown',
     title: 'Beartown',
     by: 'Fredrik Backman',
     color: '#1d3a2b',
@@ -122,6 +137,7 @@ export const LIBRARY = [
   },
   {
     type: 'book',
+    id: 'american-hagwon',
     title: 'American Hagwon',
     by: 'Min Jin Lee',
     color: '#1d3a2b',
@@ -130,18 +146,21 @@ export const LIBRARY = [
   },
   {
     type: 'quote',
+    id: 'people-think-simplifying-is-removing-things',
     text: 'People think simplifying is removing things, and it’s not. Simplifying is understanding something so deeply that you can get to the essence of something.',
     highlight: 'understanding something so deeply that you can get to the essence',
     by: 'Brian Chesky'
   },
   {
     type: 'quote',
+    id: 'maybe-fulfillment-is-not-about-what',
     text: 'Maybe fulfillment is not about what you get out, but how much of yourself you put in.',
     highlight: 'how much of yourself you put in',
     by: 'Unknown'
   },
   {
     type: 'poem',
+    id: 'the-sun-never-says',
     title: 'The Sun Never Says',
     by: 'Hafiz',
     image: 'images/Consume/the-sun-never-says.webp',
@@ -149,6 +168,7 @@ export const LIBRARY = [
   },
   {
     type: 'book',
+    id: 'think-again',
     title: 'Think Again',
     by: 'Adam Grant',
     color: '#1d3a2b',
@@ -157,6 +177,7 @@ export const LIBRARY = [
   },
   {
     type: 'book',
+    id: 'the-anthropologists',
     title: 'The Anthropologists',
     by: 'Ayşegül Savaş',
     color: '#1d3a2b',
@@ -165,6 +186,7 @@ export const LIBRARY = [
   },
   {
     type: 'poem',
+    id: 'life-is-not-a-race',
     title: 'Life is Not a Race',
     by: 'Alan Watts',
     image: 'images/Consume/life-is-not-a-race.jpg',
@@ -172,6 +194,7 @@ export const LIBRARY = [
   },
   {
     type: 'quote',
+    id: 'an-acorn-never-berates-itself-for',
     text: 'An acorn never berates itself for not being an oak tree, and yet it continues to grow. Because that is what it was encoded to do.',
     highlight: 'what it was encoded to do',
     by: 'James Clear'
@@ -187,27 +210,30 @@ export const LIBRARY = [
   },
   {
     type: 'quote',
+    id: 'do-not-now-seek-the-answers',
     text: 'Do not now seek the answers, which cannot be given you because you would not be able to live them. And the point is, to live everything. Live the questions now.',
     highlight: 'Live the questions now.',
     by: 'Rainer Maria Rilke',
-    links: ['media:letters-to-a-young-poet']
+    parent: 'media:letters-to-a-young-poet'
   },
   {
     type: 'poem',
+    id: 'letters-to-a-young-creator',
     title: 'Letters to a Young Creator',
     by: 'Steve Jobs',
     image: 'images/Consume/letters-to-a-young-creator.png',
     url: 'https://letters.stevejobsarchive.com/',
-    id: 'letters-to-a-young-creator',
   },
   {
     type: 'quote',
+    id: 'i-often-found-that-people-are',
     text: 'I often found that people are very receptive and open to this idea that we can innovate our way out of a problem through technology, and they’re much more conservative about the idea that we can do things differently.',
     highlight: 'idea that we can do things differently',
     by: 'Wen-Yu Weng, Ellen MacArthur Foundation’s Critical Minerals Lead'
   },
     {
     type: 'quote',
+    id: 'if-you-can-imagine-any-other',
     text: 'If you can imagine any other possible thing to do, perhaps you should pursue that.',
     highlight: 'perhaps you should pursue that',
     by: 'Mona Simpson'

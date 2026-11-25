@@ -37,11 +37,27 @@ export function quoteCard({ text, highlight: phrase, by, ...options }) {
   return wrap(media + (by ? meta(null, by) : ''), options);
 }
 
-// { text, date?, dateLabel? }
-// A thought: handwriting on a sheet of white paper, with its date underneath (same shape as a quote card).
-export function thoughtCard({ text, date, dateLabel, ...options }) {
-  const media = `<div class="c-media c-thought"><p>${esc(text)}</p></div>`;
-  return wrap(media + (date ? meta(null, dateLabel || date) : ''), options);
+// One block of a thought, in the same block format as an essay: a quote is drawn in the quote card's type (with its
+// `highlight` words marked, like a quote card), anything else (a paragraph) is handwriting. Blank blocks are skipped.
+// A quote with a `url` (http or https) opens that page in a new tab when clicked.
+const thoughtBlock = ({ type, text = '', highlight: phrase, url = '' }) => {
+  const words = text.trim();
+  if (!words) return '';
+  if (type !== 'quote') return `<p>${esc(words)}</p>`;
+  const quote = `<blockquote>${highlight(words, phrase)}</blockquote>`;
+  return /^https?:\/\//i.test(url)
+    ? `<a class="c-thought-link" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${quote}</a>`
+    : quote;
+};
+
+// What is written on a sheet of paper: the thought's blocks, then its date at the bottom (also handwriting).
+const thoughtWriting = ({ blocks, date, dateLabel }) =>
+  `${blocks.map(thoughtBlock).join('')}${date ? `<time class="c-thought-date" datetime="${esc(date)}">${esc(dateLabel || date)}</time>` : ''}`;
+
+// { blocks: [{ type: 'paragraph' | 'quote', text, highlight?, url? }], date?, dateLabel? }
+// A thought: writing on a quote-card-shaped sheet.
+export function thoughtCard({ blocks, date, dateLabel, ...options }) {
+  return wrap(`<div class="c-media c-thought">${thoughtWriting({ blocks, date, dateLabel })}</div>`, options);
 }
 
 // { text }

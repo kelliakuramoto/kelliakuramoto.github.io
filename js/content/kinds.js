@@ -2,6 +2,7 @@ import { esc, shuffle } from '../dom.js';
 import { articleCard, bookCard, imageCard, podcastCard, quoteCard, textCard, thoughtCard, flashCard } from '../cards.js';
 import { all, connections, refKey } from './graph.js';
 import { richText } from './richtext.js';
+import { thoughtBlocks } from './data/thoughts.js';
 
 // =====================================================
 // KINDS: how each kind of content LOOKS.
@@ -56,7 +57,7 @@ const CARDS = {
     title: item.title, by: item.byline, color: item.color || '#e8e8e8', image: item.image,
     ink: 'var(--text)', attrs: open ? refAttrs(item) : '',
   }),
-  thought: item => thoughtCard({ text: item.text, date: item.date, dateLabel: item.date && formatDate(item.date, 'short') }),
+  thought: item => thoughtCard({ blocks: thoughtBlocks(item), date: item.date, dateLabel: item.date && formatDate(item.date, 'short') }),
   definition: (item, open) => articleCard({ title: item.word, sub: plain(item.text.split('\n')[0]), attrs: open ? refAttrs(item) : '' }),
   question: (item, open) => textCard({ text: item.text, attrs: open ? refAttrs(item) : '' }),
 };
@@ -139,6 +140,7 @@ export function detailParts(item) {
   const linked = connections(item);
   return {
     quotes: linked.filter(o => o.kind === 'media' && o.type === 'quote' && isPublic(o)),
+    media: linked.filter(o => o.kind === 'media' && o.type !== 'quote' && isPublic(o)),   // books, podcasts, poems linked in (either direction)
     definitions: linked.filter(o => o.kind === 'definition' && isPublic(o)),
     thoughts: linked.filter(o => o.kind === 'thought' && isPublic(o)),
     questions: linked.filter(o => o.kind === 'question' && isPublic(o)),
@@ -150,10 +152,14 @@ export function detailParts(item) {
 export const attachedKinds = item => {
   const parts = detailParts(item);
   return [
-    ...parts.quotes.map(() => 'quote'), ...parts.definitions.map(() => 'definition'), ...parts.thoughts.map(() => 'thought'),
+    ...parts.quotes.map(() => 'quote'), ...parts.media.map(() => 'media'), ...parts.definitions.map(() => 'definition'), ...parts.thoughts.map(() => 'thought'),
     ...parts.questions.map(() => 'question'), ...parts.pages.map(() => 'page'),
   ];
 };
+
+// An item with a `parent` (library.js) belongs to that parent: it is not a card on the Consume board, it shows on the parent's
+// detail page. Change `parent` to `links` on the item and it returns to the board.
+export const onBoard = item => !item.parent;
 
 // Every media item with something attached (a book, podcast, poem or quote) gets sticky notes on hover and a detail page.
 export const hasDetail = item => item.kind === 'media'
@@ -167,8 +173,10 @@ export const detailCard = item => MEDIA_CARDS[item.type](item, {
 
 // The cards for what is attached to an item on its detail page (quotes, definitions, thoughts, questions), unshuffled.
 // Definitions and questions open their Knowledge page when clicked.
-const attachedCards = ({ quotes, definitions, thoughts, questions }) => [
-  ...quotes.map(q => cardFor(q, false)),
+// Quotes on a detail page show no author, since they belong to the book, podcast or poem the page is about.
+const attachedCards = ({ quotes, media, definitions, thoughts, questions }) => [
+  ...quotes.map(q => MEDIA_CARDS.quote(q, { by: '' })),
+  ...media.map(m => MEDIA_CARDS[m.type](m)),   // the normal card, linking out to its own url
   ...definitions.map(term => flashCard({
     front: richText(term.text, { canSee: isPublic }), back: esc(term.word), foot: term.word, attrs: refAttrs(term),
   })),

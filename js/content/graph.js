@@ -5,9 +5,11 @@
 // THE MODEL
 //   Every piece of content is a NODE with a kind and an id. Its key is "kind:id":
 //     "article:no-advice"   "definition:free-bread"   "media:letters-to-a-young-poet"
-//   Nodes are joined by EDGES, which come from two places and are ALWAYS two-way:
+//   Nodes are joined by EDGES, which come from three places and are ALWAYS two-way:
 //     1. `links: ['definition:gut-check', 'free-bread']` written on an item   (explicit)
 //     2. [[id]] / [[kind:id|words]] written inside any of the item's texts    (inline)
+//     3. `parent: 'media:some-book'` written on a media item                  (same two-way edge as `links`;
+//        the Consume board also hides any item that has a `parent`, see onBoard in kinds.js)
 //   You declare a connection once, on whichever side is convenient, and BOTH items know about it.
 //   Example: an essay writes [[letters-to-a-young-poet]]  ->  the book also lists the essay.
 //
@@ -121,6 +123,17 @@ function build() {
         if (!hit) { note(`links: "${ref}" does not exist`); continue; }
         if (hit.ambiguous) note(`links: "${ref}" matches several kinds, write kind:id`);
         addEdge(from, nodeKey(hit.item));
+      }
+
+      // 1b. parent: 'media:some-book'  (one string, media items only; a two-way edge like `links`)
+      if (item.parent !== undefined) {
+        const p = typeof item.parent === 'string' && parseRef(item.parent);
+        const hit = p && resolve(p.kind, p.id);
+        if (kind !== 'media') note('parent: only media items can have a parent');
+        else if (!hit) note(`parent: "${item.parent}" does not exist`);
+        else if (hit.ambiguous) note(`parent: "${item.parent}" matches several kinds, write media:id`);
+        else if (hit.item.kind !== 'media') note(`parent: "${item.parent}" is not a media item`);
+        else addEdge(from, nodeKey(hit.item));
       }
 
       // 2. inline: every [[...]] inside the item's texts

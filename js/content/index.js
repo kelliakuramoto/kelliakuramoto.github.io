@@ -3,7 +3,7 @@ import { LIBRARY } from './data/library.js';
 import { ESSAYS } from './data/essays.js';
 import { EXPERIMENTS } from './data/experiments.js';
 import { DEFINITIONS } from './data/definitions.js';
-import { THOUGHTS } from './data/thoughts.js';
+import { THOUGHTS, thoughtBlocks } from './data/thoughts.js';
 
 // =====================================================
 // The single registration point. Importing this file fills the graph.
@@ -23,8 +23,8 @@ register('media',      LIBRARY,     { idOf: i => i.title || i.episode || i.text 
 register('definition', DEFINITIONS, { texts: i => [i.text], idOf: i => i.word });
 register('article',    ESSAYS,      { texts: blockTexts,     idOf: i => i.title });
 register('experiment', EXPERIMENTS, { texts: blockTexts,     idOf: i => i.title });
-register('thought',    THOUGHTS,    { texts: i => [i.text], idOf: i => i.text });
+register('thought',    THOUGHTS,    { texts: i => blockTexts({ blocks: thoughtBlocks(i) }), idOf: i => thoughtBlocks(i)[0].text });
 
 // Re-exported so other files only ever import from './content/index.js'.
-export { LIBRARY, ESSAYS, EXPERIMENTS, DEFINITIONS, THOUGHTS };
+export { LIBRARY, ESSAYS, EXPERIMENTS, DEFINITIONS, THOUGHTS, thoughtBlocks };
 export { all, get, connections, validate, register, refKey } from './graph.js';

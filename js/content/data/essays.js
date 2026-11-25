@@ -3,7 +3,12 @@
 // Add an essay: copy an entry, give it a unique `id`, write blocks. That is all.
 //   id, title, subheader, date (YYYY-MM-DD), access?: ['friends', ...] (none = everyone)
 //   links?: ['definition:x', 'media:y', ...]  explicit connections (optional)
-//   blocks: paragraph | heading | subheading | quote | underline | image | divider | list | numbered-list
+//   blocks: paragraph | heading | subheading | quote | underline | image | divider | list | numbered-list | thought
+//   A `thought` block is a thought card written right here (the same card as on the Consume page, see thoughts.js):
+//     { type: 'thought', text: 'what you wrote', date: '2026-11-25' }
+//     { type: 'thought', date: '2026-11-25', blocks: [ { type: 'quote', text: '...', highlight: '...', url: 'https://...' },
+//                                                      { type: 'paragraph', text: '...' } ] }
+//   (use `text` OR `blocks`; `date` is optional. It belongs to this essay only and does not appear anywhere else.)
 //
 // Linking from inside text (works in every `text` and list item):
 //   [[free-bread]]                 -> the thing with that id, wherever it lives

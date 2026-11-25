@@ -1,7 +1,7 @@
 import { $, shuffle } from './dom.js';
 import { peekFrame, deskFrame } from './cards.js';
 import { all, refKey } from './content/index.js';
-import { cardFor, peekLinks, hasDetail, detailCard, attachedKinds } from './content/kinds.js';
+import { cardFor, peekLinks, hasDetail, detailCard, attachedKinds, onBoard } from './content/kinds.js';
 
 // =====================================================
 // Consume board
@@ -9,6 +9,7 @@ import { cardFor, peekLinks, hasDetail, detailCard, attachedKinds } from './cont
 // A card with things attached (quotes, definitions, thoughts, questions, essays) shows small sticky notes peeking out from
 // behind its cover when you hover it, and opens its own detail page when you click it (js/detail.js).
 // A quote with a connection keeps the "Peek into my mind" overlay.
+// A quote attached to a book, podcast or poem is not on the board: it shows on that item's detail page (see onBoard in kinds.js).
 // =====================================================
 
 // One board tile.
@@ -20,5 +21,5 @@ const boardCard = item => hasDetail(item)
   : peekFrame(cardFor(item, false), peekLinks(item));
 
 const board = $('#board');
-if (board) board.innerHTML = shuffle(all('media')).map(boardCard).join('');
+if (board) board.innerHTML = shuffle(all('media').filter(onBoard)).map(boardCard).join('');
 
