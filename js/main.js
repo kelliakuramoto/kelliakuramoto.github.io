@@ -1,5 +1,6 @@
 import './navigation.js';
 import './consume.js';
+import './detail.js';
 import './photography.js';
 import './password-gate.js';
 import './photobook.js';

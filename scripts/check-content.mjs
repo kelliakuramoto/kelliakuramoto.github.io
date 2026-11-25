@@ -7,7 +7,7 @@ import { all, connections, validate } from '../js/content/index.js';
 const problems = validate();
 console.log(problems.length ? `\n${problems.length} problem(s):\n - ${problems.join('\n - ')}\n` : '\nNo broken links.\n');
 
-for (const kind of ['article', 'definition', 'media', 'experiment']) {
+for (const kind of ['article', 'definition', 'media', 'experiment', 'thought']) {
   for (const item of all(kind)) {
     const links = connections(item).map(o => `${o.kind}:${o.id}`);
     if (links.length) console.log(`${kind}:${item.id}  ->  ${links.join(', ')}`);

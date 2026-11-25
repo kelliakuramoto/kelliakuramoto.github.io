@@ -1,4 +1,4 @@
-import { esc } from './dom.js';
+import { esc, seededRandom } from './dom.js';
 
 // =====================================================
 // Shared card components
@@ -35,6 +35,13 @@ function meta(title, ...lines) {
 export function quoteCard({ text, highlight: phrase, by, ...options }) {
   const media = `<div class="c-media c-quote"><blockquote>${highlight(text, phrase)}</blockquote></div>`;
   return wrap(media + (by ? meta(null, by) : ''), options);
+}
+
+// { text, date?, dateLabel? }
+// A thought: handwriting on a sheet of white paper, with its date underneath (same shape as a quote card).
+export function thoughtCard({ text, date, dateLabel, ...options }) {
+  const media = `<div class="c-media c-thought"><p>${esc(text)}</p></div>`;
+  return wrap(media + (date ? meta(null, dateLabel || date) : ''), options);
 }
 
 // { text }
@@ -109,4 +116,36 @@ export const peekFrame = (card, links = []) => {
   const buttons = links.map(({ ref, label }) => `<button type="button" data-ref="${esc(ref)}">[ ${esc(label)} ]</button>`).join('');
   media.insertAdjacentHTML('beforeend', `<div class="c-peek">${buttons}</div>`);
   return `<div class="c-peek-frame">${template.innerHTML}</div>`;
+};
+
+const between = (random, min, max) => min + random() * (max - min);
+const NOTE_EDGES = ['top', 'right', 'left'];
+const MAX_NOTES = 6;
+
+// Wraps a Consume card that has things attached with small sticky notes tucked behind its cover. On hover or focus they slide out a
+// little from the top, right and left edges, as a hint that the card opens. There is one note per attached item (at most six),
+// coloured by kind (see the .c-note--* colours in styles.css). Edges, positions and tilt come from `seed` (the item's id), so a card
+// always looks the same.
+//   kinds  one name per attached item, e.g. ['quote', 'definition', 'thought'] (see attachedKinds() in js/content/kinds.js)
+export const deskFrame = (card, seed, kinds = []) => {
+  const template = document.createElement('template');
+  template.innerHTML = card;
+  const root = template.content.firstElementChild;
+  if (!root || !kinds.length) return card;
+  const random = seededRandom(seed);
+  // up to six notes, dealt out to the three edges in turn, starting from a seeded edge
+  const first = Math.floor(random() * NOTE_EDGES.length);
+  const notes = kinds.slice(0, MAX_NOTES).map((kind, i) => ({ kind, edge: NOTE_EDGES[(first + i) % NOTE_EDGES.length] }));
+  const count = {};
+  const html = notes.map(({ kind, edge }) => {
+    const n = count[edge] = (count[edge] || 0) + 1;                       // 1st or 2nd note on this edge
+    const along = edge === 'top'
+      ? `left:${Math.round(10 + (n - 1) * 42 + between(random, 0, 22))}%`
+      : `top:${(1.25 + (n - 1) * 3.6 + between(random, 0, 1.6)).toFixed(2)}rem`;
+    const tilt = between(random, -7, 7).toFixed(1);
+    return `<span class="c-note c-note--${kind} c-note--${edge}" style="${along};--tilt:${tilt}deg" aria-hidden="true"></span>`;
+  }).join('');
+  root.insertAdjacentHTML('afterbegin', html);
+  root.classList.add('has-notes');
+  return template.innerHTML;
 };

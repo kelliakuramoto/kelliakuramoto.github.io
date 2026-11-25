@@ -1,5 +1,5 @@
-import { esc } from '../dom.js';
-import { articleCard, bookCard, imageCard, podcastCard, quoteCard, textCard, flashCard } from '../cards.js';
+import { esc, shuffle } from '../dom.js';
+import { articleCard, bookCard, imageCard, podcastCard, quoteCard, textCard, thoughtCard, flashCard } from '../cards.js';
 import { all, connections, refKey } from './graph.js';
 import { richText } from './richtext.js';
 
@@ -34,11 +34,12 @@ const BOOK_COLORS = ['#2f4858', '#1d3a2b', '#7a2a33', '#5b5266'];
 
 // One drawing function per media `type` (the `type:` field in library.js).
 // Add a new media type here and the board, the peeks and the connection lists all pick it up.
+// `extra` (href, attrs) overrides the defaults, e.g. detailCard() below removes the link and adds a click hook.
 const MEDIA_CARDS = {
-  book:    item => bookCard({ ...item, color: item.color || BOOK_COLORS[all('media').indexOf(item) % BOOK_COLORS.length], href: item.url }),
-  podcast: item => podcastCard({ ...item, href: item.url }),
-  poem:    item => imageCard({ src: item.image, ratio: '4/5', title: item.title, sub: item.by, href: item.url }),
-  quote:   item => quoteCard(item),
+  book:    (item, extra) => bookCard({ ...item, color: item.color || BOOK_COLORS[all('media').indexOf(item) % BOOK_COLORS.length], href: item.url, ...extra }),
+  podcast: (item, extra) => podcastCard({ ...item, href: item.url, ...extra }),
+  poem:    (item, extra) => imageCard({ src: item.image, ratio: '4/5', title: item.title, sub: item.by, href: item.url, ...extra }),
+  quote:   (item, extra) => quoteCard({ ...item, ...extra }),
 };
 
 // ---- One card per kind ------------------------------------------------
@@ -55,6 +56,7 @@ const CARDS = {
     title: item.title, by: item.byline, color: item.color || '#e8e8e8', image: item.image,
     ink: 'var(--text)', attrs: open ? refAttrs(item) : '',
   }),
+  thought: item => thoughtCard({ text: item.text, date: item.date, dateLabel: item.date && formatDate(item.date, 'short') }),
   definition: (item, open) => articleCard({ title: item.word, sub: plain(item.text.split('\n')[0]), attrs: open ? refAttrs(item) : '' }),
   question: (item, open) => textCard({ text: item.text, attrs: open ? refAttrs(item) : '' }),
 };
@@ -81,7 +83,7 @@ export const peekFor = item => (PEEKS[item.kind] || (i => cardFor(i, false)))(it
 const CONNECTION_LABELS = {
   definition: { media: 'Origin', article: 'Used in a sentence', _: 'Related' },
   media:      { article: 'Written about in', definition: 'Concepts', _: 'Related' },
-  _:          { media: 'References', definition: 'Concepts', article: 'See also', experiment: 'See also', question: 'Questions', _: 'Related' },
+  _:          { media: 'References', definition: 'Concepts', article: 'See also', experiment: 'See also', question: 'Questions', thought: 'Thoughts', _: 'Related' },
 };
 
 // The heading for one group of connections, e.g. labelFor('definition', 'media') -> "Origin".
@@ -123,4 +125,74 @@ export function peekLinks(item) {
     ref: refKey(other.kind, other.id),
     label: links.length === 1 ? 'PEEK INTO MY MIND' : PEEK_LABELS[other.kind],
   }));
+}
+
+// ---- Consume detail page ------------------------------------------------
+// A book, podcast or poem with things attached to it opens a detail page (js/detail.js).
+// What is attached comes from the graph: quotes (media of type 'quote'), definitions, thoughts and questions that link to it,
+// plus essays / experiments that [[link]] to it. Nothing is listed by hand on the item.
+// Quotes, definitions, thoughts and questions with an `access` list are never drawn here (the Consume board is public).
+// Essays and experiments are listed by title; opening one goes through the password prompt.
+const isPublic = other => !other.access;
+
+export function detailParts(item) {
+  const linked = connections(item);
+  return {
+    quotes: linked.filter(o => o.kind === 'media' && o.type === 'quote' && isPublic(o)),
+    definitions: linked.filter(o => o.kind === 'definition' && isPublic(o)),
+    thoughts: linked.filter(o => o.kind === 'thought' && isPublic(o)),
+    questions: linked.filter(o => o.kind === 'question' && isPublic(o)),
+    pages: linked.filter(o => o.kind === 'article' || o.kind === 'experiment'),
+  };
+}
+
+// One entry per attached item, as the name of its kind ('quote', 'definition', 'thought', 'question', 'page'), for the sticky notes on the board.
+export const attachedKinds = item => {
+  const parts = detailParts(item);
+  return [
+    ...parts.quotes.map(() => 'quote'), ...parts.definitions.map(() => 'definition'), ...parts.thoughts.map(() => 'thought'),
+    ...parts.questions.map(() => 'question'), ...parts.pages.map(() => 'page'),
+  ];
+};
+
+// Every media item with something attached (a book, podcast, poem or quote) gets sticky notes on hover and a detail page.
+export const hasDetail = item => item.kind === 'media'
+  && Object.values(detailParts(item)).some(list => list.length);
+
+// The board card for an item with a detail page: no outside link, clicking it opens the page instead.
+export const detailCard = item => MEDIA_CARDS[item.type](item, {
+  href: '',
+  attrs: `data-detail="${refKey(item.kind, item.id)}" tabindex="0" role="button" aria-label="Open notes: ${esc(item.title || item.episode || item.text)}"`,
+});
+
+// The cards for what is attached to an item on its detail page (quotes, definitions, thoughts, questions), unshuffled.
+// Definitions and questions open their Knowledge page when clicked.
+const attachedCards = ({ quotes, definitions, thoughts, questions }) => [
+  ...quotes.map(q => cardFor(q, false)),
+  ...definitions.map(term => flashCard({
+    front: richText(term.text, { canSee: isPublic }), back: esc(term.word), foot: term.word, attrs: refAttrs(term),
+  })),
+  ...thoughts.map(t => cardFor(t, false)),
+  ...questions.map(q => cardFor(q)),
+];
+
+// The detail page content, laid out like an essay: title, deck, then the attached cards.
+// Pieces are shuffled, so the order is different every time the page opens.
+export function detailHTML(item) {
+  const parts = detailParts(item);
+  const cards = [
+    ...attachedCards(parts),
+    ...parts.pages.map(page => cardFor(page)),   // opens through the password prompt when the essay has an `access` list
+  ];
+  // [ VIEW ] opens the book, podcast or poem itself, to the right of the title
+  const view = item.url
+    ? `<a class="consume-view-btn" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">[ VIEW ]</a>` : '';
+  // The same three-column layout as an essay (.essay in styles.css): everything sits in the middle column, the cards one under another.
+  return `<div class="essay"><div class="knowledge-column">
+    <header class="knowledge-article-header">
+      <div class="consume-detail-title"><h1>${esc(item.title || item.episode || item.text)}</h1>${view}</div>
+      <p class="knowledge-deck">${esc(item.by || item.show || '')}</p>
+    </header>
+    <div class="consume-detail-cards"><div class="consume-detail-board">${shuffle(cards).join('')}</div></div>
+  </div></div>`;
 }

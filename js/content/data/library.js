@@ -11,7 +11,16 @@
 //   url     external link (not for quotes)
 //   links   ['definition:gut-check', 'article:no-advice', ...] connect it to anything.
 //           Essays that write [[this-id]] are connected automatically; you don't repeat them here.
-// A "Peek into my mind" button appears on the Consume board when an item has a connection.
+// WHAT CONNECTIONS DO ON THE CONSUME BOARD
+//   An item with anything attached (quotes, definitions, thoughts, questions, essays, experiments) gets:
+//     - HOVER: small sticky notes slide out from behind the cover on the top, right and left edges, one per attached item
+//              (six at most), coloured by kind: quote yellow, definition blue, thought pink, question orange, essay green.
+//     - CLICK: a Consume detail page (header CONSUME) with everything attached, in random order, on the 4-column board.
+//              Definitions, questions and essays on that page open their Knowledge page (after the password prompt).
+//              [ VIEW ] next to the title opens the item's own `url`.
+//   An item with nothing attached is a plain card that links to its `url`.
+//   Attach things by adding `links: [...]` here, by linking to this item from a thought (see thoughts.js),
+//   or by writing [[this-id]] in an essay or definition.
 // =====================================================
 export const LIBRARY = [
   {
@@ -177,11 +186,19 @@ export const LIBRARY = [
     id: 'letters-to-a-young-poet',
   },
   {
+    type: 'quote',
+    text: 'Do not now seek the answers, which cannot be given you because you would not be able to live them. And the point is, to live everything. Live the questions now.',
+    highlight: 'Live the questions now.',
+    by: 'Rainer Maria Rilke',
+    links: ['media:letters-to-a-young-poet']
+  },
+  {
     type: 'poem',
     title: 'Letters to a Young Creator',
     by: 'Steve Jobs',
     image: 'images/Consume/letters-to-a-young-creator.png',
     url: 'https://letters.stevejobsarchive.com/',
+    id: 'letters-to-a-young-creator',
   },
   {
     type: 'quote',
