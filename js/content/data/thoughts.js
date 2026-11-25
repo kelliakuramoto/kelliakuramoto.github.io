@@ -8,11 +8,12 @@
 //                                                  `url` (optional): clicking the quote opens this page in a new tab
 //           (use `text` OR `blocks`, not both)
 //   date    ISO date (YYYY-MM-DD)
-//   links   what it is attached to, e.g. ['media:letters-to-a-young-poet']. A book / podcast / poem with a
-//           thought linked to it opens a detail page on the Consume board. Add `id` only if you link to it by hand.
+//   parent  the media this thought belongs to, e.g. 'book:letters-to-a-young-poet' (media is written by its `type`). A book / podcast / poem with a
+//           thought attached to it opens a detail page on the Consume board. Add `id` only if you link to it by hand.
+//   links   (optional) other things it is merely related to, e.g. ['definition:gut-check']
 //   access  optional, same as essays: a thought with an `access` list is never shown on the public Consume board.
 // Thoughts never appear on the main Consume board. They show only on a detail page, and as a pink sticky note on the card of what they link to.
-// TO ADD ONE:  copy an entry below, change text (or blocks) / date / links, then run:  node scripts/check-content.mjs
+// TO ADD ONE:  copy an entry below, change text (or blocks) / date / parent, then run:  node scripts/check-content.mjs
 // The two below are placeholders: replace them with your own.
 // =====================================================
 // What a thought says, as essay-style blocks: `blocks` as written, or `text` as a single paragraph.
@@ -21,12 +22,12 @@ export const thoughtBlocks = thought => thought.blocks || [{ type: 'paragraph', 
 export const THOUGHTS = [
   {
     text: 'What if the same way you could scan a nutrition label and understand the impact on your health, you could scan physical products and understand the material impact on the environment?',
-    links: ['media:circular-economy'],
+    parent: 'quote:circular-economy',
   },
   {
     text: 'i keep wanting the answer first.\nthe book keeps handing me a better question.',
     date: '2026-11-21',
-    links: ['media:letters-to-a-young-poet'],
+    parent: 'book:letters-to-a-young-poet',
   },
   // SAMPLE: a thought with blocks (quotes and handwriting), linked to the book
   // {

@@ -5,9 +5,11 @@ import { TOKEN, resolve, refKey } from './graph.js';
 // RICH TEXT: turns [[links]] written in your content into clickable HTML.
 //
 // WRITING LINKS (works in any `text` or list item of an essay, experiment or definition)
-//   [[free-bread]]                  link to whatever has that id; shows its default words
-//   [[free-bread|the free bread]]   same, but you choose the words
-//   [[media:the-score]]             add the kind only if two kinds share an id
+//   [[definition:free-bread]]                  link to that item; shows its default words
+//   [[book:letters-to-a-young-poet]]           media items are written by their `type` in library.js
+//   [[definition:free-bread|the free bread]]   same, but you choose the words
+// The kind is always written (definition, article, experiment, or a media type: book, podcast, poem, quote), the same 'kind:id' as `parent` and `links`.
+// A link without a kind, like [[free-bread]], is not turned into a link: it stays as typed and check-content.mjs reports it.
 // Text after the brackets stays attached: "[[sprint]]s" reads "sprints".
 // A link to an id that does not exist is left as typed, so a typo is easy to spot
 // (and `node scripts/check-content.mjs` lists it).
@@ -18,7 +20,7 @@ import { TOKEN, resolve, refKey } from './graph.js';
 //   Kinds only differ in colour (the class) and destination (see refAnchor).
 // =====================================================
 
-// Words shown for a link when you did not write any: [[id]] with no |words.
+// Words shown for a link when you did not write any: [[kind:id]] with no |words.
 // Add a line here when you add a new kind.
 const DEFAULT_WORDS = {
   definition: item => item.word.toLowerCase(),
@@ -55,7 +57,7 @@ export function refAnchor(item, words = esc(wordsFor(item)), { canSee = () => tr
 }
 
 // THE MAIN ENTRY POINT. Takes plain text containing [[links]] and returns safe HTML.
-//   richText('I love [[free-bread]].')   ->  'I love <a ...>free bread</a>.'
+//   richText('I love [[definition:free-bread]].')   ->  'I love <a ...>free bread</a>.'
 // The text is escaped FIRST, so nothing you write can inject HTML; links are added afterwards.
 // Options are passed to refAnchor, e.g. richText(text, { canSee }) to hide links to locked items.
 export const richText = (text, options = {}) =>

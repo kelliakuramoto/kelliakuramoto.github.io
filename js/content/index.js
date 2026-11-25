@@ -27,4 +27,4 @@ register('thought',    THOUGHTS,    { texts: i => blockTexts({ blocks: thoughtBl
 
 // Re-exported so other files only ever import from './content/index.js'.
 export { LIBRARY, ESSAYS, EXPERIMENTS, DEFINITIONS, THOUGHTS, thoughtBlocks };
-export { all, get, connections, validate, register, refKey } from './graph.js';
+export { all, get, connections, relations, validate, register, refKey, writtenRef } from './graph.js';

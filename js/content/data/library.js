@@ -6,11 +6,11 @@
 //   poem:    { type, title, by, image }
 //   quote:   { type, text, highlight?, by }
 // Every item may have:
-//   id      every item has one: a short, stable name that links use ('media:<id>'). Give each new item one,
+//   id      every item has one: a short, stable name that links use ('<type>:<id>', e.g. 'book:letters-to-a-young-poet'). Give each new item one,
 //           and don't change it once something links to it.
 //   url     external link (not for quotes)
 //   links   ['definition:gut-check', 'article:no-advice', ...] connect it to anything.
-//           Essays that write [[this-id]] are connected automatically; you don't repeat them here.
+//           Essays that write [[book:this-id]] (the item's own `type`) are connected automatically; you don't repeat them here.
 // WHAT CONNECTIONS DO ON THE CONSUME BOARD
 //   An item with anything attached (quotes, definitions, thoughts, questions, essays, experiments) gets:
 //     - HOVER: small sticky notes slide out from behind the cover on the top, right and left edges, one per attached item
@@ -18,12 +18,13 @@
 //     - CLICK: a Consume detail page (header CONSUME) with everything attached, in random order, on the 4-column board.
 //              Definitions, questions and essays on that page open their Knowledge page (after the password prompt).
 //              [ VIEW ] next to the title opens the item's own `url`.
-//   `parent: 'media:<id>'` on any item (a quote, book, podcast, poem) says "I belong to that item": it is NOT on the board,
+//   `parent: '<type>:<id>'` on any item (a quote, book, podcast, poem) says "I belong to that item": it is NOT on the board,
 //   it shows as a card on the parent's detail page, and the parent shows on its page too. One parent per item.
+//   Write a parent/child relationship on the CHILD, pointing at its parent; never list children on the parent. A child can be any media (quote, book, podcast, poem), a thought or a definition.
 //   To bring it back onto the board later, change the word `parent` to `links` (a plain two-way link, still on the board).
 //   An item with nothing attached is a plain card that links to its `url`.
 //   Attach things by adding `links: [...]` here, by linking to this item from a thought (see thoughts.js),
-//   or by writing [[this-id]] in an essay or definition.
+//   or by writing [[book:this-id]] in an essay or definition.
 // =====================================================
 export const LIBRARY = [
   {
@@ -209,7 +210,7 @@ export const LIBRARY = [
     url: 'https://www.goodreads.com/en/book/show/46199.Letters_to_a_Young_Poet',
   },
   {
-    parent: 'media:letters-to-a-young-poet',
+    parent: 'book:letters-to-a-young-poet',
     type: 'quote',
     id: 'do-not-now-seek-the-answers',
     text: 'Do not now seek the answers, which cannot be given you because you would not be able to live them. And the point is, to live everything. Live the questions now.',
@@ -231,7 +232,18 @@ export const LIBRARY = [
     highlight: 'idea that we can do things differently',
     by: 'Wen-Yu Weng, Ellen MacArthur Foundation’s Critical Minerals Lead'
   },
-    {
+  {
+    parent: 'quote:circular-economy',
+    type: 'podcast',
+    id: 'critical-minerals-crunch',
+    show: 'The Circular Economy Show Podcast',
+    episode: 'The critical minerals crunch: How do we secure the future of clean energy?',
+    minutes: 18,
+    progress: 23,
+    image: 'images/Consume/critical-minerals-crunch.png',
+    url: 'https://www.ellenmacarthurfoundation.org/podcasts/the-critical-minerals-crunch-how-do-we-secure-the-future-of-clean-energy'
+  },
+  {
     type: 'quote',
     id: 'perhaps-pursue-that',
     text: 'If you can imagine any other possible thing to do, perhaps you should pursue that.',
