@@ -1,7 +1,8 @@
-import { esc, shuffle } from '../dom.js';
-import { articleCard, bookCard, imageCard, podcastCard, quoteCard, textCard, thoughtCard, flashCard } from '../cards.js';
+import { esc, formatDate, shuffle } from '../dom.js';
+import { articleCard, bookCard, imageCard, podcastCard, quoteCard, textCard, flashCard } from '../cards.js';
+import { thoughtCard } from '../blocks.js';
 import { all, connections, refKey } from './graph.js';
-import { richText } from './richtext.js';
+import { richText, URL_TOKEN, urlWords } from './richtext.js';
 import { thoughtBlocks } from './data/thoughts.js';
 
 // =====================================================
@@ -18,16 +19,12 @@ import { thoughtBlocks } from './data/thoughts.js';
 // Link markup removed, for places that show text without links:
 //   plain('I love [[free-bread|bread]] and [[gut-check]]') -> 'I love bread and gut-check'
 const plain = text => text
-  .replace(/\[\[url:(https?:\/\/[^\]|\s]+)(?:\|([^\]]+))?\]\]/g, (m, address, label) => label || address.replace(/^https?:\/\/(www\.)?/, ''))
+  .replace(URL_TOKEN, (m, address, label) => urlWords(address, label))
   .replace(/\[\[(?:[a-z]+:)?([\w-]+)(?:\|([^\]]+))?\]\]/g, (m, id, label) => label || id);
-
-// Formats an ISO date for display. month is 'short' ("Nov 12, 2026") or 'long' ("November 12, 2026").
-export const formatDate = (iso, month) =>
-  new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', { month, day: 'numeric', year: 'numeric' });
 
 // The attributes that make a card clickable, the same for EVERY kind:
 //   refAttrs(essay) -> 'data-ref="article:no-advice" tabindex="0" role="button" aria-label="Open: ..."'
-// The single click handler in knowledge.js looks for data-ref and opens that page.
+// The single click handler in js/knowledge/index.js looks for data-ref and opens that page.
 export const refAttrs = item =>
   `data-ref="${refKey(item.kind, item.id)}" tabindex="0" role="button" aria-label="Open: ${esc(item.title || item.word || item.text)}"`;
 

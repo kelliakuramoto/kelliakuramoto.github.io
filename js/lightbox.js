@@ -1,4 +1,4 @@
-import { $, on, esc } from './dom.js';
+import { $, on, esc, setOverlay } from './dom.js';
 import { initCarousels } from './media.js';
 import { isMobile } from './navigation.js';
 
@@ -63,15 +63,13 @@ export function openLightbox({ photos, start = 0, heading = '', trigger: opener 
   initCarousels(modal);
 
   void modal.offsetWidth;   // flush styles so the first image appears instantly, not as a crossfade
-  modal.classList.add('is-open');
-  modal.setAttribute('aria-hidden', 'false');
+  setOverlay(modal, true);
   $('.car', modal).focus({ preventScroll: true });   // so ← → work straight away
 }
 
 export function closeLightbox() {
   if (!modal.classList.contains('is-open')) return;
-  modal.classList.remove('is-open');
-  modal.setAttribute('aria-hidden', 'true');
+  setOverlay(modal, false);
   trigger?.focus({ preventScroll: true });
   trigger = null;
 }

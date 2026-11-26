@@ -1,4 +1,4 @@
-import { $, on, setFlipped } from './dom.js';
+import { $, on, setFlipped, setHash } from './dom.js';
 import { get } from './content/index.js';
 import { detailHTML, hasDetail } from './content/kinds.js';
 
@@ -27,10 +27,6 @@ const isOpen = () => page.classList.contains('is-open');
 // ---- URLs ---------------------------------------------------------
 const DETAIL_HASH = /^#consume\/media\/([^/]+)$/;
 
-function setUrl(next) {
-  if (location.hash === next) return;
-  history.pushState(null, '', location.pathname + location.search + next);
-}
 
 // `over`: opened from a link inside Knowledge, so the page goes on top of the essay (and the essay can't be clicked behind it).
 function open(ref, trigger, { updateUrl = true, over = false } = {}) {
@@ -53,7 +49,7 @@ function open(ref, trigger, { updateUrl = true, over = false } = {}) {
   closeButton.focus({ preventScroll: true });
   if (updateUrl) {
     if (!DETAIL_HASH.test(location.hash)) hashBefore = location.hash;
-    setUrl(`#consume/${ref.replace(':', '/')}`);
+    setHash(`#consume/${ref.replace(':', '/')}`);
   }
   return true;
 }
@@ -63,7 +59,7 @@ function close({ updateUrl = true } = {}) {
   const wasOver = page.classList.contains('is-over-knowledge');
   page.classList.remove('is-over-knowledge');
   knowledge.inert = false;
-  if (updateUrl && DETAIL_HASH.test(location.hash)) setUrl(hashBefore);
+  if (updateUrl && DETAIL_HASH.test(location.hash)) setHash(hashBefore);
   if (wasOver && underRef) {   // back to the essay, with the page that was beneath it showing again
     if (underRef !== openRef) {   // a different page was opened on top: put the one beneath back
       content.innerHTML = detailHTML(get(underRef));
@@ -127,7 +123,7 @@ function routeFromHash() {
 window.addEventListener('popstate', routeFromHash);
 routeFromHash();
 
-// Definitions on this page open their Knowledge page (js/knowledge.js handles data-ref); any flash card without data-ref still turns over
+// Definitions on this page open their Knowledge page (js/knowledge/index.js handles data-ref); any flash card without data-ref still turns over
 on(content, 'click', event => {
   const card = event.target.closest('.c-flash');
   if (card && !event.target.closest('[data-ref]')) setFlipped(card, !card.classList.contains('is-flipped'));

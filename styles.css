@@ -105,7 +105,7 @@ Breakpoints override tokens (see section 10) instead of overriding rules.
   /* Motion: --motion-view + --ease-out are the one timing for every fade, slide, flip and hover
      (the same as opening and closing a case study).
      --motion-book and --motion-fade belong to the photobook only.
-     (js/navigation.js, js/knowledge.js and js/photobook.js read these) */
+     (js/navigation.js, js/knowledge/motion.js and js/photobook.js read these) */
   --motion-fade: 0.6s;
   --motion-view: 0.8s;
   --motion-book: 900ms;
@@ -782,7 +782,7 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   white-space: nowrap;
 }
 
-/* Thought (thoughtCard in cards.js): a quote-card-shaped block with the same grey background as a quote, written in Mido Light */
+/* Thought (thoughtCard in blocks.js): a quote-card-shaped block with the same grey background as a quote, written in Mido Light */
 .c-thought {
   padding: var(--space-l);
   color: var(--paper-ink);

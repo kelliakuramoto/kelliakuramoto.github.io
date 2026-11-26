@@ -173,7 +173,7 @@ const modeBtns = $$('.mode-btn');
 function setMode(mode) {
   document.body.dataset.mode = mode;
   modeBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
-  document.dispatchEvent(new CustomEvent('mode:changed'));   // js/knowledge.js closes itself on this
+  document.dispatchEvent(new CustomEvent('mode:changed'));   // js/knowledge/index.js closes itself on this
 }
 
 modeBtns.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));

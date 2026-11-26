@@ -10,7 +10,7 @@ import { THOUGHTS, thoughtBlocks } from './data/thoughts.js';
 // To add a new kind of content: add a data file, then one register() line here.
 //   texts(item)  every string in the item that may contain [[links]]
 //   idOf(item)   what to build an id from when the item has none
-// Questions come from Supabase and are registered after they load (see knowledge.js).
+// Questions come from Supabase and are registered after they load (see js/knowledge/questions.js).
 // =====================================================
 
 // Essays and experiments keep their writing in `blocks`; this lists every string in them

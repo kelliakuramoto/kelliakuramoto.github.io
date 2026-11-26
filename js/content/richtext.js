@@ -19,7 +19,7 @@ import { TOKEN, resolve, refKey } from './graph.js';
 //
 // WHAT COMES OUT
 //   Every link carries data-ref="kind:id" and the class "ref-link". Because of that, ONE click handler
-//   (knowledge.js) opens every kind of page and ONE hover handler shows every kind of preview.
+//   (js/knowledge/index.js) opens every kind of page and ONE hover handler shows every kind of preview.
 //   Kinds only differ in colour (the class) and destination (see refAnchor).
 // =====================================================
 
@@ -60,9 +60,11 @@ export function refAnchor(item, words = esc(wordsFor(item)), { canSee = () => tr
 }
 
 // [[url:https://example.com|words]]. The text is escaped before this runs, so `href` and `label` are safe to use as is.
-const URL_TOKEN = /\[\[url:(https?:\/\/[^\]|\s]+)(?:\|([^\]]+))?\]\]/g;
+export const URL_TOKEN = /\[\[url:(https?:\/\/[^\]|\s]+)(?:\|([^\]]+))?\]\]/g;
+// The words shown for a url link: the ones you wrote, or the address without https://
+export const urlWords = (href, label) => label || href.replace(/^https?:\/\/(www\.)?/, '');
 const urlAnchor = (href, label) =>
-  `<a href="${href}" class="essay-link" target="_blank" rel="noopener noreferrer">${label || href.replace(/^https?:\/\/(www\.)?/, '')}</a>`;
+  `<a href="${href}" class="essay-link" target="_blank" rel="noopener noreferrer">${urlWords(href, label)}</a>`;
 
 // THE MAIN ENTRY POINT. Takes plain text containing [[links]] and returns safe HTML.
 //   richText('I love [[definition:free-bread]].')   ->  'I love <a ...>free bread</a>.'
