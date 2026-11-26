@@ -38,12 +38,21 @@ export function quoteCard({ text, highlight: phrase, by, ...options }) {
 }
 
 // One block of a thought, in the same block format as an essay: a quote is drawn in the quote card's type (with its
-// `highlight` words marked, like a quote card), anything else (a paragraph) is handwriting. Blank blocks are skipped.
+// `highlight` words marked, like a quote card), a transcript line is set in Geist Mono as "Speaker:" in a column with the words
+// beside it (no `speaker`: the words alone, lined up under the others), a list or numbered-list is the essay's list in handwriting.
+// Anything else (a paragraph) is handwriting. Blank blocks are skipped.
 // A quote with a `url` (http or https) opens that page in a new tab when clicked.
-const thoughtBlock = ({ type, text = '', highlight: phrase, url = '' }) => {
+// `format` turns text into HTML (default: escaped plain text). The Knowledge reader passes richText so [[links]] work.
+const thoughtBlock = ({ type, text = '', highlight: phrase, url = '', speaker = '', items = [] }, format = esc) => {
+  if (type === 'list' || type === 'numbered-list') {
+    const lines = items.map(item => String(item).trim()).filter(Boolean);
+    const tag = type === 'list' ? 'ul' : 'ol';
+    return lines.length ? `<${tag} class="c-thought-list">${lines.map(line => `<li>${format(line)}</li>`).join('')}</${tag}>` : '';
+  }
   const words = text.trim();
   if (!words) return '';
-  if (type !== 'quote') return `<p>${esc(words)}</p>`;
+  if (type === 'transcript') return `<p class="c-thought-transcript"><span>${speaker.trim() ? `${esc(speaker.trim())}:` : ''}</span><span>${format(words)}</span></p>`;
+  if (type !== 'quote') return `<p>${format(words)}</p>`;
   const quote = `<blockquote>${highlight(words, phrase)}</blockquote>`;
   return /^https?:\/\//i.test(url)
     ? `<a class="c-thought-link" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${quote}</a>`
@@ -51,13 +60,16 @@ const thoughtBlock = ({ type, text = '', highlight: phrase, url = '' }) => {
 };
 
 // What is written on a sheet of paper: the thought's blocks, then its date at the bottom (also handwriting).
-const thoughtWriting = ({ blocks, date, dateLabel }) =>
-  `${blocks.map(thoughtBlock).join('')}${date ? `<time class="c-thought-date" datetime="${esc(date)}">${esc(dateLabel || date)}</time>` : ''}`;
+const thoughtWriting = ({ blocks, date, dateLabel, format }) =>
+  `${blocks.map(block => thoughtBlock(block, format)).join('')}${date ? `<time class="c-thought-date" datetime="${esc(date)}">${esc(dateLabel || date)}</time>` : ''}`;
 
-// { blocks: [{ type: 'paragraph' | 'quote', text, highlight?, url? }], date?, dateLabel? }
+// { blocks: [{ type: 'paragraph' | 'quote' | 'transcript' | 'list' | 'numbered-list', text, highlight?, url?, speaker?, items? }], date?, dateLabel?, format? }
 // A thought: writing on a quote-card-shaped sheet.
-export function thoughtCard({ blocks, date, dateLabel, ...options }) {
-  return wrap(`<div class="c-media c-thought">${thoughtWriting({ blocks, date, dateLabel })}</div>`, options);
+export function thoughtCard({ blocks, date, dateLabel, format, ...options }) {
+  // Every "Name:" in a card shares one column, as wide as the longest name (Geist Mono, so `ch` is exact).
+  const names = blocks.filter(b => b.type === 'transcript' && b.speaker?.trim()).map(b => b.speaker.trim().length + 1);
+  const style = names.length ? ` style="--speaker-w: ${Math.max(...names)}ch"` : '';
+  return wrap(`<div class="c-media c-thought"${style}>${thoughtWriting({ blocks, date, dateLabel, format })}</div>`, options);
 }
 
 // { text }

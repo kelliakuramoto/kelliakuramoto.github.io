@@ -14,8 +14,8 @@ import { THOUGHTS, thoughtBlocks } from './data/thoughts.js';
 // =====================================================
 
 // Essays and experiments keep their writing in `blocks`; this lists every string in them
-// (paragraphs, headings, quotes and list items) so the graph can find the [[links]] inside.
-const blockTexts = item => (item.blocks || []).flatMap(block => [block.text, ...(block.items || [])]);
+// (paragraphs, headings, quotes and list items, and the same inside a `thought` block's own `blocks`) so the graph can find the [[links]] inside.
+const blockTexts = item => (item.blocks || []).flatMap(block => [block.text, ...(block.items || []), ...(block.blocks ? blockTexts(block) : [])]);
 
 // One line per kind of content. Order matters a little: it is the order connections are grouped in,
 // and the order a bare [[id]] is searched in if two kinds share an id.

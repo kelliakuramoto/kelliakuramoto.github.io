@@ -71,6 +71,20 @@ function renderCollections() {
 
 renderCollections();   // everyone-items only, until a password is entered
 
+// Consecutive transcript blocks are one conversation: they share a single thought card instead of one card each.
+function blocksHTML(blocks) {
+  const out = [];
+  for (const block of blocks) {
+    const last = out[out.length - 1];
+    if (block.type === 'transcript' && last?.transcript) last.transcript.push(block);
+    else out.push(block.type === 'transcript' ? { transcript: [block] } : { block });
+  }
+  return out.map(part => part.transcript ? thoughtCard({ blocks: part.transcript, format: linked }) : blockHTML(part.block)).join('');
+}
+
+// A thought written inside an essay or experiment: [[links]] in its text work, like in the rest of the page.
+const linked = text => richText(text, { canSee });
+
 function blockHTML(block) {
   const text = richText(block.text || '', { canSee });
   switch (block.type) {
@@ -79,7 +93,7 @@ function blockHTML(block) {
     case 'quote': return `<blockquote class="knowledge-quote">${text}</blockquote>`;
     case 'underline': return `<p><span class="knowledge-underline">${text}</span></p>`;
     case 'image': return `<figure class="knowledge-inline-image"><img src="${esc(block.src || '')}" alt="${esc(block.alt || '')}">${block.caption ? `<figcaption>${esc(block.caption)}</figcaption>` : ''}</figure>`;
-    case 'thought': return thoughtCard({ blocks: thoughtBlocks(block), date: block.date, dateLabel: block.date && formatDate(block.date, 'short') });   // the same card as a thought on the Consume page
+    case 'thought': return thoughtCard({ blocks: thoughtBlocks(block), format: linked, date: block.date, dateLabel: block.date && formatDate(block.date, 'short') });   // the same card as a thought on the Consume page
     case 'divider': return '<hr class="knowledge-divider">';
     case 'list': return `<ul>${(block.items || []).map(item => `<li>${richText(item, { canSee })}</li>`).join('')}</ul>`;
     case 'numbered-list': return `<ol>${(block.items || []).map(item => `<li>${richText(item, { canSee })}</li>`).join('')}</ol>`;
@@ -230,7 +244,7 @@ function openReader(kind, id, trigger, back = null) {
         ${byline}
         ${kind === 'question' && editorPassword ? `<button type="button" class="question-delete" data-delete-question="${esc(item.id)}">[ DELETE QUESTION ]</button>` : ''}
       </header>`;
-    const prose = `<div class="knowledge-prose">${kind === 'question' ? responsesSection(item) : (item.blocks || []).map(blockHTML).join('')}</div>`;
+    const prose = `<div class="knowledge-prose">${kind === 'question' ? responsesSection(item) : blocksHTML(item.blocks || [])}</div>`;
 
     // Articles and experiments use the Knowledge overview's three columns: the text in the middle, and the right
     // column holds the Consume card for whichever {{link}} is hovered. Questions keep the single narrow column.

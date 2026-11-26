@@ -17,7 +17,9 @@ import { thoughtBlocks } from './data/thoughts.js';
 
 // Link markup removed, for places that show text without links:
 //   plain('I love [[free-bread|bread]] and [[gut-check]]') -> 'I love bread and gut-check'
-const plain = text => text.replace(/\[\[(?:[a-z]+:)?([\w-]+)(?:\|([^\]]+))?\]\]/g, (m, id, label) => label || id);
+const plain = text => text
+  .replace(/\[\[url:(https?:\/\/[^\]|\s]+)(?:\|([^\]]+))?\]\]/g, (m, address, label) => label || address.replace(/^https?:\/\/(www\.)?/, ''))
+  .replace(/\[\[(?:[a-z]+:)?([\w-]+)(?:\|([^\]]+))?\]\]/g, (m, id, label) => label || id);
 
 // Formats an ISO date for display. month is 'short' ("Nov 12, 2026") or 'long' ("November 12, 2026").
 export const formatDate = (iso, month) =>

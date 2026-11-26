@@ -3,7 +3,12 @@
 // Add an essay: copy an entry, give it a unique `id`, write blocks. That is all.
 //   id, title, subheader, date (YYYY-MM-DD), access?: ['friends', ...] (none = everyone)
 //   links?: ['definition:x', 'book:y', ...]  explicit connections (optional)
-//   blocks: paragraph | heading | subheading | quote | underline | image | divider | list | numbered-list | thought
+//   blocks: paragraph | heading | subheading | quote | underline | image | divider | list | numbered-list | thought | transcript
+//   A `transcript` block is one line of a conversation, in Geist Mono on the same grey as a thought or quote:
+//     { type: 'transcript', speaker: 'Steve', text: '...' }   laid out as "Steve:" in a column with the words beside it.
+//     (no `speaker`: the words alone, lined up under the others. "\n\n" in `text` starts a new paragraph for the same speaker.)
+//   Consecutive transcript blocks sit together in one card. Inside a thought's `blocks` it works the same way (see thoughts.js).
+//   For notes, put the same `list` / `numbered-list` blocks inside a thought's `blocks`: they show in handwriting on the grey card.
 //   A `thought` block is a thought card written right here (the same card as on the Consume page, see thoughts.js):
 //     { type: 'thought', text: 'what you wrote', date: '2026-11-25' }
 //     { type: 'thought', date: '2026-11-25', blocks: [ { type: 'quote', text: '...', highlight: '...', url: 'https://...' },
@@ -13,7 +18,8 @@
 // Linking from inside text (works in every `text` and list item):
 //   [[definition:free-bread]]      -> the item with that kind and id (always write the kind, like `parent` and `links`)
 //   [[book:letters-to-a-young-poet|Letters to a Young Poet]]   -> custom link words (media is written by its `type`)
-// Every [[link]] is two-way: the target automatically lists this essay too.
+//   [[url:https://example.com|the words]]   -> a link to any web page (opens in a new tab; http and https only)
+// Every [[kind:id]] link is two-way: the target automatically lists this essay too. A [[url:...]] link connects nothing.
 // =====================================================
 export const ESSAYS = [
     // Writing for the reader

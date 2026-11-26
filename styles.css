@@ -57,6 +57,7 @@ Breakpoints override tokens (see section 10) instead of overriding rules.
 
   /* Type */
   --font-hand: "Mido Light", "Bradley Hand", cursive;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --font-family: "Host Grotesk", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
 
   /* Text sizes: named by role, smallest to largest */
@@ -799,6 +800,46 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
 .c-thought :is(blockquote, .c-thought-link) + p,
 .c-thought p + :is(blockquote, .c-thought-link),
 .c-thought :is(blockquote, .c-thought-link) + :is(blockquote, .c-thought-link) {
+  margin-top: var(--space-l);
+}
+
+/* A transcript line (type: 'transcript'): Geist Mono, "Name:" in its own column with the words beside it, so wrapped lines hang under the words */
+.c-thought .c-thought-transcript {
+  font-family: var(--font-mono);
+  font-size: var(--text-body);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  display: grid;
+  grid-template-columns: var(--speaker-w, 8ch) minmax(0, 1fr);
+  column-gap: var(--space-m);
+  text-align: left;
+}
+
+.c-thought .c-thought-transcript:not(:first-child),
+.c-thought :is(blockquote, .c-thought-link, p) + .c-thought-transcript {
+  margin-top: var(--space-m);
+}
+
+/* A paragraph after the conversation: a gap, like a quote after a paragraph */
+.c-thought .c-thought-transcript + p:not(.c-thought-transcript) {
+  margin-top: var(--space-l);
+}
+
+/* A list or numbered-list block inside a thought: the essay's list, in handwriting on the thought's sheet */
+.c-thought .c-thought-list {
+  margin: 0;
+  padding-left: 1.5em;
+  font-family: var(--font-hand);
+  font-size: var(--text-lead);
+  line-height: 1.35;
+}
+
+.c-thought .c-thought-list li + li {
+  margin-top: var(--space-s);
+}
+
+.c-thought > * + .c-thought-list,
+.c-thought > .c-thought-list + * {
   margin-top: var(--space-l);
 }
 
