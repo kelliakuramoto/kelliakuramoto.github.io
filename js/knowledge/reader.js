@@ -98,7 +98,7 @@ function openReader(kind, id, trigger, back = null) {
 
     const header = `
       <header class="knowledge-article-header">
-        <h1>${esc(item.title || item.text)}</h1>
+        <h1>${kind === 'question' ? linked(item.text) : esc(item.title || item.text)}</h1>
         <p class="knowledge-deck">${esc(item.subheader || item.byline || '')}</p>
         ${byline}
         ${kind === 'question' && session.editorPassword ? `<button type="button" class="question-delete" data-delete-question="${esc(item.id)}">[ DELETE QUESTION ]</button>` : ''}

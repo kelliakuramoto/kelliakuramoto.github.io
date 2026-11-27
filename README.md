@@ -71,5 +71,8 @@ Every link carries `data-ref="kind:id"`, so one click handler opens every kind o
 
 ## Questions (Supabase)
 
-Questions are stored in Supabase and register into the graph after they load, so an essay can `[[link]]` to a question by its id.
-Optional: add a `links text[]` column to `questions` so a question can point at others.
+Questions are stored in Supabase and register into the graph after they load, so an essay can `[[link]]` to a question by its id
+(the id is the last part of the question's address: `#mymind/question/<id>`).
+A question links out the same way: write `[[book:the-score|these words]]` inside its text, or add a `links text[]` column to
+`questions` and list `book:the-score`, `article:no-advice`... in it. Either way both sides know: the question is listed on that
+Consume item's detail page, and hovering the link inside an essay or experiment previews the question.

@@ -21,5 +21,12 @@ const boardCard = item => hasDetail(item)
   : peekFrame(cardFor(item, false), peekLinks(item));
 
 const board = $('#board');
-if (board) board.innerHTML = shuffle(all('media').filter(onBoard)).map(boardCard).join('');
+const order = shuffle(all('media').filter(onBoard));   // shuffled once, so drawing the board again keeps the same order
+
+// Draws the board. It runs again when the questions finish loading (js/knowledge/questions.js): a question can link to a card,
+// which gives that card its sticky notes and a detail page.
+export function drawBoard() {
+  if (board) board.innerHTML = order.map(boardCard).join('');
+}
+drawBoard();
 

@@ -1280,16 +1280,12 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
     Questions are quote cards, articles are article cards, experiments are book cards (section 5).
     Only the overview columns and the reader are Knowledge-specific.
     ===================================================== */
+/* The middle column is as wide as two Consume board columns plus the gap between them, (page - gap) / 2, so the side columns match a Consume column too */
 .knowledge-overview, .definitions, .essay {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) calc((100% - var(--grid-gap)) / 2) minmax(0, 1fr);
   align-items: start;
   max-width: var(--screen-max);
   margin: 0 auto;
-}
-
-/* Essays and the Consume detail page: the text column stops growing at 50rem; wider screens only add white space at the sides */
-.essay {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 50rem) minmax(0, 1fr);
 }
 
 .knowledge-column {
@@ -1318,7 +1314,7 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
 
 .knowledge-reader-content {
   width: 100%;
-  width: calc((min(100%, var(--screen-max)) - 2 * var(--grid-gap)) / 2);
+  width: calc((min(100%, var(--screen-max)) - var(--grid-gap)) / 2);   /* two Consume columns + the gap */
   margin: 0 auto;
   padding: 0 0 var(--section-gap);
 }

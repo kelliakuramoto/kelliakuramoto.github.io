@@ -2,6 +2,7 @@ import { supabase } from '../supabase.js';
 import { register } from '../content/index.js';
 import { cardFor } from '../content/kinds.js';
 import { renderInto } from './collections.js';
+import { drawBoard } from '../consume.js';
 
 // Questions come from Supabase. Each one is a Consume quote card that opens the reader,
 // the same way articles and experiments do.
@@ -15,6 +16,7 @@ export async function loadQuestions() {
   // (an optional `links` text[] column on the table lets a question point at others too).
   register('question', QUESTIONS, { texts: q => [q.text], idOf: q => q.text });
   renderInto('#knowledgeQuestions', QUESTIONS, cardFor);
+  drawBoard();   // cards a question links to now have something attached
 }
 // Starts loading right away; routeFromHash awaits this promise so a pasted question link waits for its data.
 export const questionsReady = loadQuestions();

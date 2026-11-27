@@ -26,7 +26,7 @@ const plain = text => text
 //   refAttrs(essay) -> 'data-ref="article:no-advice" tabindex="0" role="button" aria-label="Open: ..."'
 // The single click handler in js/knowledge/index.js looks for data-ref and opens that page.
 export const refAttrs = item =>
-  `data-ref="${refKey(item.kind, item.id)}" tabindex="0" role="button" aria-label="Open: ${esc(item.title || item.word || item.text)}"`;
+  `data-ref="${refKey(item.kind, item.id)}" tabindex="0" role="button" aria-label="Open: ${esc(plain(item.title || item.word || item.text))}"`;
 
 // ---- Media (the Consume board) --------------------------------------
 // Cover colours for books that have no `color` of their own, picked by position in the library.
@@ -61,7 +61,7 @@ const CARDS = {
     className: item.wide ? 'c-card--wide' : '',   // wide: true in thoughts.js spans both columns on a detail page
   }),
   definition: (item, open) => articleCard({ title: item.word, sub: plain(item.text.split('\n')[0]), attrs: open ? refAttrs(item) : '' }),
-  question: (item, open) => textCard({ text: item.text, attrs: open ? refAttrs(item) : '' }),
+  question: (item, open) => textCard({ text: plain(item.text), attrs: open ? refAttrs(item) : '' }),   // a question may hold [[links]]: cards show just the words
 };
 
 // THE card for any item, whatever its kind.
@@ -74,7 +74,6 @@ export const cardFor = (item, open = true) => CARDS[item.kind](item, open);
 // list a kind here only when its preview should look different.
 const PEEKS = {
   definition: item => flashCard({ front: richText(item.text), back: esc(item.word), foot: item.word, attrs: '' }),
-  question: () => '',   // no preview for questions
 };
 
 // The preview HTML for any item (returns '' when a kind has no preview).
