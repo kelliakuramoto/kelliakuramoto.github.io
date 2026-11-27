@@ -1,4 +1,4 @@
-import { $, $$, esc, formatDate, on, setFlipped, showOnly } from '../dom.js';
+import { $, $$, esc, formatDate, on, showOnly } from '../dom.js';
 import { flashCard } from '../cards.js';
 import { pageBlocks } from '../blocks.js';
 import { animateScrollTo } from '../navigation.js';
@@ -136,30 +136,41 @@ export function closeReader() {
 
 // The right column: whatever connects to this term (media it came from, essays that use it, ...).
 // Nothing to maintain: connections come from the graph (js/content/graph.js).
-const relatedHTML = term => connectionsHTML(term, { canSee });
+const EXAMPLE_KINDS = ['article', 'experiment', 'question', 'thought', 'definition'];   // everything except media, which is where the word came from
+const columnHTML = (title, text, connected) => {
+  const body = text ? `<p class="definitions-text">${richText(text, { canSee })}</p>` : '';
+  return `<h2 class="knowledge-column-title">${title}</h2>${body}${connected}`;   // the title is always there, even when the column is empty
+};
+const originHTML = term => columnHTML('Origin', term.origin, connectionsHTML(term, { canSee, kinds: ['media'] }));
+const exampleHTML = term => columnHTML('Used in a sentence', term.example, connectionsHTML(term, { canSee, kinds: EXAMPLE_KINDS }));
 
-// Same structure as the Knowledge overview: three .knowledge-column sections (1fr 2fr 1fr).
+// Four equal .knowledge-column sections, the same grid as the Consume board.
 //   left   every term as a Consume quote card; clicking one moves the carousel
 //   middle the flash card carousel
-//   right  where the term shows up (filled in by the carousel:change handler below)
+//   origin   the term's origin text, plus any media it came from (filled in by the carousel:change handler below)
+//   example  the term's example text, plus the essays and experiments that use it
 const definitionsPage = start => `
   <div class="definitions">
     <nav class="knowledge-column definitions-nav" aria-label="Terms">
+      <h2 class="knowledge-column-title">Words</h2>
       ${DEFINITIONS().map((term, i) => `<a href="#${esc(term.id)}" data-term-index="${i}">${esc(term.word)}</a>`).join('')}
     </nav>
     <section class="knowledge-column" aria-label="Definition">
+      <h2 class="knowledge-column-title">Definition</h2>
       ${carouselHTML({
         label: 'Definitions',
         start,
         slides: DEFINITIONS().map(term => flashCard({
           front: richText(term.text, { canSee }),
           back: esc(term.word),
-          foot: term.word,
         })),
       })}
     </section>
-    <aside class="knowledge-column definitions-related" aria-label="Connections">
-      <div data-related></div>
+    <aside class="knowledge-column" aria-label="Origin">
+      <div data-origin></div>
+    </aside>
+    <aside class="knowledge-column" aria-label="Example">
+      <div data-example></div>
     </aside>
   </div>`;
 
@@ -175,20 +186,14 @@ function openDefinitions(id, trigger, back = null) {
   });
 }
 
-// Flash cards: a click (or Enter / Space) turns the card over. Links on the back don't.
-on(readerContent, 'click', event => {
-  const card = event.target.closest('.c-flash');
-  if (card && !event.target.closest('[data-ref]')) setFlipped(card, !card.classList.contains('is-flipped'));
-});
-
-// The related column follows the card on screen; cards that were turned over turn back
+// The origin and example columns follow the card on screen
 on(readerContent, 'carousel:change', event => {
-  const related = $('[data-related]', readerContent);
-  if (!related) return;                                    // some other carousel, not the definitions deck
+  const origin = $('[data-origin]', readerContent);
+  if (!origin) return;                                    // some other carousel, not the definitions deck
   if (nav.current?.kind === 'definition') nav.current.id = DEFINITIONS()[event.detail.index].id;   // so going back lands on this card
   setUrl(hashFor(nav.current), { replace: true });
-  related.innerHTML = relatedHTML(DEFINITIONS()[event.detail.index]);
-  $$('.car-slide:not(.active) .c-flash.is-flipped', readerContent).forEach(card => setFlipped(card, false));
+  origin.innerHTML = originHTML(DEFINITIONS()[event.detail.index]);
+  $('[data-example]', readerContent).innerHTML = exampleHTML(DEFINITIONS()[event.detail.index]);
   $$('.definitions-nav a', readerContent).forEach(link => {          // the current term is highlighted, like the active sidebar link
     const isCurrent = Number(link.dataset.termIndex) === event.detail.index;
     link.classList.toggle('active', isCurrent);

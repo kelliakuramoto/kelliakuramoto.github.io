@@ -66,7 +66,7 @@ After changing content, run `node scripts/check-content.mjs`.
 ## Linking (declare once, both sides know)
 
 In any text: `[[free-bread]]`, `[[id|custom words]]`, `[[media:the-score]]` (add the prefix only if ids clash).
-On any item: `links: ['definition:gut-check', 'article:no-advice']`.
+On any item: `links: ['definition:operating-system', 'article:no-advice']`.
 Every link carries `data-ref="kind:id"`, so one click handler opens every kind of page and one hover handler shows every preview.
 
 ## Questions (Supabase)

@@ -1,7 +1,7 @@
 import { esc, formatDate, shuffle } from '../dom.js';
 import { articleCard, bookCard, imageCard, podcastCard, quoteCard, textCard, flashCard } from '../cards.js';
 import { thoughtCard } from '../blocks.js';
-import { all, connections, refKey } from './graph.js';
+import { all, connections, parseRef, refKey, resolve } from './graph.js';
 import { richText, URL_TOKEN, urlWords } from './richtext.js';
 import { thoughtBlocks } from './data/thoughts.js';
 
@@ -17,7 +17,7 @@ import { thoughtBlocks } from './data/thoughts.js';
 // =====================================================
 
 // Link markup removed, for places that show text without links:
-//   plain('I love [[free-bread|bread]] and [[gut-check]]') -> 'I love bread and gut-check'
+//   plain('I love [[free-bread|bread]] and [[operating-system]]') -> 'I love bread and operating-system'
 const plain = text => text
   .replace(URL_TOKEN, (m, address, label) => urlWords(address, label))
   .replace(/\[\[(?:[a-z]+:)?([\w-]+)(?:\|([^\]]+))?\]\]/g, (m, id, label) => label || id);
@@ -56,12 +56,24 @@ const CARDS = {
     title: item.title, by: item.byline, color: item.color || '#e8e8e8', image: item.image,
     ink: 'var(--text)', attrs: open ? refAttrs(item) : '',
   }),
-  thought: item => thoughtCard({
+  thought: (item, open) => thoughtCard({
     blocks: thoughtBlocks(item), date: item.date, dateLabel: item.date && formatDate(item.date, 'short'),
+    attrs: open ? thoughtAttrs(item) : '',
+    format: text => richText(text, { canSee: isPublic }),   // [[links]] in a thought work on a detail page too
     className: item.wide ? 'c-card--wide' : '',   // wide: true in thoughts.js spans both columns on a detail page
   }),
   definition: (item, open) => articleCard({ title: item.word, sub: plain(item.text.split('\n')[0]), attrs: open ? refAttrs(item) : '' }),
   question: (item, open) => textCard({ text: plain(item.text), attrs: open ? refAttrs(item) : '' }),   // a question may hold [[links]]: cards show just the words
+};
+
+// A thought has no page of its own: clicking it opens the detail page of the media it belongs to (when that has one).
+const parentOf = item => {
+  const ref = item.parent && parseRef(item.parent);
+  return ref && resolve(ref.kind, ref.id)?.item;
+};
+const thoughtAttrs = item => {
+  const parent = parentOf(item);
+  return parent && hasDetail(parent) ? detailAttrs(parent) : '';
 };
 
 // THE card for any item, whatever its kind.
@@ -73,7 +85,7 @@ export const cardFor = (item, open = true) => CARDS[item.kind](item, open);
 // The small preview shown when you hover a link inside an essay. Defaults to the item's own card;
 // list a kind here only when its preview should look different.
 const PEEKS = {
-  definition: item => flashCard({ front: richText(item.text), back: esc(item.word), foot: item.word, attrs: '' }),
+  definition: item => flashCard({ front: richText(item.text), back: esc(item.word), attrs: '' }),
 };
 
 // The preview HTML for any item (returns '' when a kind has no preview).
@@ -102,13 +114,19 @@ const labelFor = (owner, target) => {
 // Empty groups are left out; nothing connected returns ''.
 export function connectionsHTML(item, { canSee = () => true, kinds } = {}) {
   const groups = new Map();
+  const listed = new Set(connections(item, { filter: canSee }).map(other => refKey(other.kind, other.id)));   // so nothing shows twice
   for (const other of connections(item, { kinds, filter: canSee })) {
-    if (!groups.has(other.kind)) groups.set(other.kind, []);
-    groups.get(other.kind).push(other);
+    const parent = other.kind === 'thought' && parentOf(other);   // a thought shows as the media it belongs to
+    const shown = parent || other;
+    if (parent && (listed.has(refKey(parent.kind, parent.id)) || !canSee(parent))) continue;
+    if (parent) listed.add(refKey(parent.kind, parent.id));
+    if (!groups.has(shown.kind)) groups.set(shown.kind, []);
+    groups.get(shown.kind).push(shown);
   }
   return [...groups].map(([kind, items]) => {
-    const cards = items.map(other => cardFor(other, kind !== 'media')).join('');   // media cards are external links, the rest open pages
-    return `<section class="connections"><h2 class="definitions-related">${labelFor(item.kind, kind)}</h2>${cards}</section>`;
+    // media with a detail page opens it (like on the Consume board), otherwise it links out to its own url; the rest open pages
+    const cards = items.map(other => (hasDetail(other) ? detailCard(other) : cardFor(other, kind !== 'media'))).join('');
+    return `<section class="connections">${cards}</section>`;
   }).join('');
 }
 
@@ -167,10 +185,10 @@ export const hasDetail = item => item.kind === 'media'
   && Object.values(detailParts(item)).some(list => list.length);
 
 // The board card for an item with a detail page: no outside link, clicking it opens the page instead.
-export const detailCard = item => MEDIA_CARDS[item.type](item, {
-  href: '',
-  attrs: `data-detail="${refKey(item.kind, item.id)}" tabindex="0" role="button" aria-label="Open notes: ${esc(item.title || item.episode || item.text)}"`,
-});
+const detailAttrs = item =>
+  `data-detail="${refKey(item.kind, item.id)}" tabindex="0" role="button" aria-label="Open notes: ${esc(item.title || item.episode || item.text)}"`;
+
+export const detailCard = item => MEDIA_CARDS[item.type](item, { href: '', attrs: detailAttrs(item) });
 
 // The cards for what is attached to an item on its detail page (quotes, definitions, thoughts, questions), unshuffled.
 // Definitions and questions open their Knowledge page when clicked.
@@ -179,7 +197,7 @@ const attachedCards = ({ quotes, media, definitions, thoughts, questions }) => [
   ...quotes.map(q => MEDIA_CARDS.quote(q, { by: '' })),
   ...media.map(m => MEDIA_CARDS[m.type](m)),   // the normal card, linking out to its own url
   ...definitions.map(term => flashCard({
-    front: richText(term.text, { canSee: isPublic }), back: esc(term.word), foot: term.word, attrs: refAttrs(term),
+    front: richText(term.text, { canSee: isPublic }), back: esc(term.word), attrs: refAttrs(term),
   })),
   ...thoughts.map(t => cardFor(t, false)),
   ...questions.map(q => cardFor(q)),
@@ -203,5 +221,5 @@ export function detailHTML(item) {
       <p class="knowledge-deck">${esc(item.by || item.show || '')}</p>
     </header>
     <div class="consume-detail-cards"><div class="consume-detail-board">${shuffle(cards).join('')}</div></div>
-  </div></div>`;
+  </div><aside class="knowledge-column essay-aside" aria-hidden="true"><div class="consume-peek"></div></aside></div>`;
 }

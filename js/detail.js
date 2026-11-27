@@ -1,4 +1,4 @@
-import { $, on, setFlipped, setHash } from './dom.js';
+import { $, on, setHash } from './dom.js';
 import { get } from './content/index.js';
 import { detailHTML, hasDetail } from './content/kinds.js';
 
@@ -81,7 +81,7 @@ function close({ updateUrl = true } = {}) {
 
 on(document, 'click', event => {
   const card = event.target.closest('[data-detail]');
-  if (card) open(card.dataset.detail, card);
+  if (card && !event.target.closest('[data-ref]')) open(card.dataset.detail, card, { over: document.body.classList.contains('knowledge-open') });   // a link inside the card does its own thing
 });
 // A link to a book, podcast or poem in an essay (or its References list): the same as clicking its card on the board.
 // Ctrl / Cmd / Shift / middle click still follow the link, as in any browser.
@@ -99,6 +99,8 @@ on(document, 'keydown', event => {
   if (event.key === 'Escape' && isOpen() && (page.classList.contains('is-over-knowledge') || !document.body.classList.contains('knowledge-open'))) close();
 });
 on(closeButton, 'click', () => close());
+// [ CONSUME ] goes straight to the board: the same as picking CONSUME in the toggle, which also closes this page and Knowledge
+on($('#consumeDetailHome'), 'click', () => { underRef = null; $('.mode-btn[data-mode="consume"]').click(); });
 on(document, 'mode:changed', () => close());
 
 // ---- Deep links ---------------------------------------------------
@@ -123,8 +125,4 @@ function routeFromHash() {
 window.addEventListener('popstate', routeFromHash);
 routeFromHash();
 
-// Definitions on this page open their Knowledge page (js/knowledge/index.js handles data-ref); any flash card without data-ref still turns over
-on(content, 'click', event => {
-  const card = event.target.closest('.c-flash');
-  if (card && !event.target.closest('[data-ref]')) setFlipped(card, !card.classList.contains('is-flipped'));
-});
+// Definitions on this page open their Knowledge page: js/knowledge/index.js handles data-ref

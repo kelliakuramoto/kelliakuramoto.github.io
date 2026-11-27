@@ -35,6 +35,7 @@ Breakpoints override tokens (see section 10) instead of overriding rules.
   --amazon-music: #DD74F7;
   --line: #EF5656;
   --border: #DDDDDD;
+  --ruled: #A9CCEA;                                  /* blue ruled lines on the definition card */
   --surface: #F2F2F2;
   --white: #FFFFFF;
   --caption-text: #E6E6E6;
@@ -471,6 +472,11 @@ body.knowledge-open :is(.layout, .consume) {
   overflow: visible;
 }
 
+/* [ CONSUME ] on a Consume detail page sits in an h2 but looks like [ CLOSE ] */
+#consumeDetailHome {
+  font-weight: var(--font-light);
+}
+
 /* Project title with the [ CLOSE ] button on the right */
 .project-header {
   display: flex;
@@ -865,65 +871,49 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   opacity: 0.6;
 }
 
-/* Flash card (flashCard in cards.js): two faces; the front turns away to show the back */
+/* Definition: an index card (flashCard in cards.js). The word on top, a red line, then the definition on blue ruled lines.
+   One shape, 5:4, everywhere it appears: the Definitions page, the Consume detail page and the essay hover preview. It grows if the text is longer. */
 .c-flash {
   width: 100%;
   max-width: none;
   margin: 0;
-  perspective: 2000px;
 }
 
 .c-flash-inner {
+  --lh: 1.75rem;                 /* one ruled line */
+  --pad: 1.5rem;
   aspect-ratio: 5 / 4;
-  display: grid;
-  transform-style: preserve-3d;
-  transition: transform var(--motion-view) var(--ease-out);
-}
-
-.c-flash.is-flipped .c-flash-inner {
-  transform: rotateY(180deg);
-}
-
-/* A card leaving the carousel turns back only after its fade-out, so the turn is never seen */
-.car-slide:not(.active) .c-flash-inner {
-  transition-delay: var(--motion-view);
-}
-
-.c-flash-face {
-  grid-area: 1 / 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: var(--space-m);
-  padding: var(--gutter);
-  background: var(--bg);
+  background: #fff;
   border: var(--line-width) solid var(--border);
-  backface-visibility: hidden;
-  min-height: 24rem;
-}
-
-.c-flash-back {
-  transform: rotateY(180deg);
-}
-
-.c-flash small {
-  font-size: var(--text-caption);
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-ui);
 }
 
 .c-flash-word {
-  margin: auto 0;                /* centres the word between the label and the bottom edge */
-  font-size: var(--text-display);
-  font-weight: var(--font-light);
-  letter-spacing: var(--tracking-tight);
+  padding: var(--pad) var(--pad) var(--space-s);
+  font-size: var(--text-body);
+  font-weight: var(--font-medium);
+  line-height: var(--lh);
+}
+
+.c-flash-rule {
+  margin: 0;
+  border: 0;
+  border-top: 0.125rem solid var(--line);
+}
+
+/* The ruled lines fill the rest of the card; the text has the same line height, so every line sits on one */
+.c-flash-body {
+  flex: 1;
+  padding: 0 var(--pad) var(--lh);
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--lh) - 0.0625rem), var(--ruled) calc(var(--lh) - 0.0625rem), var(--ruled) var(--lh));
 }
 
 .c-flash-def {
-  font-size: var(--text-lead);
+  padding-top: var(--lh);        /* the definition starts one line below the red line */
+  font-size: var(--text-body);
   font-weight: var(--font-light);
-  line-height: 1.4;
+  line-height: var(--lh);
   white-space: pre-line;   /* "\n" in a definition becomes a line break */
 }
 
@@ -972,17 +962,6 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
 
 .consume-detail-board .c-flash {
   margin: 0 0 var(--grid-gap);
-  container-type: inline-size;
-}
-
-.consume-detail-board .c-flash-face {
-  min-height: 0;
-  padding: var(--space-m);
-  overflow: auto;
-}
-
-.consume-detail-board .c-flash-def {
-  font-size: clamp(0.7rem, 4.4cqw, var(--text-lead));
 }
 
 /* =====================================================
@@ -1329,6 +1308,17 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   margin: 0 0 var(--space-m);
 }
 
+/* Definitions: word list, card, origin, example. Same columns as the Consume board (.board: `columns: 4 14rem`):
+   up to four equal columns, none narrower than 14rem, so they drop to three, two and one as the window narrows */
+.definitions {
+  grid-template-columns: repeat(auto-fill, minmax(max(14rem, (100% - 3 * var(--grid-gap)) / 4), 1fr));
+}
+
+.definitions-text {
+  margin: 0 0 var(--space-m);
+  white-space: pre-line;
+}
+
 .knowledge-article-header h1 {
   margin: 0 0 var(--space-m);
   font-size: var(--text-display);
@@ -1501,9 +1491,6 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   margin: 0;
 }
 
-/* Definition preview: just the definition, no word above or "Definition" label below */
-.consume-peek .c-flash small { display: none; }
-
 /* Essay preview: the same full outline as the definition card */
 .consume-peek .c-article {
   padding: var(--space-m);
@@ -1516,20 +1503,6 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   padding: var(--space-m);
   border: var(--line-width) solid var(--border);
   background: #fff;
-}
-
-/* Definition preview: the flash card, but sized to its text */
-.consume-peek .c-flash-inner { 
-  aspect-ratio: auto; 
-}
-
-.consume-peek .c-flash-face { 
-  min-height: 0; 
-  padding: var(--space-m); 
-}
-
-.consume-peek .c-flash-def { 
-  font-size: var(--text-body); 
 }
 
 .knowledge-divider {
@@ -1733,7 +1706,7 @@ img.is-zoomable {
     grid-template-columns: repeat(var(--cols-sm, var(--cols, 1)), minmax(0, 1fr));
   }
 
-  .knowledge-overview, .definitions, .essay {
+  .knowledge-overview, .essay {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -1763,10 +1736,6 @@ img.is-zoomable {
 
   .modal.modal--photo {
     left: 0;
-  }
-
-  .definitions {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 

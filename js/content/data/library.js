@@ -9,7 +9,7 @@
 //   id      every item has one: a short, stable name that links use ('<type>:<id>', e.g. 'book:letters-to-a-young-poet'). Give each new item one,
 //           and don't change it once something links to it.
 //   url     external link (not for quotes)
-//   links   ['definition:gut-check', 'article:no-advice', ...] connect it to anything.
+//   links   ['definition:operating-system', 'article:no-advice', ...] connect it to anything.
 //           Essays that write [[book:this-id]] (the item's own `type`) are connected automatically; you don't repeat them here.
 // WHAT CONNECTIONS DO ON THE CONSUME BOARD
 //   An item with anything attached (quotes, definitions, thoughts, questions, essays, experiments) gets:
@@ -87,7 +87,7 @@ export const LIBRARY = [
     text: 'When life feels unbearable, I remind myself that I am not a person, I am a piece of software running on the brain of a random ape for a few decades. It’s not the worst brain to run on.',
     highlight: 'I am not a person, I am a piece of software',
     by: 'Joscha Bach',
-    links: ['definition:gut-check']
+    links: ['definition:operating-system']
   },
   {
     type: 'book',

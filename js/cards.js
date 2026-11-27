@@ -79,19 +79,16 @@ export function articleCard({ title, sub, date, dateLabel, ...options }) {
   return wrap(`<div class="c-article">${copy}</div>`, options);
 }
 
-// { front, back, label? ("Concept"), backLabel? ("Definition"), foot? }
+// { front, back }
+// An index card: the word (back) on top, a red line, then the definition (front) on blue ruled lines. There is nothing to turn over.
 // front and back are HTML, so escape text first (or use richText from js/content/richtext.js).
-// Turning the card over is handled in js/knowledge/reader.js (and js/detail.js): .is-flipped shows the back.
-export function flashCard({ front, back, label = 'Concept', backLabel = 'Definition', foot = '', ...options }) {
-  const faces = `<div class="c-flash-inner">
-    <div class="c-flash-face c-flash-back" inert><small>${esc(label)}</small><div class="c-flash-word">${back}</div></div>
-    <div class="c-flash-face"><small>${esc(foot)}</small><div class="c-flash-def">${front}</div><small>${esc(backLabel)}</small></div>
+export function flashCard({ front, back, ...options }) {
+  const card = `<div class="c-flash-inner">
+    <div class="c-flash-word">${back}</div>
+    <hr class="c-flash-rule">
+    <div class="c-flash-body"><div class="c-flash-def">${front}</div></div>
   </div>`;
-  return wrap(faces, {
-    className: 'c-flash',
-    attrs: 'tabindex="0" role="button" aria-pressed="false" aria-label="Flip card"',
-    ...options,
-  });
+  return wrap(card, { className: 'c-flash', ...options });
 }
 
 // Wraps ANY card so hovering or focusing it fades in "Peek into my mind" button(s).

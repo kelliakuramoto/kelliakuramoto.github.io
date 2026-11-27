@@ -47,10 +47,3 @@ export function seededRandom(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-
-// Turns a flash card (.c-flash) over or back (the back face is inert while hidden)
-export function setFlipped(card, flipped) {
-  card.classList.toggle('is-flipped', flipped);
-  card.setAttribute('aria-pressed', String(flipped));
-  card.querySelector('.c-flash-back').inert = !flipped;
-}

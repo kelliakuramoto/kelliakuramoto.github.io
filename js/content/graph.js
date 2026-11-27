@@ -6,7 +6,7 @@
 //   Every piece of content is a NODE with a kind and an id. Its key is "kind:id":
 //     "article:no-advice"   "definition:free-bread"   "media:letters-to-a-young-poet"
 //   Nodes are joined by EDGES, which come from three places and are ALWAYS two-way:
-//     1. `links: ['definition:gut-check', 'free-bread']` written on an item   (explicit)
+//     1. `links: ['definition:operating-system', 'free-bread']` written on an item   (explicit)
 //     2. [[kind:id]] / [[kind:id|words]] written inside any of the item's texts (inline; the kind is always written)
 //     3. `parent: 'book:some-book'` written on any item                       (same two-way edge as `links`;
 //        it means "I belong to this media item"; the Consume board never shows an item that has a `parent`, see onBoard in kinds.js)
@@ -144,7 +144,7 @@ function build() {
       // "media:x" is the old spelling: say what to write instead
       const missing = (kind, id) => { const m = kind === 'media' && get('media', id); return m ? ` (write ${writtenRef(m)})` : ''; };
 
-      // 1. explicit: links: ['definition:gut-check', ...]
+      // 1. explicit: links: ['definition:operating-system', ...]
       for (const ref of item.links || []) {
         const p = parseRef(ref);
         const hit = p && resolve(p.kind, p.id);
