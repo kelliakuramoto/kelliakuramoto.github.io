@@ -7,7 +7,6 @@ import { richText } from '../content/richtext.js';
 import { connectionsHTML } from '../content/kinds.js';
 import { carouselHTML, initCarousels } from '../media.js';
 import { OPENABLE, closeButton, hooks, isOpen, nav, overview, reader, readerContent, readerType, view } from './state.js';
-import { canSee, session } from './access.js';
 import { DEFINITIONS } from './collections.js';
 import { instant, present } from './motion.js';
 import { hashFor, setUrl } from './urls.js';
@@ -27,15 +26,15 @@ const READER_LABELS = {
   definition: 'WHAT I HAVE DEFINED',
 };
 
-// Text on the reading page: [[links]] work, except to items this password cannot open.
-const linked = text => richText(text, { canSee });
+// Text on the reading page: [[links]] work.
+const linked = richText;
 
 // Swaps the overview for the reader and focuses [ CLOSE ].
 // Scroll: animated to the top when coming from the overview, otherwise set at once (the old page is already hidden)
 // or restored to `top` when returning to a page.
 function showReader(label, wide = false, top = 0) {
   const fromOverview = isOpen() && !reader.classList.contains('is-open');
-  readerType.textContent = label;
+  readerType.textContent = `[ ${label} ]`;
   readerContent.classList.toggle('is-wide', wide);
   const show = () => showOnly([overview, reader], reader);
   if (isOpen()) show(); else instant(show);          // the layer is hidden (opened from Consume): it only fades in
@@ -75,11 +74,11 @@ export function goBack() {
 //   openPage('article', 'no-advice', triggerElement)
 // It picks the right screen (the definitions deck for definitions, the reader for the rest),
 // and refuses (returns false) when the item does not exist, has no page of its own (media),
-// or is not visible to the current password group. `back` is only used by [ CLOSE ] to return to a page.
-// Opens any page by kind + id. Returns false when there is nothing to open or the viewer may not see it.
+// `back` is only used by [ CLOSE ] to return to a page.
+// Opens any page by kind + id. Returns false when there is nothing to open.
 export function openPage(kind, id, trigger, back = null) {
   const item = get(kind, id);
-  if (!item || !OPENABLE.has(kind) || !canSee(item)) return false;
+  if (!item || !OPENABLE.has(kind)) return false;
   if (kind === 'definition') openDefinitions(id, trigger, back);
   else openReader(kind, id, trigger, back);
   return true;
@@ -101,7 +100,6 @@ function openReader(kind, id, trigger, back = null) {
         <h1>${kind === 'question' ? linked(item.text) : esc(item.title || item.text)}</h1>
         <p class="knowledge-deck">${esc(item.subheader || item.byline || '')}</p>
         ${byline}
-        ${kind === 'question' && session.editorPassword ? `<button type="button" class="question-delete" data-delete-question="${esc(item.id)}">[ DELETE QUESTION ]</button>` : ''}
       </header>`;
     const prose = `<div class="knowledge-prose">${kind === 'question' ? responsesSection(item) : pageBlocks(item.blocks || [], { text: linked })}</div>`;
 
@@ -138,11 +136,11 @@ export function closeReader() {
 // Nothing to maintain: connections come from the graph (js/content/graph.js).
 const EXAMPLE_KINDS = ['article', 'experiment', 'question', 'thought', 'definition'];   // everything except media, which is where the word came from
 const columnHTML = (title, text, connected) => {
-  const body = text ? `<p class="definitions-text">${richText(text, { canSee })}</p>` : '';
+  const body = text ? `<p class="definitions-text">${richText(text)}</p>` : '';
   return `<h2 class="knowledge-column-title">${title}</h2>${body}${connected}`;   // the title is always there, even when the column is empty
 };
-const originHTML = term => columnHTML('Origin', term.origin, connectionsHTML(term, { canSee, kinds: ['media'] }));
-const exampleHTML = term => columnHTML('Used in a sentence', term.example, connectionsHTML(term, { canSee, kinds: EXAMPLE_KINDS }));
+const originHTML = term => columnHTML('Origin', term.origin, connectionsHTML(term, { kinds: ['media'] }));
+const exampleHTML = term => columnHTML('Used in a sentence', term.example, connectionsHTML(term, { kinds: EXAMPLE_KINDS }));
 
 // Four equal .knowledge-column sections, the same grid as the Consume board.
 //   left   every term as a Consume quote card; clicking one moves the carousel
@@ -161,7 +159,7 @@ const definitionsPage = start => `
         label: 'Definitions',
         start,
         slides: DEFINITIONS().map(term => flashCard({
-          front: richText(term.text, { canSee }),
+          front: richText(term.text),
           back: esc(term.word),
         })),
       })}

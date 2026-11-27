@@ -183,7 +183,7 @@ function build() {
 // EVERYTHING CONNECTED TO `item`, in either direction (it links there, or that links here).
 //   connections(definition)                                  all neighbours
 //   connections(media, { kinds: ['article', 'definition'] })  only those kinds
-//   connections(essay, { filter: canSee })                    only what the predicate allows
+//   connections(essay, { filter: item => ... })              only what the predicate allows
 // Order is stable: by kind (in registration order), then in data-file order.
 export function connections(item, { kinds: only, filter } = {}) {
   if (!edges) build();

@@ -35,12 +35,10 @@ js/content/             all content, and how it connects
 js/knowledge.js         entry point for the Knowledge view; imports js/knowledge/index.js
 js/knowledge/           the Knowledge view, one job per file
   state.js              its elements and the shared `nav` state
-  access.js             password unlock and who can see what
   collections.js        the overview: every collection of cards
   reader.js             a page open in the reader (essay, definition, experiment, question)
   peek.js               "Peek into my mind" previews
-  responses.js          visitors' responses to a question, and moderation
-  editor.js             the add-a-question modal
+  responses.js          visitors' responses to a question
   questions.js          loads questions from Supabase
   motion.js, urls.js    transitions, and the address bar
   index.js              opens and closes the layer, wires everything together

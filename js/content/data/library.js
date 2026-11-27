@@ -16,7 +16,7 @@
 //     - HOVER: small sticky notes slide out from behind the cover on the top, right and left edges, one per attached item
 //              (six at most), coloured by kind: quote yellow, definition blue, thought pink, question orange, essay green, a book/podcast/poem purple.
 //     - CLICK: a Consume detail page (header CONSUME) with everything attached, in random order, on the 4-column board.
-//              Definitions, questions and essays on that page open their Knowledge page (after the password prompt).
+//              Definitions, questions and essays on that page open their Knowledge page.
 //              [ VIEW ] next to the title opens the item's own `url`.
 //   `parent: '<type>:<id>'` on any item (a quote, book, podcast, poem) says "I belong to that item": it is NOT on the board,
 //   it shows as a card on the parent's detail page, and the parent shows on its page too. One parent per item.
@@ -166,6 +166,26 @@ export const LIBRARY = [
     by: 'Hafiz',
     image: 'images/Consume/the-sun-never-says.webp',
     url: 'https://www.goodreads.com/quotes/60389-even-after-all-this-time-the-sun-never-says-to/',
+  },
+  {
+    type: 'poem',
+    id: 'if-i-had-my-life-over',
+    title: 'If I Had My Life Over - I’d Pick More Daisies',
+    by: 'Nadine Stair',
+    image: 'images/Consume/if-i-had-my-life-over.jpeg',
+  },
+  {
+    parent: 'poem:if-i-had-my-life-over',
+    type: 'quote',
+    id: 'more-actual-troubles',
+    text: 'I would perhaps have more actual troubles, but I’d have fewer imaginary ones.',
+    highlight: 'more actual troubles',
+  },
+  {
+    parent: 'poem:if-i-had-my-life-over',
+    type: 'quote',
+    id: 'more-actual-troubles',
+    text: 'Oh, I’ve had my moments, and if I had to do it over again, I’d have more of them. In fact, I’d try to have nothing else.',
   },
   {
     type: 'book',

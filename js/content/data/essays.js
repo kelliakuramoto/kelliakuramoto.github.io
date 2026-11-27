@@ -1,7 +1,7 @@
 // =====================================================
 // ESSAYS  (kind: 'article'; the URL kind stays "article" so old #mymind/article/... links keep working)
 // Add an essay: copy an entry, give it a unique `id`, write blocks. That is all.
-//   id, title, subheader, date (YYYY-MM-DD), access?: ['friends', ...] (none = everyone)
+//   id, title, subheader, date (YYYY-MM-DD)
 //   links?: ['definition:x', 'book:y', ...]  explicit connections (optional)
 //   blocks: paragraph | heading | subheading | quote | underline | image | divider | list | numbered-list | thought | transcript
 //   A `transcript` block is one line of a conversation, in Geist Mono on the same grey as a thought or quote:
@@ -37,7 +37,6 @@ export const ESSAYS = [
         { type: 'paragraph', text: 'I will not deny that there is benefit in writing for the reader and I myself have read many articles that I have found propounding moving or sparked an engaging conversation between my friends and I. But I kind of think it’s something that naturally happens, rather than the main reason to do it. I think there is a greater beauty in craft, in finding your voice, one that is truly yours, and if people just happen to speak your language then it’s [[definition:free-bread]].' },
         { type: 'paragraph', text: 'I cannot write for everyone, I can only write for myself and hope that I have spoken in a way that is heard by those who want to listen. Maybe life is just a long process of finding people who speak your language. It’s not the worst way to live.' },
       ],
-      access: ['friends', 'professional'],
     },
   // I dont believe in giving advice
   {
@@ -64,7 +63,6 @@ export const ESSAYS = [
       { type: 'paragraph', text: 'I really believe that any decision that you can learn from, will be the right decision for you.' },
       { type: 'quote', text: 'Sometimes you win, sometimes you learn.' },
     ],
-    access: ['friends', 'professional'],
   },
   // Life is a sprint (part 2)
   {
@@ -87,7 +85,6 @@ export const ESSAYS = [
     { type: 'paragraph', text: 'After writing all of that, I know it sounds like a lot but what I can say is that I’ve found this practice to be extremely helpful in the moments when I feel like my life isn’t my own and I feel like I’m sitting in the passenger seat of a car that is my life, watching the streets go by, heading towards some pre-programmed destination that I’m not really sure is where I even want to end up at.' },
     { type: 'paragraph', text: 'Because if we both agree that your life is the sum of all the decisions you’ve ever made, I’d like to at least know why I’m making the decisions that I’m making. So that at the end of it, even if I don’t accomplish everything I wanted to or everything I think I should have done, I can at least say that it was mine to make.' },
   ],
-  access: ['friends', 'professional'],
   },
   // Life is a sprint
   {
@@ -120,6 +117,5 @@ export const ESSAYS = [
     { type: 'quote', text: 'I don’t know where I’m going, but I know how to get there.' },
     { type: 'paragraph', text: 'I’ve tried to reframe my mindset around goals from specific items to checking off a list to following a framework or process that enables me to experience many things and letting the feedback guide my next step. I’m not sure what my life is going to look like in 5 or 10 years, but I know that I will have learned a lot, I hope you do too.' },
   ],
-  access: ['friends', 'professional'],
   },
 ];

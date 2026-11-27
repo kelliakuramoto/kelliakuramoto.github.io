@@ -83,6 +83,7 @@ Breakpoints override tokens (see section 10) instead of overriding rules.
   --space-xs: 0.25rem;
   --space-s: 0.5rem;
   --space-m: 1rem;
+  --card-pad: 1.5rem;                               /* space between the outline and the text of an outlined card: definition, essay, question */
   --space-l: 2rem;
   --space-xl: 4rem;
 
@@ -221,8 +222,6 @@ button:disabled {
 
 .close-btn,
 .password-btn, 
-.question-add, 
-.response-actions button, 
 .response-form button {
   height: 1.3125rem;
   flex-shrink: 0;
@@ -307,13 +306,13 @@ body[data-mode="consume"] .consume,
 
 /* The Consume detail page sits over the board, under the Knowledge layer (an essay opened from it fades in on top) */
 .consume-detail {
-  z-index: calc(var(--z-overlay) - 10);
+  z-index: calc(var(--z-overlay) - 10 + var(--layer, 0));   /* --layer: a page opened from another one sits above it */
   background: var(--bg);
 }
 
 /* Opened from a link inside an essay: the detail page goes on top of the Knowledge layer */
 .consume-detail.is-over-knowledge {
-  z-index: calc(var(--z-overlay) + 10);
+  z-index: calc(var(--z-overlay) + 10 + var(--layer, 0));
 }
 
 /* The board stays put while the detail page fades in, and only switches off once the fade has finished */
@@ -472,8 +471,9 @@ body.knowledge-open :is(.layout, .consume) {
   overflow: visible;
 }
 
-/* [ CONSUME ] on a Consume detail page sits in an h2 but looks like [ CLOSE ] */
-#consumeDetailHome {
+/* [ CONSUME ] and the Knowledge section name sit in an h2 but look like [ CLOSE ] */
+[data-detail-home],
+#knowledgeReaderType {
   font-weight: var(--font-light);
 }
 
@@ -881,7 +881,7 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
 
 .c-flash-inner {
   --lh: 1.75rem;                 /* one ruled line */
-  --pad: 1.5rem;
+  --pad: var(--card-pad);
   aspect-ratio: 5 / 4;
   display: flex;
   flex-direction: column;
@@ -1491,16 +1491,16 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   margin: 0;
 }
 
-/* Essay preview: the same full outline as the definition card */
-.consume-peek .c-article {
-  padding: var(--space-m);
+/* Essay and question preview: the same full outline and spacing as the definition card */
+.consume-peek :is(.c-article, .c-question) {
+  padding: var(--card-pad);
   border: var(--line-width) solid var(--border);
   background: var(--bg);
 }
 
-/* The same outlined essay card on the Consume detail page as in the essay hover preview, on white */
-.consume-detail-board .c-article {
-  padding: var(--space-m);
+/* The same outlined card on the Consume detail page as in the hover preview, on white */
+.consume-detail-board :is(.c-article, .c-question) {
+  padding: var(--card-pad);
   border: var(--line-width) solid var(--border);
   background: #fff;
 }
@@ -1539,28 +1539,6 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
 
 /* The response form sits above the responses; the same gap as between cards */
 .response-form {
-  margin: 0 0 var(--grid-gap);
-}
-
-/* Moderator-only controls under each response card */
-.response-item {
-  break-inside: avoid;
-}
-
-.response-item.is-pending .c-thought {
-  opacity: 0.5;   /* waiting for approval */
-}
-
-/* The card above owns the small gap; the actions own the space before the next response */
-.response-item .c-card {
-  margin-bottom: var(--space-s);
-}
-
-.response-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: var(--space-m);
   margin: 0 0 var(--grid-gap);
 }
 
@@ -1831,10 +1809,10 @@ html.dot-active * {
 .c-card.has-notes:is(:hover, :focus-visible, :active) > .c-note--right { transform: translateX(var(--peek)) rotate(var(--tilt)); }
 
 /* One colour per kind of thing attached */
-.c-note--quote      { --paper: #ffe98a; }
-.c-note--definition { --paper: #a9dcff; }
-.c-note--thought    { --paper: #ffbccb; }
+.c-note--quote      { --paper: #bfe9b6; }
+.c-note--definition { --paper: #ffbccb; }
+.c-note--thought    { --paper: #a9dcff; }
 .c-note--question   { --paper: #ffd0a0; }
-.c-note--page       { --paper: #bfe9b6; }
+.c-note--page       { --paper: #ffe98a; }
 .c-note--media      { --paper: #d9c7f5; }
 

@@ -43,12 +43,10 @@ export const wordsFor = item => (DEFAULT_WORDS[item.kind] || (i => i.id))(item);
 // The HTML for ONE link to ONE item. Use it anywhere you need a link in generated markup
 // (richText below and the References list in kinds.js both use it).
 //   words    the link text, ALREADY escaped (defaults to the item's own name)
-//   canSee   predicate for items the viewer may not open: they come back as plain words, no link
 // Destination by kind:
 //   media    its external url, in a new tab (or a plain span if it has no url, like a quote)
 //   others   #mymind/<kind>/<id>, which the Knowledge reader opens in place
-export function refAnchor(item, words = esc(wordsFor(item)), { canSee = () => true } = {}) {
-  if (!canSee(item)) return words;
+export function refAnchor(item, words = esc(wordsFor(item))) {
   const ref = refKey(item.kind, item.id);
   const cls = `ref-link ${LINK_CLASS[item.kind] || 'essay-link'}`;
   if (item.kind === 'media') {
@@ -69,10 +67,9 @@ const urlAnchor = (href, label) =>
 // THE MAIN ENTRY POINT. Takes plain text containing [[links]] and returns safe HTML.
 //   richText('I love [[definition:free-bread]].')   ->  'I love <a ...>free bread</a>.'
 // The text is escaped FIRST, so nothing you write can inject HTML; links are added afterwards.
-// Options are passed to refAnchor, e.g. richText(text, { canSee }) to hide links to locked items.
-export const richText = (text, options = {}) =>
+export const richText = text =>
   esc(text).replace(URL_TOKEN, (match, href, label) => urlAnchor(href, label)).replace(TOKEN, (match, kind, id, label) => {
     // `label` was escaped along with the rest of the text, so it is safe to use as is
     const hit = resolve(kind, id);
-    return hit ? refAnchor(hit.item, label || esc(wordsFor(hit.item)), options) : match;
+    return hit ? refAnchor(hit.item, label || esc(wordsFor(hit.item))) : match;
   });

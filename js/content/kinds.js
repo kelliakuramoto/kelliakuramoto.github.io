@@ -59,7 +59,7 @@ const CARDS = {
   thought: (item, open) => thoughtCard({
     blocks: thoughtBlocks(item), date: item.date, dateLabel: item.date && formatDate(item.date, 'short'),
     attrs: open ? thoughtAttrs(item) : '',
-    format: text => richText(text, { canSee: isPublic }),   // [[links]] in a thought work on a detail page too
+    format: richText,   // [[links]] in a thought work on a detail page too
     className: item.wide ? 'c-card--wide' : '',   // wide: true in thoughts.js spans both columns on a detail page
   }),
   definition: (item, open) => articleCard({ title: item.word, sub: plain(item.text.split('\n')[0]), attrs: open ? refAttrs(item) : '' }),
@@ -109,16 +109,15 @@ const labelFor = (owner, target) => {
 // EVERYTHING CONNECTED TO `item`, as ready-made cards grouped by kind under a heading.
 // This is how definitions get "Origin" / "Used in a sentence" in the Definitions page's right column.
 // You never list these by hand: they come from [[links]] and `links:` via the graph.
-//   canSee   hides anything the viewer may not open
 //   kinds    limit to some kinds, e.g. ['media']
 // Empty groups are left out; nothing connected returns ''.
-export function connectionsHTML(item, { canSee = () => true, kinds } = {}) {
+export function connectionsHTML(item, { kinds } = {}) {
   const groups = new Map();
-  const listed = new Set(connections(item, { filter: canSee }).map(other => refKey(other.kind, other.id)));   // so nothing shows twice
-  for (const other of connections(item, { kinds, filter: canSee })) {
+  const listed = new Set(connections(item).map(other => refKey(other.kind, other.id)));   // so nothing shows twice
+  for (const other of connections(item, { kinds })) {
     const parent = other.kind === 'thought' && parentOf(other);   // a thought shows as the media it belongs to
     const shown = parent || other;
-    if (parent && (listed.has(refKey(parent.kind, parent.id)) || !canSee(parent))) continue;
+    if (parent && (listed.has(refKey(parent.kind, parent.id)))) continue;
     if (parent) listed.add(refKey(parent.kind, parent.id));
     if (!groups.has(shown.kind)) groups.set(shown.kind, []);
     groups.get(shown.kind).push(shown);
@@ -137,8 +136,6 @@ const PEEK_LABELS = { article: 'ESSAY', definition: 'CONCEPT', experiment: 'EXPE
 // The buttons for the "Peek into my mind" overlay on a Consume card: one per page it connects to.
 //   peekLinks(book) -> [{ ref: 'article:no-advice', label: 'PEEK INTO MY MIND' }]
 // An item with no connections returns [], so it gets no overlay at all.
-// Labels are generic on purpose (never the essay's title), so nothing about a locked essay
-// is revealed before the password prompt.
 export function peekLinks(item) {
   const links = connections(item, { kinds: Object.keys(PEEK_LABELS) });
   return links.map(other => ({
@@ -151,18 +148,16 @@ export function peekLinks(item) {
 // A book, podcast or poem with things attached to it opens a detail page (js/detail.js).
 // What is attached comes from the graph: quotes (media of type 'quote'), definitions, thoughts and questions that link to it,
 // plus essays / experiments that [[link]] to it. Nothing is listed by hand on the item.
-// Quotes, definitions, thoughts and questions with an `access` list are never drawn here (the Consume board is public).
-// Essays and experiments are listed by title; opening one goes through the password prompt.
-const isPublic = other => !other.access;
+// Essays and experiments are listed by title.
 
 export function detailParts(item) {
   const linked = connections(item);
   return {
-    quotes: linked.filter(o => o.kind === 'media' && o.type === 'quote' && isPublic(o)),
-    media: linked.filter(o => o.kind === 'media' && o.type !== 'quote' && isPublic(o)),   // books, podcasts, poems linked in (either direction)
-    definitions: linked.filter(o => o.kind === 'definition' && isPublic(o)),
-    thoughts: linked.filter(o => o.kind === 'thought' && isPublic(o)),
-    questions: linked.filter(o => o.kind === 'question' && isPublic(o)),
+    quotes: linked.filter(o => o.kind === 'media' && o.type === 'quote'),
+    media: linked.filter(o => o.kind === 'media' && o.type !== 'quote'),   // books, podcasts, poems linked in (either direction)
+    definitions: linked.filter(o => o.kind === 'definition'),
+    thoughts: linked.filter(o => o.kind === 'thought'),
+    questions: linked.filter(o => o.kind === 'question'),
     pages: linked.filter(o => o.kind === 'article' || o.kind === 'experiment'),
   };
 }
@@ -184,6 +179,14 @@ export const onBoard = item => !item.parent;
 export const hasDetail = item => item.kind === 'media'
   && Object.values(detailParts(item)).some(list => list.length);
 
+// The item whose detail page a link to `item` should open: the media it belongs to when it is a child (a quote with a `parent` is not
+// on the board, so a link to it opens its parent's page), otherwise the item itself. null when there is nothing to open.
+export function detailTarget(item) {
+  const parent = parentOf(item);
+  if (parent && hasDetail(parent)) return parent;
+  return hasDetail(item) ? item : null;
+}
+
 // The board card for an item with a detail page: no outside link, clicking it opens the page instead.
 const detailAttrs = item =>
   `data-detail="${refKey(item.kind, item.id)}" tabindex="0" role="button" aria-label="Open notes: ${esc(item.title || item.episode || item.text)}"`;
@@ -197,7 +200,7 @@ const attachedCards = ({ quotes, media, definitions, thoughts, questions }) => [
   ...quotes.map(q => MEDIA_CARDS.quote(q, { by: '' })),
   ...media.map(m => MEDIA_CARDS[m.type](m)),   // the normal card, linking out to its own url
   ...definitions.map(term => flashCard({
-    front: richText(term.text, { canSee: isPublic }), back: esc(term.word), attrs: refAttrs(term),
+    front: richText(term.text), back: esc(term.word), attrs: refAttrs(term),
   })),
   ...thoughts.map(t => cardFor(t, false)),
   ...questions.map(q => cardFor(q)),
@@ -209,7 +212,7 @@ export function detailHTML(item) {
   const parts = detailParts(item);
   const cards = [
     ...attachedCards(parts),
-    ...parts.pages.map(page => cardFor(page)),   // opens through the password prompt when the essay has an `access` list
+    ...parts.pages.map(page => cardFor(page)),
   ];
   // [ VIEW ] opens the book, podcast or poem itself, to the right of the title
   const view = item.url

@@ -2,13 +2,12 @@ import { $, on } from '../dom.js';
 import { isMobile } from '../navigation.js';
 import { get } from '../content/index.js';
 import { peekFor } from '../content/kinds.js';
-import { readerContent, view } from './state.js';
+import { view } from './state.js';
 
 // ---- Peek beside the essay (previews are drawn by peekFor in js/content/kinds.js) --------------------------------------
 // Hovering (or focusing) a link in the essay, or in a thought on a Consume detail page, shows a small preview of what it points at, level with the link.
 // On mobile (no room beside the essay) CSS floats it above the toggle bar instead.
 const PEEK_LINKS = '.ref-link';
-const detailPage = $('#consumeDetail');
 const peekColumn = link => $('.consume-peek', link.closest('.essay') || document);   // the preview column beside the page the link is on
 
 // The preview for any link: what the item looks like as a small card (js/content/kinds.js decides)
@@ -27,7 +26,7 @@ function showPeek(link) {
   if (!isMobile.matches) {
     // Keep the card on screen: level with the link, but never above the top or below the bottom of the view
     const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    const box = (link.closest('#consumeDetail') || view).getBoundingClientRect();
+    const box = (link.closest('.consume-detail') || view).getBoundingClientRect();
     const y = Math.max(box.top + rem, Math.min(link.getBoundingClientRect().top, box.bottom - peek.offsetHeight - rem));
     peek.style.top = `${y - peek.parentElement.getBoundingClientRect().top}px`;
   }
@@ -36,9 +35,9 @@ function showPeek(link) {
 
 const hidePeek = () => document.querySelectorAll('.consume-peek').forEach(peek => peek.classList.remove('is-visible'));
 
-for (const root of [readerContent, detailPage]) {
-  on(root, 'mouseover', event => { const link = event.target.closest(PEEK_LINKS); if (link) showPeek(link); });
-  on(root, 'mouseout', event => { if (event.target.closest(PEEK_LINKS)) hidePeek(); });
-  on(root, 'focusin', event => { const link = event.target.closest(PEEK_LINKS); if (link) showPeek(link); });
-  on(root, 'focusout', hidePeek);
-}
+// One listener each, for the Knowledge reader and for every Consume detail page (there can be several, one on top of another)
+const inPeekArea = link => link && link.closest('#knowledgeReaderContent, .consume-detail');
+on(document, 'mouseover', event => { const link = event.target.closest(PEEK_LINKS); if (inPeekArea(link)) showPeek(link); });
+on(document, 'mouseout', event => { if (inPeekArea(event.target.closest(PEEK_LINKS))) hidePeek(); });
+on(document, 'focusin', event => { const link = event.target.closest(PEEK_LINKS); if (inPeekArea(link)) showPeek(link); });
+on(document, 'focusout', event => { if (inPeekArea(event.target.closest(PEEK_LINKS))) hidePeek(); });

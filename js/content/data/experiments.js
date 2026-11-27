@@ -45,6 +45,5 @@ export const EXPERIMENTS = [
         ],
       },
     ],
-    access: ['friends', 'professional'],
   },
 ];

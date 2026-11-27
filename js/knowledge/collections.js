@@ -2,7 +2,6 @@ import { $ } from '../dom.js';
 import { articleCard } from '../cards.js';
 import { all } from '../content/index.js';
 import { cardFor, refAttrs } from '../content/kinds.js';
-import { canSee } from './access.js';
 
 // =====================================================
 // COLLECTIONS: the lists on the Knowledge overview (the definitions row, articles, experiments; questions are in questions.js).
@@ -28,8 +27,8 @@ export function renderInto(selector, items, toHTML) {
 const newestFirst = (a, b) => (b.date || '').localeCompare(a.date || '');
 
 export function renderCollections() {
-  const articles = all('article').filter(canSee).sort(newestFirst).map(item => cardFor(item)).join('');
+  const articles = all('article').sort(newestFirst).map(item => cardFor(item)).join('');
   const root = $('#knowledgeArticles');
   if (root) root.innerHTML = definitionsRow() + articles;   // definitions always sit on top
-  renderInto('#knowledgeExperiments', all('experiment').filter(canSee), cardFor);
+  renderInto('#knowledgeExperiments', all('experiment'), cardFor);
 }
