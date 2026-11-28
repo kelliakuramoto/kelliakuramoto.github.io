@@ -6,6 +6,8 @@ import { PROJECTS } from './project-data.js';
 // 1. CREATE: project grid + sidebar
 // =====================================================
 const scrollArea = $('#scrollArea');
+// One tile of the project grid. The hover preview beside an essay uses it too (js/knowledge/peek.js).
+export const projectTile = project => `<a href="#${esc(project.id)}" class="grid-item"><div class="media"><img src="${esc(project.thumbnail)}" alt="${esc(project.alt)}"><div class="grid-caption"><h3>${esc(project.title)}</h3><p class="grid-desc">${esc(project.description)}</p></div></div></a>`;
 const navRoot = $('#projectNavItems');
 const gridRoot = $('#projectGrid');
 if (navRoot) {
@@ -13,7 +15,7 @@ if (navRoot) {
   navRoot.innerHTML = groups.map(group => `<h3>${esc(group)}</h3>${PROJECTS.filter(project => project.group === group).map(project => `<a href="#${esc(project.id)}" class="nav-link">${esc(project.question)}</a>`).join('')}`).join('');
 }
 if (gridRoot) {
-  gridRoot.innerHTML = PROJECTS.map(project => `<a href="#${esc(project.id)}" class="grid-item"><div class="media"><img src="${esc(project.thumbnail)}" alt="${esc(project.alt)}"><div class="grid-caption"><h3>${esc(project.title)}</h3><p class="grid-desc">${esc(project.description)}</p></div></div></a>`).join('');
+  gridRoot.innerHTML = PROJECTS.map(project => projectTile(project)).join('');
 }
 const navLinks = $$('.nav-link');
 const gridItems = $$('.grid-item');
@@ -136,17 +138,39 @@ function setHash(id) {
   history.pushState(null, '', location.pathname + location.search + next);
 }
 
+// A [[project:id]] link inside Knowledge (js/content/richtext.js): switch to CREATE (which closes Knowledge) and open that case study.
+// It remembers the Knowledge page it came from (and the mode behind it); [ CLOSE ] on the case study goes back there.
+let cameFrom = null;
+on(document, 'click', event => {
+  const link = event.target.closest('[data-project]');
+  if (!link) return;
+  event.preventDefault();
+  cameFrom = location.hash.startsWith('#mymind')
+    ? { hash: location.hash, scroll: $('#knowledgeView').scrollTop, mode: document.body.dataset.mode }
+    : null;
+  setMode('create');
+  showDetail(link.dataset.project);
+});
+
 // ---- Event wiring ----------------------------------------------
 // Sidebar questions and grid tiles both open their project
 [...navLinks, ...gridItems].forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
+    cameFrom = null;   // opened from the sidebar or the grid: [ CLOSE ] goes to the overview
     showDetail(link.getAttribute('href').slice(1));
   });
 });
 
-// [ CLOSE ] returns to the overview grid
-closeBtns.forEach(btn => btn.addEventListener('click', showAll));
+// [ CLOSE ] returns to the overview grid, or to the Knowledge page the case study was opened from (js/knowledge/index.js reopens it)
+closeBtns.forEach(btn => btn.addEventListener('click', () => {
+  showAll();
+  if (!cameFrom) return;
+  const back = cameFrom;
+  cameFrom = null;
+  if (back.mode !== document.body.dataset.mode) setMode(back.mode);
+  document.dispatchEvent(new CustomEvent('knowledge:return', { detail: back }));
+}));
 
 // Hover sync: hovering one element highlights its match in the other list.
 // A highlighted grid tile reveals its caption; a highlighted nav link turns blue.
@@ -170,11 +194,23 @@ syncHover(gridItems, navLinks);
 const modeBtns = $$('.mode-btn');
 
 // CSS reads body[data-mode] to crossfade the views; aria-pressed marks the active button
-function setMode(mode) {
+function setMode(mode, { url = true } = {}) {
   document.body.dataset.mode = mode;
   modeBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
   document.dispatchEvent(new CustomEvent('mode:changed'));   // js/knowledge/index.js closes itself on this
+  // The Consume board has its own address, #consume, to copy and share (a Consume page is #consume/media/<id>, Knowledge is #mymind/...)
+  if (!url) return;
+  if (mode === 'consume' && !/^#(consume|mymind)/.test(location.hash)) setHash('consume');
+  else if (mode === 'create' && location.hash === '#consume') setHash('');
 }
+
+// A pasted #consume link, and Back / Forward between #consume and the home page
+const modeFromHash = () => {
+  if (location.hash === '#consume' && document.body.dataset.mode !== 'consume') setMode('consume', { url: false });
+  else if (!location.hash && document.body.dataset.mode !== 'create') setMode('create', { url: false });
+};
+window.addEventListener('popstate', modeFromHash);
+if (location.hash === '#consume') modeFromHash();
 
 modeBtns.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
 

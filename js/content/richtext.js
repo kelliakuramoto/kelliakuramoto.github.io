@@ -1,5 +1,6 @@
 import { esc } from '../dom.js';
 import { TOKEN, resolve, refKey } from './graph.js';
+import { PROJECTS } from '../project-data.js';
 
 // =====================================================
 // RICH TEXT: turns [[links]] written in your content into clickable HTML.
@@ -14,6 +15,10 @@ import { TOKEN, resolve, refKey } from './graph.js';
 //   [[url:https://example.com]]                same, and the words are the address without https://
 // A url link is not part of the content graph: it connects nothing, it is only a link.
 // Text after the brackets stays attached: "[[sprint]]s" reads "sprints".
+// A link to one of the case studies on the CREATE side (ids are in js/project-data.js):
+//   [[project:photobook|the photobook case study]]   closes Knowledge and opens that case study; without |words it shows the project's title
+// BOLD AND ITALIC (same places as links): **bold words**  and  *italic words*  (a paragraph, list item, thought or transcript line).
+// Each pair stays on one line, and the words can hold links: **see [[definition:free-bread]]**.
 // A link to an id that does not exist is left as typed, so a typo is easy to spot
 // (and `node scripts/check-content.mjs` lists it).
 //
@@ -67,8 +72,20 @@ const urlAnchor = (href, label) =>
 // THE MAIN ENTRY POINT. Takes plain text containing [[links]] and returns safe HTML.
 //   richText('I love [[definition:free-bread]].')   ->  'I love <a ...>free bread</a>.'
 // The text is escaped FIRST, so nothing you write can inject HTML; links are added afterwards.
+const emphasis = html => html
+  .replace(/\*\*\*(\S(?:.*?\S)?)\*\*\*/g, '<strong><em>$1</em></strong>')
+  .replace(/\*\*(\S(?:.*?\S)?)\*\*/g, '<strong>$1</strong>')
+  .replace(/\*(\S(?:.*?\S)?)\*/g, '<em>$1</em>');
+
+// [[project:id|words]]: the click is handled in js/navigation.js (data-project). An unknown id is left as typed.
+const PROJECT_TOKEN = /\[\[project:([\w-]+)(?:\|([^\]]+))?\]\]/g;
+const projectAnchor = (match, id, label) => {
+  const project = PROJECTS.find(p => p.id === id);
+  return project ? `<a href="#${esc(id)}" class="essay-link" data-project="${esc(id)}">${label || esc(project.title)}</a>` : match;
+};
+
 export const richText = text =>
-  esc(text).replace(URL_TOKEN, (match, href, label) => urlAnchor(href, label)).replace(TOKEN, (match, kind, id, label) => {
+  emphasis(esc(text)).replace(PROJECT_TOKEN, projectAnchor).replace(URL_TOKEN, (match, href, label) => urlAnchor(href, label)).replace(TOKEN, (match, kind, id, label) => {
     // `label` was escaped along with the rest of the text, so it is safe to use as is
     const hit = resolve(kind, id);
     return hit ? refAnchor(hit.item, label || esc(wordsFor(hit.item))) : match;

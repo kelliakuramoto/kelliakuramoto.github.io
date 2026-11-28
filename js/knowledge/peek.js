@@ -1,5 +1,6 @@
 import { $, on } from '../dom.js';
-import { isMobile } from '../navigation.js';
+import { isMobile, projectTile } from '../navigation.js';
+import { PROJECTS } from '../project-data.js';
 import { get } from '../content/index.js';
 import { peekFor } from '../content/kinds.js';
 import { view } from './state.js';
@@ -7,13 +8,17 @@ import { view } from './state.js';
 // ---- Peek beside the essay (previews are drawn by peekFor in js/content/kinds.js) --------------------------------------
 // Hovering (or focusing) a link in the essay, or in a thought on a Consume detail page, shows a small preview of what it points at, level with the link.
 // On mobile (no room beside the essay) CSS floats it above the toggle bar instead.
-const PEEK_LINKS = '.ref-link';
+const PEEK_LINKS = '.ref-link, [data-project]';
 const peekColumn = link => $('.consume-peek', link.closest('.essay') || document);   // the preview column beside the page the link is on
 
 // The preview for any link: what the item looks like as a small card (js/content/kinds.js decides)
 // The preview HTML for a hovered link. Works for every kind: the graph finds the item from data-ref,
 // and kinds.js decides how it looks (peekFor). Returns '' / undefined when there is nothing to show.
 const peekCard = link => {
+  if (link.dataset.project) {   // a [[project:id]] link: the same tile as on the home page, just the image (no hover caption)
+    const project = PROJECTS.find(p => p.id === link.dataset.project);
+    return project && projectTile(project);
+  }
   const item = get(link.dataset.ref);
   return item && peekFor(item);
 };

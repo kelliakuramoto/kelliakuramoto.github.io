@@ -166,6 +166,7 @@ function build() {
       // 2. inline: every [[...]] inside the item's texts
       for (const text of texts(item)) {
         for (const m of String(text || '').matchAll(TOKEN)) {
+          if (m[1] === 'project') continue;   // [[project:id]] links to a case study (js/project-data.js), not to content
           const hit = resolve(m[1], m[2]);
           if (!hit) { note(`[[${m[1] ? m[1] + ':' : ''}${m[2]}]] does not exist${missing(m[1], m[2])}`); continue; }
           if (hit.ambiguous) note(`[[${m[2]}]] matches several kinds, write kind:id`);

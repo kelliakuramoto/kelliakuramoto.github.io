@@ -34,6 +34,9 @@ const cardList = tag => ({ items = [] }, text) => {
   return lines.length ? `<${tag} class="c-thought-list">${lines.map(line => `<li>${text(line)}</li>`).join('')}</${tag}>` : '';
 };
 
+// width: 'half' (default, one Consume column) or 'full' (the whole text) on an image or thought block
+const fullWidth = block => (block.width === 'full' ? ' is-full' : '');
+
 const BLOCKS = {
   paragraph: { page: pageParagraph, card: cardParagraph },
   heading: { page: (block, text) => `<h2>${text(block.text || '')}</h2>` },
@@ -41,7 +44,7 @@ const BLOCKS = {
   underline: { page: (block, text) => `<p><span class="knowledge-underline">${text(block.text || '')}</span></p>` },
   divider: { page: () => '<hr class="knowledge-divider">' },
   image: {
-    page: block => `<figure class="knowledge-inline-image"><img src="${esc(block.src || '')}" alt="${esc(block.alt || '')}">${block.caption ? `<figcaption>${esc(block.caption)}</figcaption>` : ''}</figure>`,
+    page: block => `<figure class="knowledge-inline-image${fullWidth(block)}"><img src="${esc(block.src || '')}" alt="${esc(block.alt || '')}">${block.caption ? `<figcaption>${esc(block.caption)}</figcaption>` : ''}</figure>`,
   },
   list: { page: pageList('ul'), card: cardList('ul') },
   'numbered-list': { page: pageList('ol'), card: cardList('ol') },
@@ -73,6 +76,7 @@ const BLOCKS = {
   thought: {
     page: (block, text) => thoughtCard({
       blocks: thoughtBlocks(block), format: text, date: block.date, dateLabel: block.date && formatDate(block.date, 'short'),
+      className: fullWidth(block).trim(),
     }),
   },
 };
@@ -106,7 +110,7 @@ export function pageBlocks(blocks, { text }) {
   }
   return parts
     .map(part => part.transcript
-      ? thoughtCard({ blocks: part.transcript, format: text })
+      ? thoughtCard({ blocks: part.transcript, format: text, className: fullWidth(part.transcript[0]).trim() })
       : drawing(part.block.type, 'page', pageParagraph)(part.block, text))
     .join('');
 }

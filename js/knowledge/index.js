@@ -111,6 +111,19 @@ on(knowledgeToggle, 'click', requestKnowledge);
 // Picking CREATE or CONSUME (click or arrow keys) closes Knowledge and shows that view
 on(document, 'mode:changed', () => setKnowledge(false));
 
+// Back from a case study opened by a [[project:id]] link (js/navigation.js): reopen the Knowledge page it was opened from, at the same scroll position
+on(document, 'knowledge:return', async ({ detail: { hash, scroll } }) => {
+  const match = KNOWLEDGE_HASH.exec(hash);
+  if (!match) return;
+  const [, kind, rawId] = match;
+  const id = rawId && decodeURIComponent(rawId);
+  await questionsReady;
+  nav.current = null;
+  nav.trail = [];
+  if (!(kind && openPage(kind, id, null, { kind, id, scroll }))) setUrl('#mymind', { replace: true });
+  setKnowledge(true);
+});
+
 // ---- Deep links ---------------------------------------------------
 // Runs on page load (a pasted link) and on Back / Forward.
 const KNOWLEDGE_HASH = /^#mymind(?:\/(article|experiment|question|definition)\/([^/]+))?$/;

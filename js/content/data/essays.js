@@ -14,14 +14,77 @@
 //     { type: 'thought', date: '2026-11-25', blocks: [ { type: 'quote', text: '...', highlight: '...', url: 'https://...' },
 //                                                      { type: 'paragraph', text: '...' } ] }
 //   (use `text` OR `blocks`; `date` is optional. It belongs to this essay only and does not appear anywhere else.)
+//   width: 'half' | 'full' (optional, default 'half') on an `image` or `thought` block: 'half' is one Consume column wide, centered in the text; 'full' fills the text.
 //
 // Linking from inside text (works in every `text` and list item):
 //   [[definition:free-bread]]      -> the item with that kind and id (always write the kind, like `parent` and `links`)
 //   [[book:letters-to-a-young-poet|Letters to a Young Poet]]   -> custom link words (media is written by its `type`)
 //   [[url:https://example.com|the words]]   -> a link to any web page (opens in a new tab; http and https only)
+// Bold and italic (every `text` and list item): **bold words**  and  *italic words*  (on one line; links can go inside)
 // Every [[kind:id]] link is two-way: the target automatically lists this essay too. A [[url:...]] link connects nothing.
 // =====================================================
 export const ESSAYS = [
+    // Some infinites are bigger than other infinities
+    {
+      id: 'my-meaning-in-life',
+      title: 'Some infinites are bigger than other infinities',
+      subheader: 'How I defined the  meaning of life',
+      date: '2026-11-27',
+      blocks: [
+        { type: 'paragraph', text: 'If you were a book nerd born in the early 2000s (like me) you’ve probably read [[url:https://www.goodreads.com/en/book/show/25856606-the-fault-in-our-stars|The Fault in our Stars]] by John Green. There’s a famous line that has been reposted many times on Tumblr and Instagram and Pinterest and it goes' },
+        { type: 'image', src: 'images/Writing/some-infinities-are-bigger.jpg', alt: 'Some infinites are bigger than other infinities' },
+        { type: 'paragraph', text: 'Growing up I was obsessed with this quote but to be completely honest I had no idea what it meant. I could tell that it was supposed to be metaphorical and poetic, but my 12 year old brain couldn’t quite decrypt Green’s secret message' },
+        { type: 'paragraph', text: 'I sit before you, 12 years later, and can confidently say that I’ve finally cracked the code.' },
+        { type: 'heading', text: 'Part 1: Noticing' },
+        { type: 'paragraph', text: 'When I first moved to the city post-graduation, I was riding the high of never having to submit an assignment on Canvas again and basking in the freedom of being able to order an overpriced cappuccino anytime I wanted. That lasted about a month. And what I was left with was this singular, dreadful feeling: **Is this it?**' },
+        { type: 'paragraph', text: 'Initially I was confused, I kept asking myself: Isn’t this what I had worked for my entire life? To graduate college, become financially independent, live in my own apartment, and work a “big girl” job in the city?' },
+        { type: 'paragraph', text: 'And yet, it just didn’t feel right.' },
+        { type: 'paragraph', text: 'On top of all of this, the two core pieces of my identity that had defined me for the last 21 years ceased to exist: I was no longer a student and I was no longer an athlete. So not only was I doubting every decision I had made up until this point, but I wasn’t even sure who “I” was anymore. I really hoped that this was just a phase, but it kept gnawing at my mind every couple months and eventually I couldn’t ignore the questions anymore' },
+        { type: 'quote', text: 'Who am I? What is the meaning of life?' },
+        { type: 'heading', text: 'Part 2: Questioning' },
+        { type: 'paragraph', text: 'During this time, I started listening to a ton of podcasts and reading a bunch of books, but the information I was consuming was a bit too abstract, a bit too far removed. I wanted to know what people around me were thinking. It was almost like an impulse, I couldn’t stop myself from asking, I needed to know.' },
+        { type: 'paragraph', text: 'What I found interesting was that many people had the same feeling of “Is this it?”. Somehow we had all arrived at this similar sense of aimlessness in our lives, but when I probed further, curious about how they defined their identity or what their goals in life were, I was almost always met with shoulder shrugs or media trained responses like “Make a lot of money”.' },
+        { type: 'thought', text: 'Side note: As I was asking people about their goals and what successes look like, I started to notice patterns in the answers and the clear association with corporate-business-like KPI metrics. I wanted to plot their responses visually and I think seeing where my answer was in comparison to others gave me my first indication that what I want out of life might be different than those around me. \n\nMy answer at the time (and still is), [[project:photobook|If you believe that you are the average of the five people you spend the most time with]], then I want to be in the top 5 of as many of the people I love.', width: 'full' },
+        { type: 'paragraph', text: 'After a couple months of asking the question “What does success mean to you?”  I was growing impatient with my method of crowdsourcing, none of the answers ever tasted quite right in my mouth. I think it was around this time when I stumbled across [[url:https://vanschneider.com/quotes|Tobias van Schneider]]’s website and one of the quotes that stuck out to me was by Carl Jung' },
+        { type: 'quote', text: 'The world will ask you who you are, and if you don’t know, the world will tell you' },
+        { type: 'heading', text: 'Part 3: Investigating' },
+        { type: 'paragraph', text: 'And so I started compiling a list of answers to the question “Who am I?”. At first it was mostly a list of values that I had inherited from my parents but overtime this list grew the longer I spent thinking about what really mattered to me.' },
+        // { type: 'image', src: 'images/Writing/who-am-i.jpg', alt: 'List of things I believe and who I want to be' },
+        { type: 'paragraph', text: 'I remember listening to Trevor Noah’s podcast with [[podcast:brooks-are-we-happy-yet|Arthur C. Brooks: Why Humans Are So Bad at Being Happy]], specifically when they talk about the differences between East versus West philosophy and how that influenced the art they created, but really their meaning in life, about success. He said that westerners think of things as starting from nothing, a blank canvas and through their own initiative they come into existence. Westerners think that if you’re going to have enough, add more, add more, add more. But in the east, they understand that things are already in existence and it’s their job to chip away the last piece of Jade until it’s perfect to reveal what’s been inside the whole time. And that means they take away. They are subtracting.' },
+        { type: 'paragraph', text: 'I was quite struck by this eastern philosophy and I decided I wanted to experiment with all the things I could chip away in my own life. So I just slowly started subtracting things: conveniences, assumptions, opinions, trying to test if their absence had any lasting effect.' },
+        { type: 'paragraph', text: 'At the same time, AI was becoming increasingly prevalent at my work but I found myself somewhat resistant to using it at first. I kept thinking about this talk from a design conference I had attended the year before, [[podcast:designing-for-play|Designing for play and friction in a fast-paced world with Michelle Lee]]. Lee’s main message was that a slower, counterintuitive approach against designing for algorithmic efficiency can create more meaningful and joyful experiences. **Meaning is constructed from the process of doing, not the end result.**' },
+        { type: 'heading', text: 'Part 4: Grappling' },
+        { type: 'paragraph', text: 'At this point if you’re wondering how this all relates to The Fault In Our Stars, I promise it comes around. About a month ago my roommate asked me, "Do you think you would be satisfied if you died tomorrow?" And I thought about it for a second, and I said “Yes”. Her immediate response was “Why?”' },
+        { type: 'paragraph', text: 'As I was responding I realized that I could confidently state what mattered to me. Over the course of this year, I had been subtracting, and subtracting, and subtracting. And what I was left with was a few things that I could hold in the palm of my hand, that I believed to be the [[quote:essence-of-something|essence of who I am]].' },
+        { type: 'paragraph', text: 'I want to strive to be the best daughter, the best friend, and the best version I can be. I want to help people. **I want to do something extraordinary in this world, not to be remembered, but simply because I have the opportunity to try.**' },
+        { type: 'paragraph', text: 'And the beautiful thing about all of these is that they cannot be checked off like an item on my to do list. They are [[poem:life-is-not-a-race|processes, continuous tenses, forever ongoing]]. If I were to die tomorrow I would be content because I know that I had lived my life in constant pursuit of these goals. The only real question is when is my time up? Hopefully the longer time I spend on this earth, the more I am able to fulfill my intentions, but as John Green already knew “Some infinites are bigger than other infinites”. Every life holds an infinite, immeasurable amount of depth and value, no matter how long it existed.' },
+        { type: 'heading', text: 'Part 5: Reckoning' },
+        { type: 'paragraph', text: 'A couple days later, I was sitting at work and I don’t know even know what triggered it, maybe my [[definition:operating-system|operating system]]’s compiler finally turned on, but it was as if every single piece of media that I had consumed, every thought I ever wrote down, every question I ever had was translated into an output that I could finally understand' },
+        { type: 'quote', text: 'There is no meaning of life, there is only *my* meaning in *my* life' },
+        { type: 'paragraph', text: 'I am deeply grateful for the ability and the privilege to decide how I want to define my life. I hope to have the courage to live this life. I hope to make my parents proud.' },
+        { type: 'paragraph', text: 'If you’ve read up until this point, I want to thank you for being generous with your time. I know that it is finite and it means a lot that you would spend any amount of it reading the inner workings of my mind. And so I present to you: my meaning in my life:' },
+        { type: 'list', items: [
+          'Experimenting and gathering as much data as you can',
+          'Identifying what you were encoded to do',
+          'Finding people who speak your language',
+          'Showing up and cheering on the people you love',
+          'Exploring all the ways you can be generous',
+          'Being honest with yourself and with others',
+          'Trying to believe what others already know to be true',
+          ] 
+        }, 
+        { type: 'paragraph', text: 'but also,' },
+        { type: 'list', items: [
+          'Long walks on a sunny day',
+          'Simmered kabocha in dashi and soy sauce',
+          'Little free libraries',
+          'Working out with my dad at the YMCA',
+          'Greek yogurt with overripe persimmon',
+          'Calling long distance friends to catch up',
+          ] 
+        },
+      ],
+    },
     // Writing for the reader
     {
       id: 'writing-for-the-reader',
@@ -31,14 +94,14 @@ export const ESSAYS = [
       blocks: [
         { type: 'paragraph', text: 'When I was in New York a couple weeks ago, my friend took me to the Strangers Project. It’s a collection of letters written in response to the question: What’s it like being you? It started during the pandemic and has been popping up in various spots around the city since. After 20 minutes I had already laughed (physically out loud), cried, and related to many of the letters that I read.' },
         { type: 'paragraph', text: 'Over time I noticed a theme. People responded to this question in many different ways: as a journal entry, time stamping that exact moment in life, a confession of their biggest fears, a celebration of their biggest accomplishment, but surprisingly the most common letter was advice or pre-requisitely, learnings from their own life. One person went as far to say: “I’m wondering what to write that will have the most impact for the readers” and that felt very “breaking the 4th wall”-esque. I thought it was quite an odd response when asked about yourself and it made me a bit sad to realize that this urge to impart wisdom, to create a legacy or sense of permanence was probably born out of a feeling of disconnectedness from their own lives. I remember walking out of the exhibit and my friend asked me if I wanted to write a letter. I responded with “No, the people who matter to me know how I feel about them.”' },
-        { type: 'paragraph', text: 'I think if she had asked me this question a couple months earlier my response might have been different, but I had just recently had made a photobook of thank you notes to the people in my life and shared it with them. I can honestly say there’s nothing I’m more proud of than that and I plan to make one every year for as long as I can. But we’ve somehow off-roaded quite a bit now.' },
+        { type: 'paragraph', text: 'I think if she had asked me this question a couple months earlier my response might have been different, but I had just recently had made a [[project:photobook|photobook]] of thank you notes to the people in my life and shared it with them. I can honestly say there’s nothing I’m more proud of than that and I plan to make one every year for as long as I can. But we’ve somehow off-roaded quite a bit now.' },
         { type: 'paragraph', text: 'The reason I brought this project up is that I’m starting to publish my writing on the internet (not that anyone is reading it but still) and I’m not sure who I’m writing for anymore. Writing for me has always been this private act, mainly to just calm the thoughts in my brain and for future versions of myself to look back on and glimpse into a moment of who I used to be. Sometimes I write conversationally, as if I’m writing a letter to a future version of myself that’s a different person than who I am right now and sometimes I write quite factually, as a way to record-keep a memory that I’m worried I might forget. But lately I’ve been finding myself editing my mind and writing for the reader, adding in generic shared experiences to seem more relatable, or structuring my essays in a way that connect the intro paragraph to a life changing conclusion and I just keep thinking to myself: Who am I writing for? ' },
         { type: 'paragraph', text: 'I don’t edit my writing, the same way that I don’t edit my photos, or edit my appearance: because I’m lazy; but also because, as my father so aptly described it “take me as I am”. I tell my friends all the time, I don’t think I’m going to wear makeup on my wedding day, it just wouldn’t feel like me. And if I’m not willing to edit my appearance on what society deems “the happiest day of your life.” I sure as shit am not going to edit my writing for hypothetical readers that I may or may not know, who may or may not read it.' },
         { type: 'paragraph', text: 'I will not deny that there is benefit in writing for the reader and I myself have read many articles that I have found propounding moving or sparked an engaging conversation between my friends and I. But I kind of think it’s something that naturally happens, rather than the main reason to do it. I think there is a greater beauty in craft, in finding your voice, one that is truly yours, and if people just happen to speak your language then it’s [[definition:free-bread]].' },
         { type: 'paragraph', text: 'I cannot write for everyone, I can only write for myself and hope that I have spoken in a way that is heard by those who want to listen. Maybe life is just a long process of finding people who speak your language. It’s not the worst way to live.' },
       ],
     },
-  // I dont believe in giving advice
+  // I don’t believe in giving advice
   {
     id: 'no-advice',
     title: 'I don’t believe in giving advice',
@@ -100,7 +163,7 @@ export const ESSAYS = [
     { type: 'paragraph', text: 'And after 2 years what I didn’t realize is how much of what I do at work has been copied and pasted into my life without me even realizing,' },
     { type: 'numbered-list', items: [
       'Continually asking myself “What problem are we trying to solve” has helped me to view all obstacles in this manner. Approaching disagreements not from the perspective of whose to blame, but rather from a place of collaboration. I really believe that we can work together and reach an end state that enables both of us to achieve our goals, even if that solution might not be obvious at first.',
-      'Thinking through the entire flow of an experience and begging the question of where does this begin has enabled me to question the origin of my decisions. Knowing which core value has shaped my decision and being able to identify when there is a disconnectness has been extremely important as I try to tackle this larger question of who am I?',
+      'Thinking through the entire flow of an experience and begging the question of where does this begin has enabled me to question the origin of my decisions. Knowing which core value has shaped my decision and being able to identify when there is a disconnectedness has been extremely important as I try to tackle this larger question of who am I?',
       'Helping my team’s QA engineer uncover all of the edge cases within a feature has led me to stress test all of the possible outcomes of a decision. I have felt more confident in the decisions I make because I know that all perspectives were taken into account.',
       'Deciding what and how much information to display on a screen during  a user’s journey has sharpened my ability to think about when and how to have tough conversations with friends. Sometimes more information isn’t always a good thing and sensing when someone might not be receptive to feedback can save a lot of energy.',
       'Presenting my work to be critiqued each week with product managers, other designers, or business stakeholders has taught me to release my ego and attachment to the work. Understanding how to digest feedback and improve is an iterative process that I continue to do both in my work and in life. I believe that there’s always room to grow, even if you’re growing sideways. ',

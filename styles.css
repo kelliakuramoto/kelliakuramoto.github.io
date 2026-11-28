@@ -934,28 +934,28 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   }
 }
 
-/* A card marked wide: true (a long thought) spans both columns; the cards before and after it fill the columns evenly */
-.consume-detail-board .c-card--wide {
+/* A card marked width: 'full' (a long thought) spans both columns; the cards before and after it fill the columns evenly */
+.consume-detail-board .c-card--full {
   column-span: all;
 }
 
 /* Columns drop the bottom margin of the cards above a spanning card, so it brings its own gap (not when it is first: the header already spaces it) */
-.consume-detail-board .c-card--wide:not(:first-child) {
+.consume-detail-board .c-card--full:not(:first-child) {
   margin-top: var(--grid-gap);
 }
 
-/* On small screens (the site's mobile breakpoint, 800px) the board is always one column. This comes after the wide-card rules above so it overrides them. */
+/* On small screens (the site's mobile breakpoint, 800px) the board is always one column. This comes after the full-card rules above so it overrides them. */
 @media (max-width: 800px) {
   .consume-detail-board {
     columns: 1;
   }
 
-  /* With one column there is nothing to span: a wide card is an ordinary card, with its own margin like the rest */
-  .consume-detail-board .c-card--wide {
+  /* With one column there is nothing to span: a full card is an ordinary card, with its own margin like the rest */
+  .consume-detail-board .c-card--full {
     column-span: none;
   }
 
-  .consume-detail-board .c-card--wide:not(:first-child) {
+  .consume-detail-board .c-card--full:not(:first-child) {
     margin-top: 0;
   }
 }
@@ -1464,6 +1464,14 @@ a[href*="instagram.com/saturated_sights"]:is(:hover, :focus-visible) {
   grid-column: 2;
 }
 
+/* Images and thoughts in an essay are one Consume column wide (width: 'half', the default), centered in the text; width: 'full' fills the text. The text is two columns plus the gap,
+    so one column is (text width - gap) / 2. At one column they fill the text (see the 800px block). */
+.knowledge-prose > .knowledge-inline-image:not(.is-full),
+.knowledge-prose > .c-card:not(.is-full) .c-thought {
+  max-width: calc((100% - var(--grid-gap)) / 2);
+  margin-inline: auto;
+}
+
 .essay-aside {
   grid-column: 3;
   position: relative;
@@ -1690,6 +1698,11 @@ img.is-zoomable {
 
   .knowledge-reader-content {
     width: 100%;
+  }
+
+  .knowledge-prose > .knowledge-inline-image:not(.is-full),
+  .knowledge-prose > .c-card:not(.is-full) .c-thought {
+    max-width: none;
   }
 
   /* No room beside the essay: the Consume card floats bottom right, above the toggle bar */

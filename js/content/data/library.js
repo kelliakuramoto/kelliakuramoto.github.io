@@ -29,6 +29,15 @@
 export const LIBRARY = [
   {
     type: 'podcast',
+    id: 'what-now',
+    show: 'Trevor Noah',
+    episode: 'What Now? With Trevor Noah',
+    image: 'images/Consume/what-now.png',
+    url: 'https://www.youtube.com/channel/UChGkulntbV_b0FPYSLBXWNg',
+  },
+  {
+    parent: 'podcast:what-now',
+    type: 'podcast',
     id: 'boroditsky-language-changes-personality',
     show: 'What Now? With Trevor Noah',
     episode: 'Lera Boroditsky: How Language Secretly Changes Your Personality',
@@ -37,6 +46,17 @@ export const LIBRARY = [
     image: 'images/Consume/what-now.png',
     url: 'https://youtu.be/UVhAceBQmpY?si=Xk2LRWulUE9_W7gx',
     links: ['definition:cost-of-translation']
+  },
+    {
+    parent: 'podcast:what-now',
+    type: 'podcast',
+    id: 'brooks-are-we-happy-yet',
+    show: 'What Now? With Trevor Noah',
+    episode: 'Arthur C. Brooks: Why Humans Are So Bad at Being Happy',
+    minutes: 127,
+    progress: 98,
+    image: 'images/Consume/what-now.png',
+    url: 'https://www.youtube.com/watch?v=xHZmw3JhT48',
   },
   {
     type: 'book',
@@ -107,6 +127,16 @@ export const LIBRARY = [
     progress: 96,
     image: 'images/Consume/radical-neighbouring.jpg',
     url: 'https://www.youtube.com/watch?v=dynQV-oKM0E&t=843s'
+  },
+    {
+    type: 'podcast',
+    id: 'designing-for-play',
+    show: 'Michelle Lee',
+    episode: 'Designing for play and friction in a fast-paced world',
+    minutes: 20,
+    progress: 87,
+    image: 'images/Consume/design-for-play.png',
+    url: 'https://www.youtube.com/watch?v=nIq4pHAIEeU'
   },
   {
     type: 'podcast',
@@ -219,6 +249,17 @@ export const LIBRARY = [
     text: 'An acorn never berates itself for not being an oak tree, and yet it continues to grow. Because that is what it was encoded to do.',
     highlight: 'what it was encoded to do',
     by: 'James Clear'
+  },
+  {
+    parent: 'quote:encoded-to-do',
+    type: 'podcast',
+    id: 'build-better-habits',
+    show: 'Huberman Lab',
+    episode: 'Best Ways to Build Better Habits & Break Bad Ones | James Clear',
+    minutes: 51,
+    progress: 155,
+    image: 'images/Consume/huberman-lab.png',
+    url: 'https://www.youtube.com/watch?v=bdsc3Spm6Sw'
   },
   {
     type: 'book',

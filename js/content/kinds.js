@@ -1,5 +1,5 @@
 import { esc, formatDate, shuffle } from '../dom.js';
-import { articleCard, bookCard, imageCard, podcastCard, quoteCard, textCard, flashCard } from '../cards.js';
+import { articleCard, bookCard, imageCard, podcastCard, quoteCard, textCard, flashCard, deskFrame } from '../cards.js';
 import { thoughtCard } from '../blocks.js';
 import { all, connections, parseRef, refKey, resolve } from './graph.js';
 import { richText, URL_TOKEN, urlWords } from './richtext.js';
@@ -20,7 +20,8 @@ import { thoughtBlocks } from './data/thoughts.js';
 //   plain('I love [[free-bread|bread]] and [[operating-system]]') -> 'I love bread and operating-system'
 const plain = text => text
   .replace(URL_TOKEN, (m, address, label) => urlWords(address, label))
-  .replace(/\[\[(?:[a-z]+:)?([\w-]+)(?:\|([^\]]+))?\]\]/g, (m, id, label) => label || id);
+  .replace(/\[\[(?:[a-z]+:)?([\w-]+)(?:\|([^\]]+))?\]\]/g, (m, id, label) => label || id)
+  .replace(/\*{1,3}(\S(?:.*?\S)?)\*{1,3}/g, '$1');   // **bold** and *italic* show as plain words
 
 // The attributes that make a card clickable, the same for EVERY kind:
 //   refAttrs(essay) -> 'data-ref="article:no-advice" tabindex="0" role="button" aria-label="Open: ..."'
@@ -60,7 +61,7 @@ const CARDS = {
     blocks: thoughtBlocks(item), date: item.date, dateLabel: item.date && formatDate(item.date, 'short'),
     attrs: open ? thoughtAttrs(item) : '',
     format: richText,   // [[links]] in a thought work on a detail page too
-    className: item.wide ? 'c-card--wide' : '',   // wide: true in thoughts.js spans both columns on a detail page
+    className: item.width === 'full' ? 'c-card--full' : '',   // width: 'full' in thoughts.js spans both columns on a detail page
   }),
   definition: (item, open) => articleCard({ title: item.word, sub: plain(item.text.split('\n')[0]), attrs: open ? refAttrs(item) : '' }),
   question: (item, open) => textCard({ text: plain(item.text), attrs: open ? refAttrs(item) : '' }),   // a question may hold [[links]]: cards show just the words
@@ -151,7 +152,8 @@ export function peekLinks(item) {
 // Essays and experiments are listed by title.
 
 export function detailParts(item) {
-  const linked = connections(item);
+  const parent = parentOf(item);   // a child's page doesn't list the item it belongs to
+  const linked = connections(item).filter(o => !(parent && o.kind === parent.kind && o.id === parent.id));
   return {
     quotes: linked.filter(o => o.kind === 'media' && o.type === 'quote'),
     media: linked.filter(o => o.kind === 'media' && o.type !== 'quote'),   // books, podcasts, poems linked in (either direction)
@@ -179,12 +181,12 @@ export const onBoard = item => !item.parent;
 export const hasDetail = item => item.kind === 'media'
   && Object.values(detailParts(item)).some(list => list.length);
 
-// The item whose detail page a link to `item` should open: the media it belongs to when it is a child (a quote with a `parent` is not
-// on the board, so a link to it opens its parent's page), otherwise the item itself. null when there is nothing to open.
+// The item whose detail page a link to `item` should open: its own page when it has one, otherwise the media it belongs to when it is a
+// child (a quote with a `parent` and nothing attached is not on the board, so a link to it opens its parent's page). null when there is nothing to open.
 export function detailTarget(item) {
+  if (hasDetail(item)) return item;   // a child with a page of its own (its own thoughts, links...) opens that page
   const parent = parentOf(item);
-  if (parent && hasDetail(parent)) return parent;
-  return hasDetail(item) ? item : null;
+  return parent && hasDetail(parent) ? parent : null;
 }
 
 // The board card for an item with a detail page: no outside link, clicking it opens the page instead.
@@ -198,7 +200,9 @@ export const detailCard = item => MEDIA_CARDS[item.type](item, { href: '', attrs
 // Quotes on a detail page show no author, since they belong to the book, podcast or poem the page is about.
 const attachedCards = ({ quotes, media, definitions, thoughts, questions }) => [
   ...quotes.map(q => MEDIA_CARDS.quote(q, { by: '' })),
-  ...media.map(m => MEDIA_CARDS[m.type](m)),   // the normal card, linking out to its own url
+  // a book, podcast or poem with things attached of its own opens its own page and has the sticky notes, like on the board;
+  // one without links out to its own url
+  ...media.map(m => (hasDetail(m) ? deskFrame(detailCard(m), refKey(m.kind, m.id), attachedKinds(m)) : MEDIA_CARDS[m.type](m))),
   ...definitions.map(term => flashCard({
     front: richText(term.text), back: esc(term.word), attrs: refAttrs(term),
   })),

@@ -12,7 +12,8 @@
 //           [[kind:id|words]] links work in a thought written inside an essay or experiment (they connect it like any other link).
 //           They work on a Consume detail page too, where a thought's [[links]] open their pages.
 //   date    ISO date (YYYY-MM-DD)
-//   wide    optional, true: on a Consume detail page this thought spans both columns instead of one (for a long thought)
+//   width   optional, 'half' (default) or 'full': on a Consume detail page 'full' spans both columns instead of one (for a long thought).
+//           Written inside an essay or experiment, 'half' is one Consume column and 'full' fills the text; the block takes `width` too (see essays.js)
 //   parent  the media this thought belongs to, e.g. 'book:letters-to-a-young-poet' (media is written by its `type`). A book / podcast / poem with a
 //           thought attached to it opens a detail page on the Consume board. Add `id` only if you link to it by hand.
 //   links   (optional) other things it is merely related to, e.g. ['definition:operating-system']
@@ -29,26 +30,30 @@ export const THOUGHTS = [
     parent: 'quote:circular-economy',
   },
   {
+    text: 'Did I say what I mean? Did I mean what I said?',
+    parent: 'podcast:boroditsky-language-changes-personality',
+  },
+  {
     blocks: [
       { 
-        type: 'quote', text: 'Because your language has told you that blame has to be assigned, you then assume that blame is neccessary.\n\nIf you show a video of a ball rolling onto the screen and it knocks into a vase and the vase falls, you ask English speakers to describe it they’ll say someone rolled a ball into a vase. There’s no someone on the screen at all.', 
-        highlight: 'assume that blame is neccessary',
+        type: 'quote', text: 'Because your language has told you that blame has to be assigned, you then assume that blame is necessary.\n\nIf you show a video of a ball rolling onto the screen and it knocks into a vase and the vase falls, you ask English speakers to describe it they’ll say someone rolled a ball into a vase. There’s no someone on the screen at all.', 
+        highlight: 'assume that blame is necessary',
       },
-      { type: 'paragraph', text: 'I recently found myself in a situation where no one did anything wrong, there was no "bad guy" but I still lost a relationship that meant a lot to me. I was quite upset but it felt a bit misplaced because I didn’t have anyone to blame for how I was feeling.\n\n After a second I remebered this podcast and realized that it felt so fuzzy because the American grammar is wired in a way that associates an actor with an action. The idea that something could happen to me without someone else causing it, is a foregin concept to me. I’m still grappling with the lack of casuality and fighting even harder to not blame myself in this situation (that would be the automatic thing to do in my mind).\n\nI want to be the type of person who can accept actions without agents or cause because sometimes in life things just happen.',
+      { type: 'paragraph', text: 'I recently found myself in a situation where no one did anything wrong, there was no "bad guy" but I still lost a relationship that meant a lot to me. I was quite upset but it felt a bit misplaced because I didn’t have anyone to blame for how I was feeling.\n\n After a second I remembered this podcast and realized that it felt so fuzzy because the American grammar is wired in a way that associates an actor with an action. The idea that something could happen to me without someone else causing it, is a foreign concept to me. I’m still grappling with the lack of causality and fighting even harder to not blame myself in this situation (that would be the automatic thing to do in my mind).\n\nI want to be the type of person who can accept actions without agents or cause because sometimes in life things just happen.',
       },
     ],
     parent: 'podcast:boroditsky-language-changes-personality',
     date: '2026-11-12',
-    wide: true,
-  },
-    {
-    text: 'I heard this poem for the first time at a [[url:https://www.yuz-sf.org/|Young Urban Zen]] talk at the [[url:https://www.sfzc.org/|San Francisco Zen Center]]. The talk was centered around genorosity',
-    parent: 'quote:sun-never-says',
+    width: 'full',
   },
   {
-    text: 'I’ve had this quote hanging up on my desk since the summer of 2022, back when my thoughts seemed to eclipse my mind and therefor my view of the world.\n\nLife isn’t as unbearable now but I still keep it up as a reminder everyday that whatever overwhelming or horrible thing I think is happening to me right now will not last forever. I can choose which program to run, I can choose how I percieve inputs of information, and at the end of the day if things still suck, life really isn’t that long anways.\n\n "Taking my big ideas to big places to feel small" - Huarui Lai',
+    text: 'I heard this poem for the first time at a [[url:https://www.yuz-sf.org/|Young Urban Zen]] talk at the [[url:https://www.sfzc.org/|San Francisco Zen Center]]. The talk was centered around generosity',
+    parent: 'poem:sun-never-says',
+  },
+  {
+    text: 'I’ve had this quote hanging up on my desk since the summer of 2022, back when my thoughts seemed to eclipse my mind and therefore my view of the world.\n\nLife isn’t as unbearable now but I still keep it up as a reminder everyday that whatever overwhelming or horrible thing I think is happening to me right now will not last forever. I can choose which program to run, I can choose how I perceive inputs of information, and at the end of the day if things still suck, life really isn’t that long anyway.\n\n "Taking my big ideas to big places to feel small" - Huarui Lai',
     parent: 'quote:life-feels-unbearable',
-    wide: true,
+    width: 'full',
   },
   {
     blocks: [
@@ -61,6 +66,6 @@ export const THOUGHTS = [
     ],
     parent: 'poem:letters-to-a-young-creator',
     date: '2026-11-24',
-    wide: true,
+    width: 'full',
   },
 ];
